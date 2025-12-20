@@ -3,5 +3,9 @@
     <Platform Name="x64" />
     <Platform Name="x86" />
   </Configurations>
+  <Folder Name="/Solution Items/">
+    <File Path="LICENSE.txt" />
+    <File Path="README.md" />
+  </Folder>
   <Project Path="UEFIpp/UEFIpp.vcxproj" Id="6fc109e8-d0e8-49ee-9a24-f3034acc531a" />
 </Solution>

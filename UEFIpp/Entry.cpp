@@ -5,7 +5,7 @@
  * designed for out-of-the-box UEFI compilation using Microsoft Visual Studio.
  *
  * The framework provides a small foundational core.
- * Most components are expected to be implemented or extended by the user
+ * Most functionality is expected to be implemented or extended by the user
  * depending on the specific firmware use case.
  * 
  * The project is under active development and may evolve over time.
@@ -26,9 +26,6 @@ EfiMain(
 	MAYBE_UNUSED PEFI_SYSTEM_TABLE SystemTable
 )
 {
-	Console::Out
-		<< Console::Clear;
-
 	Console::Out
 		<< "Hello, UEFI++"
 		<< Console::Endl;
