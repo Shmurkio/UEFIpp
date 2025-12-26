@@ -13,7 +13,7 @@
 using UINT8 = uint8_t;
 using CUINT8 = const UINT8;
 using PUINT8 = UINT8*;
-using PCUINT8 = const UINT8;
+using PCUINT8 = const UINT8*;
 
 using UINT16 = uint16_t;
 using CUINT16 = const UINT16;
@@ -82,6 +82,7 @@ using PCCHAR32 = const CHAR32*;
 
 using CHAR = char;
 using CCHAR = const CHAR;
+using PCHAR = CHAR*;
 using STR = CHAR*;
 using PCSTR = const CHAR*;
 
@@ -116,8 +117,9 @@ typedef struct _EFI_GUID
 	UINT16 Data2;
 	UINT16 Data3;
 	UINT8 Data4[8];
-} EFI_GUID, *PEFI_GUID;
+} EFI_GUID, * PEFI_GUID;
 
+using CEFI_GUID = const EFI_GUID;
 using PCEFI_GUID = const PEFI_GUID;
 
 using EFI_TPL = UINT64;
@@ -186,14 +188,14 @@ typedef enum _EFI_MEMORY_TYPE : UINT32
 	EfiPalCode,
 	EfiPersistentMemory,
 	EfiMaxMemoryType
-} EFI_MEMORY_TYPE, *PEFI_MEMORY_TYPE;
+} EFI_MEMORY_TYPE, * PEFI_MEMORY_TYPE;
 
 typedef enum _EFI_TIMER_DELAY : UINT32
 {
 	TimerCancel,
 	TimerPeriodic,
 	TimerRelative
-} EFI_TIMER_DELAY, *PEFI_TIMER_DELAY;
+} EFI_TIMER_DELAY, * PEFI_TIMER_DELAY;
 
 typedef enum _EFI_ALLOCATE_TYPE : UINT32
 {
@@ -201,7 +203,7 @@ typedef enum _EFI_ALLOCATE_TYPE : UINT32
 	AllocateMaxAddress,
 	AllocateAddress,
 	MaxAllocateType
-} EFI_ALLOCATE_TYPE, *PEFI_ALLOCATE_TYPE;
+} EFI_ALLOCATE_TYPE, * PEFI_ALLOCATE_TYPE;
 
 typedef struct _EFI_TABLE_HEADER
 {
@@ -210,9 +212,9 @@ typedef struct _EFI_TABLE_HEADER
 	UINT32 HeaderSize;
 	UINT32 CRC32;
 	UINT32 Reserved;
-} EFI_TABLE_HEADER, *PEFI_TABLE_HEADER;
+} EFI_TABLE_HEADER, * PEFI_TABLE_HEADER;
 
-typedef struct _EFI_SIMPLE_TEXT_OUTPUT_PROTOCOL EFI_SIMPLE_TEXT_OUTPUT_PROTOCOL, *PEFI_SIMPLE_TEXT_OUTPUT_PROTOCOL;
+typedef struct _EFI_SIMPLE_TEXT_OUTPUT_PROTOCOL EFI_SIMPLE_TEXT_OUTPUT_PROTOCOL, * PEFI_SIMPLE_TEXT_OUTPUT_PROTOCOL;
 
 using EfiTextResetFn = EFI_STATUS(__cdecl)(PEFI_SIMPLE_TEXT_OUTPUT_PROTOCOL This, BOOLEAN ExtendedVerification);
 using EfiTextOutputStringFn = EFI_STATUS(__cdecl)(PEFI_SIMPLE_TEXT_OUTPUT_PROTOCOL This, PCWSTR String);
@@ -232,7 +234,7 @@ typedef struct _EFI_SIMPLE_TEXT_OUTPUT_MODE
 	INT32 CursorColumn;
 	INT32 CursorRow;
 	BOOLEAN CursorVisible;
-} EFI_SIMPLE_TEXT_OUTPUT_MODE, *PEFI_SIMPLE_TEXT_OUTPUT_MODE;
+} EFI_SIMPLE_TEXT_OUTPUT_MODE, * PEFI_SIMPLE_TEXT_OUTPUT_MODE;
 
 typedef struct _EFI_SIMPLE_TEXT_OUTPUT_PROTOCOL
 {
@@ -246,15 +248,15 @@ typedef struct _EFI_SIMPLE_TEXT_OUTPUT_PROTOCOL
 	EfiTextSetCursorPositionFn* SetCursorPosition;
 	EfiTextEnableCursor EnableCursor;
 	PEFI_SIMPLE_TEXT_OUTPUT_MODE Mode;
-} EFI_SIMPLE_TEXT_OUTPUT_PROTOCOL, *PEFI_SIMPLE_TEXT_OUTPUT_PROTOCOL;
+} EFI_SIMPLE_TEXT_OUTPUT_PROTOCOL, * PEFI_SIMPLE_TEXT_OUTPUT_PROTOCOL;
 
-typedef struct _EFI_SIMPLE_TEXT_INPUT_PROTOCOL EFI_SIMPLE_TEXT_INPUT_PROTOCOL, *PEFI_SIMPLE_TEXT_INPUT_PROTOCOL;
+typedef struct _EFI_SIMPLE_TEXT_INPUT_PROTOCOL EFI_SIMPLE_TEXT_INPUT_PROTOCOL, * PEFI_SIMPLE_TEXT_INPUT_PROTOCOL;
 
 typedef struct _EFI_INPUT_KEY
 {
 	UINT16 ScanCode;
 	UINT16 UnicodeChar;
-} EFI_INPUT_KEY, *PEFI_INPUT_KEY;
+} EFI_INPUT_KEY, * PEFI_INPUT_KEY;
 
 using EfiTextInputResetFn = EFI_STATUS(__cdecl)(PEFI_SIMPLE_TEXT_INPUT_PROTOCOL This, BOOLEAN ExtendedVerification);
 using EfiTextInputReadKeyStrokeFn = EFI_STATUS(__cdecl)(PEFI_SIMPLE_TEXT_INPUT_PROTOCOL This, PEFI_INPUT_KEY Key);
@@ -264,7 +266,7 @@ typedef struct _EFI_SIMPLE_TEXT_INPUT_PROTOCOL
 	EfiTextInputResetFn* Reset;
 	EfiTextInputReadKeyStrokeFn* ReadKeyStroke;
 	EFI_EVENT WaitForKey;
-} EFI_SIMPLE_TEXT_INPUT_PROTOCOL, *PEFI_SIMPLE_TEXT_INPUT_PROTOCOL;
+} EFI_SIMPLE_TEXT_INPUT_PROTOCOL, * PEFI_SIMPLE_TEXT_INPUT_PROTOCOL;
 
 typedef struct _EFI_MEMORY_DESCRIPTOR
 {
@@ -278,14 +280,14 @@ typedef struct _EFI_MEMORY_DESCRIPTOR
 typedef enum _EFI_INTERFACE_TYPE : UINT32
 {
 	EFI_NATIVE_INTERFACE
-} EFI_INTERFACE_TYPE, *PEFI_INTERFACE_TYPE;
+} EFI_INTERFACE_TYPE, * PEFI_INTERFACE_TYPE;
 
 typedef enum _EFI_LOCATE_SEARCH_TYPE : UINT32
 {
 	AllHandles,
 	ByRegisterNotify,
 	ByProtocol
-} EFI_LOCATE_SEARCH_TYPE, *PEFI_LOCATE_SEARCH_TYPE;
+} EFI_LOCATE_SEARCH_TYPE, * PEFI_LOCATE_SEARCH_TYPE;
 
 typedef struct _EFI_OPEN_PROTOCOL_INFORMATION_ENTRY
 {
@@ -293,9 +295,9 @@ typedef struct _EFI_OPEN_PROTOCOL_INFORMATION_ENTRY
 	EFI_HANDLE ControllerHandle;
 	UINT32 Attributes;
 	UINT32 OpenCount;
-} EFI_OPEN_PROTOCOL_INFORMATION_ENTRY, *PEFI_OPEN_PROTOCOL_INFORMATION_ENTRY;
+} EFI_OPEN_PROTOCOL_INFORMATION_ENTRY, * PEFI_OPEN_PROTOCOL_INFORMATION_ENTRY;
 
-typedef struct _EFI_DEVICE_PATH_PROTOCOL EFI_DEVICE_PATH_PROTOCOL, *PEFI_DEVICE_PATH_PROTOCOL;
+typedef struct _EFI_DEVICE_PATH_PROTOCOL EFI_DEVICE_PATH_PROTOCOL, * PEFI_DEVICE_PATH_PROTOCOL;
 
 using EfiRaiseTplFn = EFI_TPL(__cdecl)(EFI_TPL NewTpl);
 using EfiRestoreTplFn = VOID(__cdecl)(EFI_TPL OldTpl);
@@ -315,7 +317,7 @@ using EfiCloseEventFn = EFI_STATUS(__cdecl)(EFI_EVENT Event);
 using EfiCheckEventFn = EFI_STATUS(__cdecl)(EFI_EVENT Event);
 using EfiCreateEventExFn = EFI_STATUS(__cdecl)(UINT32 Type, EFI_TPL NotifyTpl, EfiEventNotifyFn* NotifyFunction, PVOID NotifyContext, PCEFI_GUID EventGroup, PEFI_EVENT Event);
 
-using EfiInstallProtocolInterfaceFn = EFI_STATUS(__cdecl)(PEFI_HANDLE Handle, PEFI_GUID Protocol, EFI_INTERFACE_TYPE InterfaceType, PVOID Interface);
+using EfiInstallProtocolInterfaceFn = EFI_STATUS(__cdecl)(PEFI_HANDLE Handle, PCEFI_GUID Protocol, EFI_INTERFACE_TYPE InterfaceType, PVOID Interface);
 using EfiReinstallProtocolInterfaceFn = EFI_STATUS(__cdecl)(EFI_HANDLE Handle, PEFI_GUID Protocol, PVOID OldInterface, PVOID NewInterface);
 using EfiUninstallProtocolInterfaceFn = EFI_STATUS(__cdecl)(EFI_HANDLE Handle, PEFI_GUID Protocol, PVOID Interface);
 using EfiHandleProtocolFn = EFI_STATUS(__cdecl)(EFI_HANDLE Handle, PCEFI_GUID Protocol, PVOID* Interface);
@@ -420,7 +422,7 @@ typedef struct _EFI_BOOT_SERVICES
 	EfiCopyMemFn* CopyMem;
 	EfiSetMemFn* SetMem;
 	EfiCreateEventExFn* CreateEventEx;
-} EFI_BOOT_SERVICES, *PEFI_BOOT_SERVICES;
+} EFI_BOOT_SERVICES, * PEFI_BOOT_SERVICES;
 
 typedef struct _EFI_TIME
 {
@@ -435,14 +437,14 @@ typedef struct _EFI_TIME
 	INT16 TimeZone;
 	UINT8 Daylight;
 	UINT8 Pad2;
-} EFI_TIME, *PEFI_TIME;
+} EFI_TIME, * PEFI_TIME;
 
 typedef struct _EFI_TIME_CAPABILITIES
 {
 	UINT32 Resolution;
 	UINT32 Accuracy;
 	BOOLEAN SetsToZero;
-} EFI_TIME_CAPABILITIES, *PEFI_TIME_CAPABILITIES;
+} EFI_TIME_CAPABILITIES, * PEFI_TIME_CAPABILITIES;
 
 typedef enum _EFI_RESET_TYPE : UINT32
 {
@@ -450,7 +452,7 @@ typedef enum _EFI_RESET_TYPE : UINT32
 	EfiResetWarm,
 	EfiResetShutdown,
 	EfiResetPlatformSpecific
-} EFI_RESET_TYPE, *PEFI_RESET_TYPE;
+} EFI_RESET_TYPE, * PEFI_RESET_TYPE;
 
 typedef struct _EFI_CAPSULE_HEADER
 {
@@ -458,7 +460,7 @@ typedef struct _EFI_CAPSULE_HEADER
 	UINT32 HeaderSize;
 	UINT32 Flags;
 	UINT32 CapsuleImageSize;
-} EFI_CAPSULE_HEADER, *PEFI_CAPSULE_HEADER;
+} EFI_CAPSULE_HEADER, * PEFI_CAPSULE_HEADER;
 
 using EfiGetTimeFn = EFI_STATUS(__cdecl)(PEFI_TIME Time, PEFI_TIME_CAPABILITIES Capabilities);
 using EfiSetTimeFn = EFI_STATUS(__cdecl)(PEFI_TIME Time);
@@ -505,13 +507,13 @@ typedef struct _EFI_RUNTIME_SERVICES
 
 	// Miscellaneous UEFI 2.0 Service.
 	EfiQueryVariableInfoFn* QueryVariableInfo;
-} EFI_RUNTIME_SERVICES, *PEFI_RUNTIME_SERVICES;
+} EFI_RUNTIME_SERVICES, * PEFI_RUNTIME_SERVICES;
 
 typedef struct _EFI_CONFIGURATION_TABLE
 {
 	EFI_GUID VendorGuid;
 	PVOID VendorTable;
-} EFI_CONFIGURATION_TABLE, *PEFI_CONFIGURATION_TABLE;
+} EFI_CONFIGURATION_TABLE, * PEFI_CONFIGURATION_TABLE;
 
 typedef struct _EFI_SYSTEM_TABLE
 {
@@ -528,7 +530,40 @@ typedef struct _EFI_SYSTEM_TABLE
 	PEFI_BOOT_SERVICES BootServices;
 	UINT64 NumberOfTableEntries;
 	PEFI_CONFIGURATION_TABLE ConfigurationTable;
-} EFI_SYSTEM_TABLE, *PEFI_SYSTEM_TABLE;
+} EFI_SYSTEM_TABLE, * PEFI_SYSTEM_TABLE;
+
+typedef struct _EFI_DEVICE_PATH_PROTOCOL
+{
+	UINT8 Type;
+	UINT8 SubType;
+	UINT8 Length[2];
+} EFI_DEVICE_PATH_PROTOCOL, * PEFI_DEVICE_PATH_PROTOCOL;
+
+using CEFI_DEVICE_PATH_PROTOCOL = const EFI_DEVICE_PATH_PROTOCOL;
+using PCEFI_DEVICE_PATH_PROTOCOL = const EFI_DEVICE_PATH_PROTOCOL*;
+
+using EfiDevicePathToTextPathFn = PCWSTR(__cdecl)(
+	IN PCEFI_DEVICE_PATH_PROTOCOL DevicePath,
+	IN CBOOLEAN DisplayOnly,
+	IN CBOOLEAN AllowShortcuts
+	);
+
+using EfiDevicePathToTextNodeFn = PCWSTR(__cdecl)(
+	IN PCEFI_DEVICE_PATH_PROTOCOL DeviceNode,
+	IN CBOOLEAN DisplayOnly,
+	IN CBOOLEAN AllowShortcuts
+	);
+
+typedef struct _EFI_DEVICE_PATH_TO_TEXT_PROTOCOL
+{
+	EfiDevicePathToTextNodeFn* ConvertDeviceNodeToText;
+	EfiDevicePathToTextPathFn* ConvertDevicePathToPath;
+} EFI_DEVICE_PATH_TO_TEXT_PROTOCOL, * PEFI_DEVICE_PATH_TO_TEXT_PROTOCOL;
+
+using CEFI_DEVICE_PATH_TO_TEXT_PROTOCOL = const EFI_DEVICE_PATH_TO_TEXT_PROTOCOL;
+using PCEFI_DEVICE_PATH_TO_TEXT_PROTOCOL = const EFI_DEVICE_PATH_TO_TEXT_PROTOCOL*;
+
+constexpr EFI_GUID gEfiDevicePathToTextProtocolGuid = { 0x8B843E20, 0x8132, 0x4852, { 0x90, 0xCC, 0x55, 0x1A, 0x4E, 0x4A, 0x7F, 0x1C } };
 
 extern PEFI_SYSTEM_TABLE gST;
 extern EFI_HANDLE gImageHandle;
