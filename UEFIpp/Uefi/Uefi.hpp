@@ -11,26 +11,94 @@
 #define MAYBE_UNUSED [[maybe_unused]]
 
 using UINT8 = uint8_t;
+using CUINT8 = const UINT8;
 using PUINT8 = UINT8*;
+using PCUINT8 = const UINT8;
+
 using UINT16 = uint16_t;
+using CUINT16 = const UINT16;
 using PUINT16 = UINT16*;
+using PCUINT16 = const UINT16*;
+
 using UINT32 = uint32_t;
+using CUINT32 = const UINT32;
 using PUINT32 = UINT32*;
+using PCUINT32 = const UINT32*;
+
 using UINT64 = uint64_t;
-using PUINT64 = UINT64*;
 using CUINT64 = const UINT64;
+using PUINT64 = UINT64*;
+using PCUINT64 = const UINT64*;
+
+using UINTN = uintptr_t;
+using CUINTN = const UINTN;
+using PUINTN = UINTN*;
+using PCUINTN = const UINTN*;
 
 using INT8 = int8_t;
+using CINT8 = const INT8;
 using PINT8 = INT8*;
+using PCINT8 = const INT8*;
+
 using INT16 = int16_t;
+using CINT16 = const INT16;
 using PINT16 = INT16*;
+using PCINT16 = const INT16;
+
 using INT32 = int32_t;
+using CINT32 = const INT32;
 using PINT32 = INT32*;
+using PCINT32 = const INT32*;
+
 using INT64 = int64_t;
+using CINT64 = const INT64;
 using PINT64 = INT64*;
+using PCINT64 = const INT64*;
+
+using INTN = intptr_t;
+using CINTN = const INTN;
+using PINTN = INTN*;
+using PCINTN = const INTN*;
+
+using SIZE_T = UINTN;
+using CSIZE_T = const SIZE_T;
+using PSIZE_T = SIZE_T*;
+using PCSIZE_T = const SIZE_T*;
+
+using CHAR8 = char8_t;
+using CCHAR8 = const CHAR8;
+using PCHAR8 = CHAR8*;
+using PCCHAR8 = const CHAR8*;
+
+using CHAR16 = char16_t;
+using CCHAR16 = const CHAR16;
+using PCHAR16 = CHAR16*;
+using PCCHAR16 = const CHAR16*;
+
+using CHAR32 = char32_t;
+using CCHAR32 = const CHAR32;
+using PCHAR32 = CHAR32*;
+using PCCHAR32 = const CHAR32*;
+
+using CHAR = char;
+using CCHAR = const CHAR;
+using STR = CHAR*;
+using PCSTR = const CHAR*;
+
+using WCHAR = wchar_t;
+using CWCHAR = const WCHAR;
+using PWSTR = WCHAR*;
+using PCWSTR = const WCHAR*;
+
+using UCHAR = unsigned char;
+using CUCHAR = const UCHAR;
+using PUCHAR = UCHAR*;
+using PCUCHAR = const UCHAR*;
 
 using BOOLEAN = bool;
+using CBOOLEAN = const BOOLEAN;
 using PBOOLEAN = BOOLEAN*;
+using CPBOOLEAN = const BOOLEAN*;
 
 using VOID = void;
 using PVOID = VOID*;
@@ -38,18 +106,6 @@ using PCVOID = const VOID*;
 
 using EFI_HANDLE = PVOID;
 using PEFI_HANDLE = EFI_HANDLE*;
-
-using CHAR = char;
-using CCHAR = const char;
-using STR = char*;
-using PCSTR = const char*;
-
-using UCHAR = unsigned char;
-
-using WCHAR = wchar_t;
-using CWCHAR = const wchar_t;
-using PWSTR = wchar_t*;
-using PCWSTR = const wchar_t*;
 
 using EFI_EVENT = PVOID;
 using PEFI_EVENT = EFI_EVENT*;
