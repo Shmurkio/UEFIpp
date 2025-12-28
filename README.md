@@ -30,6 +30,7 @@ UEFI++ intentionally provides only a small foundational core. Most functionality
 - **Serial stream**
 	- Stream-style interface for serial output
 	- Chained insertion operators (`<<`)
+	- UTF-8 output support through the `UTF8` namespace
 	- Same formatting and interface as the console stream
 
 - **Memory utilities**
@@ -39,4 +40,4 @@ UEFI++ intentionally provides only a small foundational core. Most functionality
 
 ## Example Output
 
-![UEFI++ console output](Docs/Output.png)
+![UEFI++ console and output](Docs/Output.png)

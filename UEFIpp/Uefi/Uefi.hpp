@@ -546,13 +546,13 @@ using EfiDevicePathToTextPathFn = PCWSTR(__cdecl)(
 	IN PCEFI_DEVICE_PATH_PROTOCOL DevicePath,
 	IN CBOOLEAN DisplayOnly,
 	IN CBOOLEAN AllowShortcuts
-	);
+);
 
 using EfiDevicePathToTextNodeFn = PCWSTR(__cdecl)(
 	IN PCEFI_DEVICE_PATH_PROTOCOL DeviceNode,
 	IN CBOOLEAN DisplayOnly,
 	IN CBOOLEAN AllowShortcuts
-	);
+);
 
 typedef struct _EFI_DEVICE_PATH_TO_TEXT_PROTOCOL
 {

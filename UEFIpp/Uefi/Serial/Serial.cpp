@@ -361,6 +361,16 @@ operator<<(
 Serial::OUT_STREAM&
 operator<<(
 	IN Serial::OUT_STREAM& Stream,
+	IN PCCHAR8 String
+)
+{
+	PushString(Stream, reinterpret_cast<PCSTR>(String));
+	return Stream;
+}
+
+Serial::OUT_STREAM&
+operator<<(
+	IN Serial::OUT_STREAM& Stream,
 	IN Serial::ENDL
 )
 {
