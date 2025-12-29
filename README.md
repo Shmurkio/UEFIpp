@@ -36,6 +36,12 @@ UEFI++ intentionally provides only a small foundational core. Most functionality
 - **Memory utilities**
 	- `new` and `delete` operator implementation
 
+- **Command line arguments**
+	- Access to UEFI load options as traditional `ArgC`/`ArgV`
+	- UTF-16 to UTF-8 conversion
+	- Quoted argument support
+	- Escape handling inside quoted arguments
+
 ---
 
 ## Example Output

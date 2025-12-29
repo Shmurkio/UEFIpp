@@ -83,7 +83,7 @@ using PCCHAR32 = const CHAR32*;
 using CHAR = char;
 using CCHAR = const CHAR;
 using PCHAR = CHAR*;
-using STR = CHAR*;
+using PSTR = CHAR*;
 using PCSTR = const CHAR*;
 
 using WCHAR = wchar_t;
@@ -564,6 +564,30 @@ using CEFI_DEVICE_PATH_TO_TEXT_PROTOCOL = const EFI_DEVICE_PATH_TO_TEXT_PROTOCOL
 using PCEFI_DEVICE_PATH_TO_TEXT_PROTOCOL = const EFI_DEVICE_PATH_TO_TEXT_PROTOCOL*;
 
 constexpr EFI_GUID gEfiDevicePathToTextProtocolGuid = { 0x8B843E20, 0x8132, 0x4852, { 0x90, 0xCC, 0x55, 0x1A, 0x4E, 0x4A, 0x7F, 0x1C } };
+
+using EfiImageUnloadFn = EFI_STATUS(__cdecl)(EFI_HANDLE ImageHandle);
+
+typedef struct _EFI_LOADED_IMAGE_PROTOCOL
+{
+	UINT32 Revision;
+	EFI_HANDLE ParentHandle;
+	PEFI_SYSTEM_TABLE SystemTable;
+	EFI_HANDLE DeviceHandle;
+	PEFI_DEVICE_PATH_PROTOCOL FilePath;
+	PVOID Reserved;
+	UINT32 LoadOptionsSize;
+	PWSTR LoadOptions;
+	PVOID ImageBase;
+	UINT64 ImageSize;
+	EFI_MEMORY_TYPE ImageCodeType;
+	EFI_MEMORY_TYPE ImageDataType;
+	EfiImageUnloadFn* Unload;
+} EFI_LOADED_IMAGE_PROTOCOL, *PEFI_LOADED_IMAGE_PROTOCOL;
+
+using CEFI_LOADED_IMAGE_PROTOCOL = const EFI_LOADED_IMAGE_PROTOCOL;
+using PCEFI_LOADED_IMAGE_PROTOCOL = const EFI_LOADED_IMAGE_PROTOCOL*;
+
+constexpr EFI_GUID gEfiLoadedImageProtocolGuid = { 0x5B1B31A1, 0x9562, 0x11d2, { 0x8E, 0x3F, 0x00, 0xA0, 0xC9, 0x69, 0x72, 0x3B } };
 
 extern PEFI_SYSTEM_TABLE gST;
 extern EFI_HANDLE gImageHandle;

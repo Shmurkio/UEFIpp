@@ -22,8 +22,8 @@
 
 EFI_STATUS
 EfiMain(
-	MAYBE_UNUSED EFI_HANDLE ImageHandle,
-	MAYBE_UNUSED PEFI_SYSTEM_TABLE SystemTable
+	MAYBE_UNUSED IN PCSTR* ArgV,
+	MAYBE_UNUSED IN UINT64 ArgC
 )
 {
 	//
@@ -73,6 +73,36 @@ EfiMain(
 	Serial::Out
 		<< "Hello, UEFI++"
 		<< Serial::Endl;
+
+	Serial::Out
+		<< "ArgC: "
+		<< ArgC
+		<< Serial::Endl;
+
+	if (ArgC)
+	{
+		Serial::Out
+			<< "Command line: \"";
+	}
+
+	for (UINT64 i = 0; i < ArgC; ++i)
+	{
+		Serial::Out
+			<< ArgV[i];
+
+		if (i + 1 < ArgC)
+		{
+			Serial::Out
+				<< " ";
+		}
+	}
+
+	if (ArgC)
+	{
+		Serial::Out
+			<< "\""
+			<< Serial::Endl;
+	}
 
 	Serial::Out
 		<< "UEFI++ serial stream now supports UTF-8!"
