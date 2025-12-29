@@ -20,6 +20,7 @@ extern "C" int _fltused = 1;
 PEFI_SYSTEM_TABLE gST = nullptr;
 EFI_HANDLE gImageHandle = nullptr;
 PEFI_BOOT_SERVICES gBS = nullptr;
+PEFI_RUNTIME_SERVICES gRT = nullptr;
 
 EFI_STATUS
 EfiMain(
@@ -460,6 +461,7 @@ EfipMain(
 	gST = SystemTable;
 	gImageHandle = ImageHandle;
 	gBS = SystemTable->BootServices;
+	gRT = SystemTable->RuntimeServices;
 
 	//
 	// Set up streams.

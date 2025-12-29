@@ -1,6 +1,3 @@
-// To-do:
-// - EFI_DEVICE_PATH_PROTOCOL
-
 #pragma once
 
 #include <cstdint>
@@ -9,6 +6,23 @@
 #define OUT
 #define OPTIONAL
 #define MAYBE_UNUSED [[maybe_unused]]
+
+#define offsetof(Type, Member) ((size_t)&(((Type*)0)->Member))
+
+namespace std
+{
+	template <typename T>
+	struct remove_reference { using type = T; };
+
+	template <typename T>
+	struct remove_reference<T&> { using type = T; };
+
+	template <typename T>
+	struct remove_reference<T&&> { using type = T; };
+
+	template <typename T>
+	using remove_reference_t = typename remove_reference<T>::type;
+}
 
 using UINT8 = uint8_t;
 using CUINT8 = const UINT8;
@@ -592,6 +606,7 @@ constexpr EFI_GUID gEfiLoadedImageProtocolGuid = { 0x5B1B31A1, 0x9562, 0x11d2, {
 extern PEFI_SYSTEM_TABLE gST;
 extern EFI_HANDLE gImageHandle;
 extern PEFI_BOOT_SERVICES gBS;
+extern PEFI_SYSTEM_TABLE gST;
 
 #include "Memory/Memory.hpp"
 #include "Console/Console.hpp"
