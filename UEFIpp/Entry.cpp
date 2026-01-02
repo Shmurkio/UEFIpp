@@ -178,7 +178,8 @@ EfiMain(
 
 			if (i + 1 < Count)
 			{
-				Console::Out << ", ";
+				Console::Out
+					<< ", ";
 			}
 		}
 
