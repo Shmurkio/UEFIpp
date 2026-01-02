@@ -482,7 +482,7 @@ using EfiGetWakeupTimeFn = EFI_STATUS(__cdecl)(PBOOLEAN Enabled, PBOOLEAN Pendin
 using EfiSetWakeupTimeFn = EFI_STATUS(__cdecl)(BOOLEAN Enable, PEFI_TIME Time);
 using EfiSetVirtualAddressMapFn = EFI_STATUS(__cdecl)(UINT64 MemoryMapSize, UINT64 DescriptorSize, UINT32 DescriptorVersion, PEFI_MEMORY_DESCRIPTOR VirtualMap);
 using EfiConvertPointerFn = EFI_STATUS(__cdecl)(UINT64 DebugPosition, PVOID* Address);
-using EfiGetVariableFn = EFI_STATUS(__cdecl)(PCWSTR VariableName, PEFI_GUID VendorGuid, PUINT32 Attributes, PUINT64 DataSize, PVOID Data);
+using EfiGetVariableFn = EFI_STATUS(__cdecl)(PCWSTR VariableName, PCEFI_GUID VendorGuid, PUINT32 Attributes, PUINT64 DataSize, PVOID Data);
 using EfiGetNextVariableNameFn = EFI_STATUS(__cdecl)(PUINT64 VariableNameSize, PCWSTR VariableName, PEFI_GUID VendorGuid);
 using EfiSetVariableFn = EFI_STATUS(__cdecl)(PCWSTR VariableName, PEFI_GUID VendorGuid, UINT32 Attributes, UINT64 DataSize, PVOID Data);
 using EfiGetNextHighMonoCountFn = EFI_STATUS(__cdecl)(PUINT32 HighCount);
@@ -1406,7 +1406,4 @@ extern PEFI_SYSTEM_TABLE gST;
 extern EFI_HANDLE gImageHandle;
 extern PEFI_BOOT_SERVICES gBS;
 extern PEFI_SYSTEM_TABLE gST;
-
-#include "Memory/Memory.hpp"
-#include "Console/Console.hpp"
-#include "Serial/Serial.hpp"
+extern PEFI_RUNTIME_SERVICES gRT;

@@ -30,6 +30,9 @@
     <ClCompile Include="Uefi\Serial\Serial.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="Uefi\Util\Util.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Uefi\Uefi.hpp">
@@ -66,6 +69,12 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="DFA\NfaToDfa.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Uefi\NVRAM\NVRAM.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Uefi\Util\Util.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

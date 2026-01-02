@@ -1,5 +1,9 @@
 #include "Uefi.hpp"
 
+#include "Console/Console.hpp"
+#include "Serial/Serial.hpp"
+#include "Memory/Memory.hpp"
+
 //
 // Required for compiler.
 //
