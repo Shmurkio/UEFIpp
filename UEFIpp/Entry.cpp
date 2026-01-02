@@ -138,5 +138,55 @@ EfiMain(
 		<< "Note: Use a font such as \"Julia Mono\" (https://github.com/cormullion/juliamono) for proper UTF-8 rendering."
 		<< Serial::Endl;
 
+	//
+	// NVRAM utilities.
+	//
+	PWSTR BootOrder = nullptr;
+	UINT64 BootOrderSize = 0;
+
+	EFI_STATUS Status = NVRAM::Get<WCHAR>(gEfiGlobalVariableGuid, "BootOrder", BootOrder, BootOrderSize, true);
+
+	if (EfiError(Status))
+	{
+		Console::Out
+			<< "Failed to read BootOrder from NVRAM: 0x"
+			<< Console::Hex
+			<< Console::Upper
+			<< Status
+			<< Console::Dec
+			<< Console::Lower
+			<< Console::Endl;
+	}
+	else
+	{
+		UINT64 Count = BootOrderSize / sizeof(WCHAR);
+
+		Console::Out
+			<< "BootOrder ("
+			<< Count
+			<< " entries): ";
+
+		for (UINT64 i = 0; i < Count; ++i)
+		{
+			Console::Out
+				<< "Boot"
+				<< Console::Hex
+				<< Console::Fill('0')
+				<< Console::Width(4)
+				<< BootOrder[i]
+				<< Console::Dec;
+
+			if (i + 1 < Count)
+			{
+				Console::Out << ", ";
+			}
+		}
+
+		Console::Out
+			<< Console::Endl;
+
+		delete[] BootOrder;
+	}
+
 	return EFI_SUCCESS;
 }

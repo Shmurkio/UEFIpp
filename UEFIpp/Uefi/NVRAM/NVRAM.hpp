@@ -29,7 +29,8 @@ namespace NVRAM
 
 		// Convert name.
 		PWSTR NameW = nullptr;
-		EFI_STATUS Status = Util::StrToStrW(const_cast<PSTR>(Name), NameW, UseHeap, false);
+		PSTR NameTemp = const_cast<PSTR>(Name);
+		EFI_STATUS Status = Util::StrToStrW(NameTemp, NameW, UseHeap, false);
 
 		if (EfiError(Status))
 		{
@@ -40,7 +41,7 @@ namespace NVRAM
 		UINT32 Attributes = 0;
 		UINT64 Size = 0;
 
-		Status = gRT->GetVariable(NameW, &Guid, &Attributes, &Size, nullptr);
+		Status = gRT->GetVariable(NameW, const_cast<PEFI_GUID>(&Guid), &Attributes, &Size, nullptr);
 
 		if (Status != EFI_BUFFER_TOO_SMALL)
 		{
@@ -78,7 +79,7 @@ namespace NVRAM
 		}
 
 		// Read into the allocated buffer.
-		Status = gRT->GetVariable(NameW, &Guid, &Attributes, &Size, Out);
+		Status = gRT->GetVariable(NameW, const_cast<PEFI_GUID>(&Guid), &Attributes, &Size, Out);
 		
 		if (UseHeap)
 		{
