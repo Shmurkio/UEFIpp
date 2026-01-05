@@ -42,6 +42,16 @@ UEFI++ intentionally provides only a small foundational core. Most functionality
 	- Quoted argument support
 	- Escape handling inside quoted arguments
 
+- **Image utilities**
+	- PE64 image inspection helpers
+	- NT header access
+	- Image size extraction
+	- Backward image base discovery from arbitrary addresses
+
+- **Memory patching & detours**
+	- Write-protected memory copying with optional WP bypass
+	- Generic, type-safe function detour abstraction
+	- Supports temporary unhooking for original calls
 ---
 
 ## Example Output
