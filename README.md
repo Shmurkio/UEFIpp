@@ -52,6 +52,7 @@ UEFI++ intentionally provides only a small foundational core. Most functionality
 	- Write-protected memory copying with optional WP bypass
 	- Generic, type-safe function detour abstraction
 	- Supports temporary unhooking for original calls
+	- Pattern / signature-based memory scanning
 ---
 
 ## Example Output
