@@ -1,6 +1,7 @@
 #pragma once
 
 #include <cstdint>
+#include <type_traits>
 
 #define IN
 #define OUT
@@ -8,21 +9,6 @@
 #define MAYBE_UNUSED [[maybe_unused]]
 
 #define offsetof(Type, Member) ((size_t)&(((Type*)0)->Member))
-
-namespace std
-{
-	template <typename T>
-	struct remove_reference { using type = T; };
-
-	template <typename T>
-	struct remove_reference<T&> { using type = T; };
-
-	template <typename T>
-	struct remove_reference<T&&> { using type = T; };
-
-	template <typename T>
-	using remove_reference_t = typename remove_reference<T>::type;
-}
 
 using UINT8 = uint8_t;
 using CUINT8 = const UINT8;
@@ -1401,6 +1387,27 @@ typedef union {
 	EFI_TE_IMAGE_HEADER* Te;
 	EFI_IMAGE_OPTIONAL_HEADER_UNION* Union;
 } EFI_IMAGE_OPTIONAL_HEADER_PTR_UNION;
+
+extern "C"
+{
+	void __writecr3(unsigned __int64 Data);
+	unsigned __int64 __readcr4(void);
+	void __writecr4(unsigned __int64 Data);
+	unsigned __int64 __readmsr(int Register);
+	void __writemsr(unsigned long Register, unsigned __int64 Value);
+	unsigned __int64 __readcr0(void);
+	void __writecr0(unsigned __int64 Data);
+	void* _AddressOfReturnAddress();
+	unsigned __int64 __readcr3(void);
+	void __outbyte(unsigned short port, unsigned char value);
+	void __outword(unsigned short port, unsigned short value);
+	void __outdword(unsigned short port, unsigned long value);
+	unsigned char  __inbyte(unsigned short port);
+	unsigned short __inword(unsigned short port);
+	unsigned long  __indword(unsigned short port);
+	void __lidt(void* Source);
+	void __halt(void);
+}
 
 extern PEFI_SYSTEM_TABLE gST;
 extern EFI_HANDLE gImageHandle;

@@ -8,5 +8,6 @@
 #include "Uefi/Util/Util.hpp"
 #include "Uefi/NVRAM/NVRAM.hpp"
 #include "Uefi/Image/Image.hpp"
+#include "Uefi/Detour/Detour.hpp"
 
 #include <cstdint>

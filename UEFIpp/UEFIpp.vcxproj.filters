@@ -83,5 +83,8 @@
     <ClInclude Include="Uefi\Image\Image.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="Uefi\Detour\Detour.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

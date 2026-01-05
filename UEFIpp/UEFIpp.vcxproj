@@ -179,6 +179,7 @@
     <ClInclude Include="DFA\RegexToken.hpp" />
     <ClInclude Include="DFA\RegexValidate.hpp" />
     <ClInclude Include="Uefi\Console\Console.hpp" />
+    <ClInclude Include="Uefi\Detour\Detour.hpp" />
     <ClInclude Include="Uefi\Image\Image.hpp" />
     <ClInclude Include="Uefi\Memory\Memory.hpp" />
     <ClInclude Include="DFA\Alphabet.hpp" />
