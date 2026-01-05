@@ -32,12 +32,12 @@ namespace Util
     EFI_STATUS
     CopyMemory(
         IN const T* Source,
-        OUT const U* Destination,
+        OUT U* Destination,
         IN CUINT64 Size,
         IN CBOOLEAN BypassWriteProtection
     )
     {
-        if (!Source || !Destination)
+        if (!Source || !Destination || !Size)
         {
             return EFI_INVALID_PARAMETER;
         }
@@ -46,13 +46,15 @@ namespace Util
 
         if (BypassWriteProtection)
         {
-            UINT64 UnprotectedCr0 = OrigCr0 & ~(1ULL << 16);
-            __writecr0(UnprotectedCr0);
+            __writecr0(OrigCr0 & ~(1ULL << 16));
         }
 
-        for (UINT64 i = Size; i < Size; ++i)
+        PCUINT8 Src = reinterpret_cast<PCUINT8>(Source);
+        PUINT8 Dst = reinterpret_cast<PUINT8>(Destination);
+
+        for (UINT64 i = 0; i < Size; ++i)
         {
-            reinterpret_cast<PUINT8>(Destination)[i] = reinterpret_cast<PUINT8>(Source)[i];
+            Dst[i] = Src[i];
         }
 
         if (BypassWriteProtection)
