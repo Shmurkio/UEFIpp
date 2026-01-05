@@ -7,5 +7,6 @@
 #include "Uefi/Serial/Serial.hpp"
 #include "Uefi/Util/Util.hpp"
 #include "Uefi/NVRAM/NVRAM.hpp"
+#include "Uefi/Image/Image.hpp"
 
 #include <cstdint>

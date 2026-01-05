@@ -165,6 +165,7 @@
   <ItemGroup>
     <ClCompile Include="Entry.cpp" />
     <ClCompile Include="Uefi\Console\Console.cpp" />
+    <ClCompile Include="Uefi\Image\Image.cpp" />
     <ClCompile Include="Uefi\Memory\Memory.cpp" />
     <ClCompile Include="Uefi\Serial\Serial.cpp" />
     <ClCompile Include="Uefi\Uefi.cpp" />
@@ -178,6 +179,7 @@
     <ClInclude Include="DFA\RegexToken.hpp" />
     <ClInclude Include="DFA\RegexValidate.hpp" />
     <ClInclude Include="Uefi\Console\Console.hpp" />
+    <ClInclude Include="Uefi\Image\Image.hpp" />
     <ClInclude Include="Uefi\Memory\Memory.hpp" />
     <ClInclude Include="DFA\Alphabet.hpp" />
     <ClInclude Include="Uefi\NVRAM\NVRAM.hpp" />
