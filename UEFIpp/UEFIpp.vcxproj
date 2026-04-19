@@ -54,6 +54,7 @@
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
   <ImportGroup Label="ExtensionSettings">
+    <Import Project="$(VCTargetsPath)\BuildCustomizations\masm.props" />
   </ImportGroup>
   <ImportGroup Label="Shared">
   </ImportGroup>
@@ -164,12 +165,15 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="Entry.cpp" />
+    <ClCompile Include="Library\Cpu\Cpu.cpp" />
+    <ClCompile Include="Library\Environment\Environment.cpp" />
+    <ClCompile Include="Library\Memory\Memory.cpp" />
+    <ClCompile Include="Library\String\String.cpp" />
+    <ClCompile Include="Library\SymbolResolver\SymbolResolver.cpp" />
+    <ClCompile Include="Library\Util\Util.cpp" />
     <ClCompile Include="Uefi\Console\Console.cpp" />
-    <ClCompile Include="Uefi\Image\Image.cpp" />
-    <ClCompile Include="Uefi\Memory\Memory.cpp" />
     <ClCompile Include="Uefi\Serial\Serial.cpp" />
     <ClCompile Include="Uefi\Uefi.cpp" />
-    <ClCompile Include="Uefi\Util\Util.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="DFA\NfaToDfa.hpp" />
@@ -178,10 +182,18 @@
     <ClInclude Include="DFA\RegexToPostfix.hpp" />
     <ClInclude Include="DFA\RegexToken.hpp" />
     <ClInclude Include="DFA\RegexValidate.hpp" />
+    <ClInclude Include="Library\Cast\Cast.hpp" />
+    <ClInclude Include="Library\Cpu\Cpu.hpp" />
+    <ClInclude Include="Library\Detour\Detour.hpp" />
+    <ClInclude Include="Library\Environment\Environment.hpp" />
+    <ClInclude Include="Library\Memory\Memory.hpp" />
+    <ClInclude Include="Library\String\String.hpp" />
+    <ClInclude Include="Library\SymbolResolver\SymbolResolver.hpp" />
+    <ClInclude Include="Library\Util\Util.hpp" />
+    <ClInclude Include="Library\Vector\Vector.hpp" />
     <ClInclude Include="Uefi\Console\Console.hpp" />
     <ClInclude Include="Uefi\Detour\Detour.hpp" />
     <ClInclude Include="Uefi\Image\Image.hpp" />
-    <ClInclude Include="Uefi\Memory\Memory.hpp" />
     <ClInclude Include="DFA\Alphabet.hpp" />
     <ClInclude Include="Uefi\NVRAM\NVRAM.hpp" />
     <ClInclude Include="Uefi\Serial\Serial.hpp" />
@@ -189,7 +201,11 @@
     <ClInclude Include="UEFIpp.hpp" />
     <ClInclude Include="Uefi\Util\Util.hpp" />
   </ItemGroup>
+  <ItemGroup>
+    <MASM Include="Library\Cpu\CpuAsm.asm" />
+  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
+    <Import Project="$(VCTargetsPath)\BuildCustomizations\masm.targets" />
   </ImportGroup>
 </Project>

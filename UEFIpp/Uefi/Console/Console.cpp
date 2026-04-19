@@ -263,6 +263,60 @@ PushSignedAuto(
 
 static
 inline
+VOID
+PushGuid(
+	IN Console::OUT_STREAM& Stream,
+	IN CEFI_GUID& Guid
+)
+{
+	auto OldBase = Stream.Base;
+	auto OldWidth = Stream.Width;
+	auto OldFill = Stream.Fill;
+	auto OldCase = Stream.HexCase;
+
+	Stream.Base = Console::BASE::Hex;
+	Stream.Fill = '0';
+	Stream.HexCase = Console::HEXCASE::Upper;
+
+	Stream.Width = 8;
+	PushUnsignedHex(Stream, Guid.Data1);
+	PushChar(Stream, '-');
+
+	Stream.Width = 4;
+	PushUnsignedHex(Stream, Guid.Data2);
+	PushChar(Stream, '-');
+
+	Stream.Width = 4;
+	PushUnsignedHex(Stream, Guid.Data3);
+	PushChar(Stream, '-');
+
+	Stream.Width = 2;
+	PushUnsignedHex(Stream, Guid.Data4[0]);
+	Stream.Width = 2;
+	PushUnsignedHex(Stream, Guid.Data4[1]);
+	PushChar(Stream, '-');
+
+	Stream.Width = 2;
+	PushUnsignedHex(Stream, Guid.Data4[2]);
+	Stream.Width = 2;
+	PushUnsignedHex(Stream, Guid.Data4[3]);
+	Stream.Width = 2;
+	PushUnsignedHex(Stream, Guid.Data4[4]);
+	Stream.Width = 2;
+	PushUnsignedHex(Stream, Guid.Data4[5]);
+	Stream.Width = 2;
+	PushUnsignedHex(Stream, Guid.Data4[6]);
+	Stream.Width = 2;
+	PushUnsignedHex(Stream, Guid.Data4[7]);
+
+	Stream.Base = OldBase;
+	Stream.Width = OldWidth;
+	Stream.Fill = OldFill;
+	Stream.HexCase = OldCase;
+}
+
+static
+inline
 UINT64
 Pow10U64(
 	IN UINT8 Exp
@@ -562,5 +616,47 @@ operator<<(
 )
 {
 	PushChar(Stream, Value);
+	return Stream;
+}
+
+Console::OUT_STREAM&
+operator<<(
+	IN Console::OUT_STREAM& Stream,
+	IN CEFI_GUID& Guid
+)
+{
+	PushGuid(Stream, Guid);
+	return Stream;
+}
+
+Console::OUT_STREAM&
+operator<<(
+	IN Console::OUT_STREAM& Stream,
+	IN PEFI_GUID Guid
+	)
+{
+	if (!Guid)
+	{
+		PushString(Stream, "null");
+		return Stream;
+	}
+
+	PushGuid(Stream, *Guid);
+	return Stream;
+}
+
+Console::OUT_STREAM&
+operator<<(
+	IN Console::OUT_STREAM& Stream,
+	IN PCEFI_GUID Guid
+	)
+{
+	if (!Guid)
+	{
+		PushString(Stream, "null");
+		return Stream;
+	}
+
+	PushGuid(Stream, *Guid);
 	return Stream;
 }

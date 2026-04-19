@@ -2,13 +2,12 @@
 
 #include <cstdint>
 #include <type_traits>
+#include <intrin.h>
 
 #define IN
 #define OUT
 #define OPTIONAL
 #define MAYBE_UNUSED [[maybe_unused]]
-
-#define offsetof(Type, Member) ((size_t)&(((Type*)0)->Member))
 
 using UINT8 = uint8_t;
 using CUINT8 = const UINT8;
@@ -111,16 +110,21 @@ using PEFI_HANDLE = EFI_HANDLE*;
 using EFI_EVENT = PVOID;
 using PEFI_EVENT = EFI_EVENT*;
 
-typedef struct _EFI_GUID
+typedef struct _GUID
 {
-	UINT32 Data1;
-	UINT16 Data2;
-	UINT16 Data3;
-	UINT8 Data4[8];
-} EFI_GUID, *PEFI_GUID;
+	uint32_t Data1;
+	uint16_t Data2;
+	uint16_t Data3;
+	uint8_t Data4[8];
+} GUID, *PGUID;
 
-using CEFI_GUID = const EFI_GUID;
-using PCEFI_GUID = const PEFI_GUID;
+using CGUID = const GUID;
+using PCGUID = const GUID*;
+
+using EFI_GUID = GUID;
+using PEFI_GUID = GUID*;
+using CEFI_GUID = const GUID;
+using PCEFI_GUID = const GUID*;
 
 using EFI_TPL = UINT64;
 using EFI_LBA = UINT64;
@@ -532,15 +536,1165 @@ typedef struct _EFI_SYSTEM_TABLE
 	PEFI_CONFIGURATION_TABLE ConfigurationTable;
 } EFI_SYSTEM_TABLE, *PEFI_SYSTEM_TABLE;
 
+constexpr CEFI_GUID gEfiSimpleFileSystemProtocolGuid = { 0x0964e5b22, 0x6459, 0x11d2, { 0x8e, 0x39, 0x00, 0xa0, 0xc9, 0x69, 0x72, 0x3b } };
+
+typedef struct _EFI_SIMPLE_FILE_SYSTEM_PROTOCOL EFI_SIMPLE_FILE_SYSTEM_PROTOCOL, * PEFI_SIMPLE_FILE_SYSTEM_PROTOCOL;
+typedef struct _EFI_FILE_PROTOCOL EFI_FILE_PROTOCOL, * PEFI_FILE_PROTOCOL;
+
+using EfiSimpleFileSystemProtocolOpenVolumeFn = EFI_STATUS(__cdecl)(
+	IN	PEFI_SIMPLE_FILE_SYSTEM_PROTOCOL	This,
+	OUT	PEFI_FILE_PROTOCOL* Root
+	);
+
+constexpr CUINT64 EFI_SIMPLE_FILE_SYSTEM_PROTOCOL_REVISION = 0x00010000;
+constexpr CUINT64 EFI_FILE_IO_INTERFACE_REVISION = EFI_SIMPLE_FILE_SYSTEM_PROTOCOL_REVISION;
+
+typedef struct _EFI_SIMPLE_FILE_SYSTEM_PROTOCOL
+{
+	UINT64										Revision;
+	EfiSimpleFileSystemProtocolOpenVolumeFn* OpenVolume;
+} EFI_SIMPLE_FILE_SYSTEM_PROTOCOL, * PEFI_SIMPLE_FILE_SYSTEM_PROTOCOL;
+
+using CEFI_SIMPLE_FILE_SYSTEM_PROTOCOL = const EFI_SIMPLE_FILE_SYSTEM_PROTOCOL;
+using PCEFI_SIMPLE_FILE_SYSTEM_PROTOCOL = const EFI_SIMPLE_FILE_SYSTEM_PROTOCOL*;
+
+using EfiFileOpenFn = EFI_STATUS(__cdecl)(
+	IN	PEFI_FILE_PROTOCOL	This,
+	OUT PEFI_FILE_PROTOCOL* NewHandle,
+	IN	PCWSTR				FileName,
+	IN	UINT64				OpenMode,
+	IN	UINT64				Attributes
+	);
+
+constexpr CUINT64 EFI_FILE_MODE_READ = 0x0000000000000001;
+constexpr CUINT64 EFI_FILE_MODE_WRITE = 0x0000000000000002;
+constexpr CUINT64 EFI_FILE_MODE_CREATE = 0x8000000000000000;
+
+constexpr CUINT64 EFI_FILE_READ_ONLY = 0x0000000000000001;
+constexpr CUINT64 EFI_FILE_HIDDEN = 0x0000000000000002;
+constexpr CUINT64 EFI_FILE_SYSTEM = 0x0000000000000004;
+constexpr CUINT64 EFI_FILE_RESERVED = 0x0000000000000008;
+constexpr CUINT64 EFI_FILE_DIRECTORY = 0x0000000000000010;
+constexpr CUINT64 EFI_FILE_ARCHIVE = 0x0000000000000020;
+constexpr CUINT64 EFI_FILE_VALID_ATTR = 0x0000000000000037;
+
+using EfiFileCloseFn = EFI_STATUS(__cdecl)(
+	IN	PEFI_FILE_PROTOCOL	This
+	);
+
+using EfiFileDeleteFn = EFI_STATUS(__cdecl)(
+	IN	PEFI_FILE_PROTOCOL	This
+	);
+
+using EfiFileReadFn = EFI_STATUS(__cdecl)(
+	IN		PEFI_FILE_PROTOCOL	This,
+	IN OUT	PUINT64				BufferSize,
+	OUT		PVOID				Buffer
+	);
+
+using EfiFileWriteFn = EFI_STATUS(__cdecl)(
+	IN		PEFI_FILE_PROTOCOL	This,
+	IN OUT	PUINT64				BufferSize,
+	IN		PVOID				Buffer
+	);
+
+using EfiFileSetPositionFn = EFI_STATUS(__cdecl)(
+	IN	PEFI_FILE_PROTOCOL	This,
+	IN	UINT64				Position
+	);
+
+using EfiFileGetPositionFn = EFI_STATUS(__cdecl)(
+	IN	PEFI_FILE_PROTOCOL	This,
+	OUT PUINT64				Position
+	);
+
+using EfiFileGetInfoFn = EFI_STATUS(__cdecl)(
+	IN		PEFI_FILE_PROTOCOL	This,
+	IN		PCEFI_GUID			InformationType,
+	IN OUT	PUINT64				BufferSize,
+	OUT		PVOID				Buffer
+	);
+
+using EfiFileSetInfoFn = EFI_STATUS(__cdecl)(
+	IN	PEFI_FILE_PROTOCOL	This,
+	IN	PEFI_GUID			InformationType,
+	IN	UINT64				BufferSize,
+	IN	PVOID				Buffer
+	);
+
+using EfiFileFlushFn = EFI_STATUS(__cdecl)(
+	IN	PEFI_FILE_PROTOCOL	This
+	);
+
+typedef struct _EFI_FILE_IO_TOKEN
+{
+	EFI_EVENT	Event;
+	EFI_STATUS	Status;
+	UINT64		BufferSize;
+	PVOID		Buffer;
+} EFI_FILE_IO_TOKEN, * PEFI_FILE_IO_TOKEN;
+
+using CEFI_FILE_IO_TOKEN = const EFI_FILE_IO_TOKEN;
+using PCEFI_FILE_IO_TOKEN = const EFI_FILE_IO_TOKEN*;
+
+using EfiFileOpenExFn = EFI_STATUS(__cdecl)(
+	IN		PEFI_FILE_PROTOCOL	This,
+	OUT		PEFI_FILE_PROTOCOL* NewHandle,
+	IN		PCWSTR				FileName,
+	IN		UINT64				OpenMode,
+	IN		UINT64				Attributes,
+	IN OUT	PEFI_FILE_IO_TOKEN	Token
+	);
+
+using EfiFileReadExFn = EFI_STATUS(__cdecl)(
+	IN		PEFI_FILE_PROTOCOL	This,
+	IN OUT	PEFI_FILE_IO_TOKEN	Token
+	);
+
+using EfiFileWriteExFn = EFI_STATUS(__cdecl)(
+	IN		PEFI_FILE_PROTOCOL	This,
+	IN OUT	PEFI_FILE_IO_TOKEN	Token
+	);
+
+using EfiFileFlushExFn = EFI_STATUS(__cdecl)(
+	IN		PEFI_FILE_PROTOCOL	This,
+	IN OUT	PEFI_FILE_IO_TOKEN	Token
+	);
+
+constexpr CUINT64 EFI_FILE_PROTOCOL_REVISION = 0x00010000;
+constexpr CUINT64 EFI_FILE_PROTOCOL_REVISION2 = 0x00020000;
+constexpr CUINT64 EFI_FILE_PROTOCOL_LATEST_REVISION = EFI_FILE_PROTOCOL_REVISION2;
+
+constexpr CUINT64 EFI_FILE_REVISION = EFI_FILE_PROTOCOL_REVISION;
+
+typedef struct _EFI_FILE_PROTOCOL
+{
+	UINT64					Revision;
+	EfiFileOpenFn* Open;
+	EfiFileCloseFn* Close;
+	EfiFileDeleteFn* Delete;
+	EfiFileReadFn* Read;
+	EfiFileWriteFn* Write;
+	EfiFileGetPositionFn* GetPosition;
+	EfiFileSetPositionFn* SetPosition;
+	EfiFileGetInfoFn* GetInfo;
+	EfiFileSetInfoFn* SetInfo;
+	EfiFileFlushFn* Flush;
+	EfiFileOpenExFn* OpenEx;
+	EfiFileReadExFn* ReadEx;
+	EfiFileWriteExFn* WriteEx;
+	EfiFileFlushExFn* FlushEx;
+} EFI_FILE_PROTOCOL, * PEFI_FILE_PROTOCOL;
+
+constexpr CEFI_GUID gEfiDevicePathProtocolGuid = { 0x09576e91, 0x6d3f, 0x11d2, { 0x8e, 0x39, 0x00, 0xa0, 0xc9, 0x69, 0x72, 0x3b } };
+
+#pragma pack(push, 1)
 typedef struct _EFI_DEVICE_PATH_PROTOCOL
 {
-	UINT8 Type;
-	UINT8 SubType;
-	UINT8 Length[2];
-} EFI_DEVICE_PATH_PROTOCOL, *PEFI_DEVICE_PATH_PROTOCOL;
+	UINT8	Type;
+	UINT8	SubType;
+	UINT8	Length[2];
+} EFI_DEVICE_PATH_PROTOCOL, * PEFI_DEVICE_PATH_PROTOCOL;
 
 using CEFI_DEVICE_PATH_PROTOCOL = const EFI_DEVICE_PATH_PROTOCOL;
 using PCEFI_DEVICE_PATH_PROTOCOL = const EFI_DEVICE_PATH_PROTOCOL*;
+using EFI_DEVICE_PATH = EFI_DEVICE_PATH_PROTOCOL;
+
+constexpr CUINT8 HARDWARE_DEVICEPATH = 0x01;
+constexpr CUINT8 HW_PCI_DP = 0x01;
+
+typedef struct _PCI_DEVICE_PATH
+{
+	EFI_DEVICE_PATH_PROTOCOL	Header;
+	UINT8						Function;
+	UINT8						Device;
+} PCI_DEVICE_PATH, * PPCI_DEVICE_PATH;
+
+using CPCI_DEVICE_PATH = const PCI_DEVICE_PATH;
+using PCPCI_DEVICE_PATH = const PCI_DEVICE_PATH*;
+
+constexpr CUINT8 HW_PCCARD_DP = 0x02;
+
+typedef struct _PCCARD_DEVICE_PATH
+{
+	EFI_DEVICE_PATH_PROTOCOL	Header;
+	UINT8						Function;
+	UINT8						Device;
+} PCCARD_DEVICE_PATH, * PPCCARD_DEVICE_PATH;
+
+using CPCCARD_DEVICE_PATH = const PCCARD_DEVICE_PATH;
+using PCPCCARD_DEVICE_PATH = const PCCARD_DEVICE_PATH*;
+
+constexpr CUINT8 HW_MEMMAP_DP = 0x03;
+
+typedef struct _MEMMAP_DEVICE_PATH
+{
+	EFI_DEVICE_PATH_PROTOCOL	Header;
+	UINT32						StartAddress;
+	UINT32						EndAddress;
+} MEMMAP_DEVICE_PATH, * PMEMMAP_DEVICE_PATH;
+
+using CMEMMAP_DEVICE_PATH = const MEMMAP_DEVICE_PATH;
+using PCMEMMAP_DEVICE_PATH = const MEMMAP_DEVICE_PATH*;
+
+constexpr CUINT8 HW_VENDOR_DP = 0x04;
+
+typedef struct _VENDOR_DEVICE_PATH
+{
+	EFI_DEVICE_PATH_PROTOCOL	Header;
+	EFI_GUID					Guid;
+	UINT8						Data[1];
+} VENDOR_DEVICE_PATH, * PVENDOR_DEVICE_PATH;
+
+using CVENDOR_DEVICE_PATH = const VENDOR_DEVICE_PATH;
+using PCVENDOR_DEVICE_PATH = const VENDOR_DEVICE_PATH*;
+
+constexpr CUINT8 HW_CONTROLLER_DP = 0x05;
+
+typedef struct _CONTROLLER_DEVICE_PATH
+{
+	EFI_DEVICE_PATH_PROTOCOL	Header;
+	UINT32						ControllerNumber;
+} CONTROLLER_DEVICE_PATH, * PCONTROLLER_DEVICE_PATH;
+
+using CCONTROLLER_DEVICE_PATH = const CONTROLLER_DEVICE_PATH;
+using PCCONTROLLER_DEVICE_PATH = const CONTROLLER_DEVICE_PATH*;
+
+constexpr CUINT8 HW_BMC_DP = 0x06;
+
+typedef struct _BMC_DEVICE_PATH
+{
+	EFI_DEVICE_PATH_PROTOCOL	Header;
+	UINT8						InterfaceType;
+	UINT8						ChannelNumber;
+	UINT8						Reserved[2];
+	UINT32						LUN;
+} BMC_DEVICE_PATH, * PBMC_DEVICE_PATH;
+
+using CBMC_DEVICE_PATH = const BMC_DEVICE_PATH;
+using PCBMC_DEVICE_PATH = const BMC_DEVICE_PATH*;
+
+constexpr CUINT8 ACPI_DEVICE_PATH = 0x02;
+constexpr CUINT8 ACPI_DP = 0x01;
+
+typedef struct _ACPI_HID_DEVICE_PATH
+{
+	EFI_DEVICE_PATH_PROTOCOL	Header;
+	UINT32						HID;
+	UINT32						UID;
+} ACPI_HID_DEVICE_PATH, * PACPI_HID_DEVICE_PATH;
+
+using CACPI_HID_DEVICE_PATH = const ACPI_HID_DEVICE_PATH;
+using PCACPI_HID_DEVICE_PATH = const ACPI_HID_DEVICE_PATH*;
+
+constexpr CUINT8 ACPI_EXTENDED_DP = 0x02;
+
+typedef struct _ACPI_EXTENDED_HID_DEVICE_PATH
+{
+	EFI_DEVICE_PATH_PROTOCOL	Header;
+	UINT32						HID;
+	UINT32						UID;
+	UINT32						CID;
+} ACPI_EXTENDED_HID_DEVICE_PATH, * PACPI_EXTENDED_HID_DEVICE_PATH;
+
+using CACPI_EXTENDED_HID_DEVICE_PATH = const ACPI_EXTENDED_HID_DEVICE_PATH;
+using PCACPI_EXTENDED_HID_DEVICE_PATH = const ACPI_EXTENDED_HID_DEVICE_PATH*;
+
+constexpr CUINT16 PNP_EISA_ID_CONST = 0x41D0;
+
+constexpr
+UINT32
+EISA_ID(
+	IN	UINT32	Name,
+	IN	UINT32	Num
+)
+{
+	return (Name & 0xFFFFU) | ((Num & 0xFFFFU) << 16);
+}
+
+constexpr
+UINT32
+EISA_PNP_ID(
+	IN	UINT32	PNPId
+)
+{
+	return EISA_ID(PNP_EISA_ID_CONST, PNPId);
+}
+
+constexpr
+UINT32
+EFI_PNP_ID(
+	IN	UINT32	PNPId
+)
+{
+	return EISA_ID(PNP_EISA_ID_CONST, PNPId);
+}
+
+constexpr CUINT16 PNP_EISA_ID_MASK = 0xFFFF;
+
+constexpr
+UINT16
+EISA_ID_TO_NUM(
+	IN	UINT32	EisaId
+)
+{
+	return static_cast<UINT16>((EisaId >> 16) & 0xFFFFU);
+}
+
+constexpr
+UINT16
+EISA_ID_TO_NAME(
+	IN	UINT32	EisaId
+)
+{
+	return static_cast<UINT16>(EisaId & 0xFFFFU);
+}
+
+constexpr CUINT8 ACPI_ADR_DP = 0x03;
+
+typedef struct _ACPI_ADR_DEVICE_PATH
+{
+	EFI_DEVICE_PATH_PROTOCOL	Header;
+	UINT64						ADR;
+} ACPI_ADR_DEVICE_PATH, * PACPI_ADR_DEVICE_PATH;
+
+using CACPI_ADR_DEVICE_PATH = const ACPI_ADR_DEVICE_PATH;
+using PCACPI_ADR_DEVICE_PATH = const ACPI_ADR_DEVICE_PATH*;
+
+constexpr CUINT8 ACPI_NVDIMM_DP = 0x04;
+
+typedef struct _ACPI_NVDIMM_DEVICE_PATH
+{
+	EFI_DEVICE_PATH_PROTOCOL	Header;
+	UINT32                      NFITDeviceHandle;
+} ACPI_NVDIMM_DEVICE_PATH, * PACPI_NVDIMM_DEVICE_PATH;
+
+using CACPI_NVDIMM_DEVICE_PATH = const ACPI_NVDIMM_DEVICE_PATH;
+using PCACPI_NVDIMM_DEVICE_PATH = const ACPI_NVDIMM_DEVICE_PATH*;
+
+constexpr
+UINT32
+ACPI_DISPLAY_ADR(
+	IN	UINT32	DeviceIdScheme,
+	IN	UINT32	HeadId,
+	IN	UINT32	NonVgaOutput,
+	IN	UINT32	BiosCanDetect,
+	IN	UINT32	VendorInfo,
+	IN	UINT32	Type,
+	IN	UINT32	Port,
+	IN	UINT32	Index
+)
+{
+	return ((DeviceIdScheme & 0x1U) << 31) | ((HeadId & 0x7U) << 18) | ((NonVgaOutput & 0x1U) << 17) | ((BiosCanDetect & 0x1U) << 16) | ((VendorInfo & 0xFU) << 12) | ((Type & 0xFU) << 8) | ((Port & 0xFU) << 4) | ((Index & 0xFU));
+}
+
+constexpr CUINT8 MESSAGING_DEVICE_PATH = 0x03;
+constexpr CUINT8 MSG_ATAPI_DP = 0x01;
+
+typedef struct _ATAPI_DEVICE_PATH
+{
+	EFI_DEVICE_PATH_PROTOCOL	Header;
+	UINT8						PrimarySecondary;
+	UINT8						SlaveMaster;
+	UINT16						Lun;
+} ATAPI_DEVICE_PATH, * PATAPI_DEVICE_PATH;
+
+using CATAPI_DEVICE_PATH = const ATAPI_DEVICE_PATH;
+using PCATAPI_DEVICE_PATH = const ATAPI_DEVICE_PATH*;
+
+constexpr CUINT8 MSG_SCSI_DP = 0x02;
+
+typedef struct _SCSI_DEVICE_PATH
+{
+	EFI_DEVICE_PATH_PROTOCOL	Header;
+	UINT16						Pun;
+	UINT16						Lun;
+} SCSI_DEVICE_PATH, * PSCSI_DEVICE_PATH;
+
+using CSCSI_DEVICE_PATH = const SCSI_DEVICE_PATH;
+using PCSCSI_DEVICE_PATH = const SCSI_DEVICE_PATH*;
+
+constexpr CUINT8 MSG_FIBRECHANNEL_DP = 0x03;
+
+typedef struct _FIBRECHANNEL_DEVICE_PATH
+{
+	EFI_DEVICE_PATH_PROTOCOL	Header;
+	UINT32						Reserved;
+	UINT64						WWN;
+	UINT64						Lun;
+} FIBRECHANNEL_DEVICE_PATH, * PFIBRECHANNEL_DEVICE_PATH;
+
+using CFIBRECHANNEL_DEVICE_PATH = const FIBRECHANNEL_DEVICE_PATH;
+using PCFIBRECHANNEL_DEVICE_PATH = const FIBRECHANNEL_DEVICE_PATH*;
+
+constexpr CUINT8 MSG_FIBRECHANNELEX_DP = 0x15;
+
+typedef struct _FIBRECHANNELEX_DEVICE_PATH
+{
+	EFI_DEVICE_PATH_PROTOCOL	Header;
+	UINT32						Reserved;
+	UINT8						WWN[8];
+	UINT8						Lun[8];
+} FIBRECHANNELEX_DEVICE_PATH, * PFIBRECHANNELEX_DEVICE_PATH;
+
+using CFIBRECHANNELEX_DEVICE_PATH = const FIBRECHANNELEX_DEVICE_PATH;
+using PCFIBRECHANNELEX_DEVICE_PATH = const FIBRECHANNELEX_DEVICE_PATH*;
+
+constexpr CUINT8 MSG_1394_DP = 0x04;
+
+typedef struct _F1394_DEVICE_PATH
+{
+	EFI_DEVICE_PATH_PROTOCOL	Header;
+	UINT32						Reserved;
+	UINT64						Guid;
+} F1394_DEVICE_PATH, * PF1394_DEVICE_PATH;
+
+using CF1394_DEVICE_PATH = const F1394_DEVICE_PATH;
+using PCF1394_DEVICE_PATH = const F1394_DEVICE_PATH*;
+
+constexpr CUINT8 MSG_USB_DP = 0x05;
+
+typedef struct _USB_DEVICE_PATH
+{
+	EFI_DEVICE_PATH_PROTOCOL	Header;
+	UINT8						ParentPortNumber;
+	UINT8						InterfaceNumber;
+} USB_DEVICE_PATH, * PUSB_DEVICE_PATH;
+
+using CUSB_DEVICE_PATH = const USB_DEVICE_PATH;
+using PCUSB_DEVICE_PATH = const USB_DEVICE_PATH*;
+
+constexpr CUINT8 MSG_USB_CLASS_DP = 0x0F;
+
+typedef struct _USB_CLASS_DEVICE_PATH
+{
+	EFI_DEVICE_PATH_PROTOCOL	Header;
+	UINT16						VendorId;
+	UINT16						ProductId;
+	UINT8						DeviceClass;
+	UINT8 						DeviceSubClass;
+	UINT8						DeviceProtocol;
+} USB_CLASS_DEVICE_PATH, * PUSB_CLASS_DEVICE_PATH;
+
+using CUSB_CLASS_DEVICE_PATH = const USB_CLASS_DEVICE_PATH;
+using PCUSB_CLASS_DEVICE_PATH = const USB_CLASS_DEVICE_PATH*;
+
+constexpr CUINT8 MSG_USB_WWID_DP = 0x10;
+
+typedef struct _USB_WWID_DEVICE_PATH
+{
+	EFI_DEVICE_PATH_PROTOCOL	Header;
+	UINT16						InterfaceNumber;
+	UINT16						VendorId;
+	UINT16						ProductId;
+} USB_WWID_DEVICE_PATH, * PUSB_WWID_DEVICE_PATH;
+
+using CUSB_WWID_DEVICE_PATH = const USB_WWID_DEVICE_PATH;
+using PCUSB_WWID_DEVICE_PATH = const USB_WWID_DEVICE_PATH*;
+
+constexpr CUINT8 MSG_DEVICE_LOGICAL_UNIT_DP = 0x11;
+
+typedef struct _DEVICE_LOGICAL_UNIT_DEVICE_PATH
+{
+	EFI_DEVICE_PATH_PROTOCOL	Header;
+	UINT8						Lun;
+} DEVICE_LOGICAL_UNIT_DEVICE_PATH, * PDEVICE_LOGICAL_UNIT_DEVICE_PATH;
+
+using CDEVICE_LOGICAL_UNIT_DEVICE_PATH = const DEVICE_LOGICAL_UNIT_DEVICE_PATH;
+using PCDEVICE_LOGICAL_UNIT_DEVICE_PATH = const DEVICE_LOGICAL_UNIT_DEVICE_PATH*;
+
+constexpr CUINT8 MSG_SATA_DP = 0x12;
+
+typedef struct _SATA_DEVICE_PATH
+{
+	EFI_DEVICE_PATH_PROTOCOL	Header;
+	UINT16						HBAPortNumber;
+	UINT16						PortMultiplierPortNumber;
+	UINT16						Lun;
+} SATA_DEVICE_PATH, * PSATA_DEVICE_PATH;
+
+using CSATA_DEVICE_PATH = const SATA_DEVICE_PATH;
+using PCSATA_DEVICE_PATH = const SATA_DEVICE_PATH*;
+
+constexpr CUINT8 MSG_I2O_DP = 0x06;
+
+typedef struct _I2O_DEVICE_PATH
+{
+	EFI_DEVICE_PATH_PROTOCOL	Header;
+	UINT32						Tid;
+} I2O_DEVICE_PATH, * PI2O_DEVICE_PATH;
+
+using CI2O_DEVICE_PATH = const I2O_DEVICE_PATH;
+using PCI2O_DEVICE_PATH = const I2O_DEVICE_PATH*;
+
+constexpr CUINT8 MSG_MAC_ADDR_DP = 0x0B;
+
+typedef struct _EFI_MAC_ADDRESS
+{
+	UINT8	Addr[32];
+} EFI_MAC_ADDRESS, * PEFI_MAC_ADDRESS;
+
+using CEFI_MAC_ADDRESS = const EFI_MAC_ADDRESS;
+using PCEFI_MAC_ADDRESS = const EFI_MAC_ADDRESS*;
+
+typedef struct _MAC_ADDR_DEVICE_PATH
+{
+	EFI_DEVICE_PATH_PROTOCOL	Header;
+	EFI_MAC_ADDRESS				MacAddress;
+	UINT8						IfType;
+} MAC_ADDR_DEVICE_PATH, * PMAC_ADDR_DEVICE_PATH;
+
+using CMAC_ADDR_DEVICE_PATH = const MAC_ADDR_DEVICE_PATH;
+using PCMAC_ADDR_DEVICE_PATH = const MAC_ADDR_DEVICE_PATH*;
+
+constexpr CUINT8 MSG_IPv4_DP = 0x0C;
+
+typedef struct _IPv4_ADDRESS
+{
+	UINT8	Addr[4];
+} IPv4_ADDRESS, * PIPv4_ADDRESS;
+
+using CIPv4_ADDRESS = const IPv4_ADDRESS;
+using PCIPv4_ADDRESS = const IPv4_ADDRESS*;
+using EFI_IPv4_ADDRESS = IPv4_ADDRESS;
+using PEFI_IPv4_ADDRESS = EFI_IPv4_ADDRESS*;
+using CEFI_IPv4_ADDRESS = const EFI_IPv4_ADDRESS;
+using PCEFI_IPv4_ADDRESS = const EFI_IPv4_ADDRESS*;
+
+typedef struct _IPv4_DEVICE_PATH
+{
+	EFI_DEVICE_PATH_PROTOCOL	Header;
+	EFI_IPv4_ADDRESS			LocalIpAddress;
+	EFI_IPv4_ADDRESS			RemoteIpAddress;
+	UINT16						LocalPort;
+	UINT16						RemotePort;
+	UINT16						Protocol;
+	BOOLEAN 					StaticIpAddress;
+	EFI_IPv4_ADDRESS			GatewayIpAddress;
+	EFI_IPv4_ADDRESS			SubnetMask;
+} IPv4_DEVICE_PATH, * PIPv4_DEVICE_PATH;
+
+using CIPv4_DEVICE_PATH = const IPv4_DEVICE_PATH;
+using PCIPv4_DEVICE_PATH = const IPv4_DEVICE_PATH*;
+
+constexpr CUINT8 MSG_IPv6_DP = 0x0D;
+
+typedef struct _IPv6_ADDRESS
+{
+	UINT8	Addr[16];
+} IPv6_ADDRESS, * PIPv6_ADDRESS;
+
+using CIPv6_ADDRESS = const IPv6_ADDRESS;
+using PCIPv6_ADDRESS = const IPv6_ADDRESS*;
+using EFI_IPv6_ADDRESS = IPv6_ADDRESS;
+using PEFI_IPv6_ADDRESS = EFI_IPv6_ADDRESS*;
+using CEFI_IPv6_ADDRESS = const EFI_IPv6_ADDRESS;
+using PCEFI_IPv6_ADDRESS = const EFI_IPv6_ADDRESS*;
+
+typedef struct _IPv6_DEVICE_PATH
+{
+	EFI_DEVICE_PATH_PROTOCOL	Header;
+	EFI_IPv6_ADDRESS 			LocalIpAddress;
+	EFI_IPv6_ADDRESS 			RemoteIpAddress;
+	UINT16						LocalPort;
+	UINT16						RemotePort;
+	UINT16						Protocol;
+	UINT8						IpAddressOrigin;
+	UINT8						PrefixLength;
+	EFI_IPv6_ADDRESS			GatewayIpAddress;
+} IPv6_DEVICE_PATH, * PIPv6_DEVICE_PATH;
+
+using CIPv6_DEVICE_PATH = const IPv6_DEVICE_PATH;
+using PCIPv6_DEVICE_PATH = const IPv6_DEVICE_PATH*;
+
+constexpr CUINT8 MSG_INFINIBAND_DP = 0x09;
+
+typedef struct _INFINIBAND_DEVICE_PATH
+{
+	EFI_DEVICE_PATH_PROTOCOL	Header;
+	UINT32						ResourceFlags;
+	UINT8						PortGid[16];
+	UINT64						ServiceId;
+	UINT64						TargetPortId;
+	UINT64						DeviceId;
+} INFINIBAND_DEVICE_PATH, * PINFINIBAND_DEVICE_PATH;
+
+using CINFINIBAND_DEVICE_PATH = const INFINIBAND_DEVICE_PATH;
+using PCINFINIBAND_DEVICE_PATH = const INFINIBAND_DEVICE_PATH*;
+
+constexpr CUINT8 INFINIBAND_RESOURCE_FLAG_IOC_SERVICE = 0x01;
+constexpr CUINT8 INFINIBAND_RESOURCE_FLAG_EXTENDED_BOOT_ENVIRONMENT = 0x02;
+constexpr CUINT8 INFINIBAND_RESOURCE_FLAG_CONSOLE_PROTOCOL = 0x04;
+constexpr CUINT8 INFINIBAND_RESOURCE_FLAG_STORAGE_PROTOCOL = 0x08;
+constexpr CUINT8 INFINIBAND_RESOURCE_FLAG_NETWORK_PROTOCOL = 0x10;
+
+constexpr CUINT8 MSG_UART_DP = 0x0E;
+
+typedef struct _UART_DEVICE_PATH
+{
+	EFI_DEVICE_PATH_PROTOCOL	Header;
+	UINT32						Reserved;
+	UINT64						BaudRate;
+	UINT8						DataBits;
+	UINT8						Parity;
+	UINT8						StopBits;
+} UART_DEVICE_PATH, * PUART_DEVICE_PATH;
+
+using CUART_DEVICE_PATH = const UART_DEVICE_PATH;
+using PCUART_DEVICE_PATH = const UART_DEVICE_PATH*;
+
+constexpr CUINT8 NVDIMM_NAMESPACE_DP = 0x20;
+
+typedef struct _NVDIMM_NAMESPACE_DEVICE_PATH
+{
+	EFI_DEVICE_PATH_PROTOCOL	Header;
+	EFI_GUID					Uuid;
+} NVDIMM_NAMESPACE_DEVICE_PATH, * PNVDIMM_NAMESPACE_DEVICE_PATH;
+
+using CNVDIMM_NAMESPACE_DEVICE_PATH = const NVDIMM_NAMESPACE_DEVICE_PATH;
+using PCNVDIMM_NAMESPACE_DEVICE_PATH = const NVDIMM_NAMESPACE_DEVICE_PATH*;
+
+constexpr CUINT8 MSG_VENDOR_DP2 = 0x0A;
+
+using VENDOR_DEFINED_DEVICE_PATH = VENDOR_DEVICE_PATH;
+using PVENDOR_DEFINED_DEVICE_PATH = PVENDOR_DEVICE_PATH;
+using CVENDOR_DEFINED_DEVICE_PATH = const VENDOR_DEFINED_DEVICE_PATH;
+using PCVENDOR_DEFINED_DEVICE_PATH = const VENDOR_DEFINED_DEVICE_PATH*;
+
+constexpr CEFI_GUID EFI_PC_ANSI_GUID = { 0xe0c14753, 0xf9be, 0x11d2, {0x9a, 0x0c, 0x00, 0x90, 0x27, 0x3f, 0xc1, 0x4d } };
+constexpr CEFI_GUID EFI_VT_100_GUID = { 0xdfa66065, 0xb419, 0x11d3, {0x9a, 0x2d, 0x00, 0x90, 0x27, 0x3f, 0xc1, 0x4d } };
+constexpr CEFI_GUID EFI_VT_100_PLUS_GUID = { 0x7baec70b, 0x57e0, 0x4c76, {0x8e, 0x87, 0x2f, 0x9e, 0x28, 0x08, 0x83, 0x43 } };
+constexpr CEFI_GUID EFI_VT_UTF8_GUID = { 0xad15a0d6, 0x8bec, 0x4acf, {0xa0, 0x73, 0xd0, 0x1d, 0xe7, 0x7e, 0x2d, 0x88 } };
+constexpr CEFI_GUID DEVICE_PATH_MESSAGING_PC_ANSI = EFI_PC_ANSI_GUID;
+constexpr CEFI_GUID DEVICE_PATH_MESSAGING_VT_100 = EFI_VT_100_GUID;
+constexpr CEFI_GUID DEVICE_PATH_MESSAGING_VT_100_PLUS = EFI_VT_100_PLUS_GUID;
+constexpr CEFI_GUID DEVICE_PATH_MESSAGING_VT_UTF8 = EFI_VT_UTF8_GUID;
+
+typedef struct _UART_FLOW_CONTROL_DEVICE_PATH
+{
+	EFI_DEVICE_PATH_PROTOCOL	Header;
+	EFI_GUID					Guid;
+	UINT32						FlowControlMap;
+} UART_FLOW_CONTROL_DEVICE_PATH, * PUART_FLOW_CONTROL_DEVICE_PATH;
+
+using CUART_FLOW_CONTROL_DEVICE_PATH = const UART_FLOW_CONTROL_DEVICE_PATH;
+using PCUART_FLOW_CONTROL_DEVICE_PATH = const UART_FLOW_CONTROL_DEVICE_PATH*;
+
+constexpr CUINT32 UART_FLOW_CONTROL_HARDWARE = 0x00000001;
+constexpr CUINT32 UART_FLOW_CONTROL_XON_XOFF = 0x00000010;
+
+constexpr CEFI_GUID EFI_SAS_DEVICE_PATH_GUID = { 0xd487ddb4, 0x008b, 0x11d9, {0xaf, 0xdc, 0x00, 0x10, 0x83, 0xff, 0xca, 0x4d } };
+constexpr CEFI_GUID DEVICE_PATH_MESSAGING_SAS = EFI_SAS_DEVICE_PATH_GUID;
+
+typedef struct _SAS_DEVICE_PATH
+{
+	EFI_DEVICE_PATH_PROTOCOL	Header;
+	EFI_GUID					Guid;
+	UINT32						Reserved;
+	UINT64						SasAddress;
+	UINT64						Lun;
+	UINT16						DeviceTopology;
+	UINT16						RelativeTargetPort;
+} SAS_DEVICE_PATH, * PSAS_DEVICE_PATH;
+
+using CSAS_DEVICE_PATH = const SAS_DEVICE_PATH;
+using PCSAS_DEVICE_PATH = const SAS_DEVICE_PATH*;
+
+constexpr CUINT8 MSG_SASEX_DP = 0x16;
+
+typedef struct _SASEX_DEVICE_PATH
+{
+	EFI_DEVICE_PATH_PROTOCOL	Header;
+	UINT8						SasAddress[8];
+	UINT8						Lun[8];
+	UINT16						DeviceTopology;
+	UINT16						RelativeTargetPort;
+} SASEX_DEVICE_PATH, * PSASEX_DEVICE_PATH;
+
+using CSASEX_DEVICE_PATH = const SASEX_DEVICE_PATH;
+using PCSASEX_DEVICE_PATH = const SASEX_DEVICE_PATH*;
+
+constexpr CUINT8 MSG_NVME_NAMESPACE_DP = 0x17;
+
+typedef struct _NVME_NAMESPACE_DEVICE_PATH
+{
+	EFI_DEVICE_PATH_PROTOCOL	Header;
+	UINT32						NamespaceId;
+	UINT64						NamespaceUuid;
+} NVME_NAMESPACE_DEVICE_PATH, * PNVME_NAMESPACE_DEVICE_PATH;
+
+using CNVME_NAMESPACE_DEVICE_PATH = const NVME_NAMESPACE_DEVICE_PATH;
+using PCNVME_NAMESPACE_DEVICE_PATH = const NVME_NAMESPACE_DEVICE_PATH*;
+
+constexpr CUINT8 MSG_NVME_OF_NAMESPACE_DP = 0x22;
+
+typedef struct _NVME_OF_NAMESPACE_DEVICE_PATH
+{
+	EFI_DEVICE_PATH_PROTOCOL	Header;
+	UINT8						NamespaceIdType;
+	UINT8						NamespaceId[16];
+	CHAR						SubsystemNqn[];
+} NVME_OF_NAMESPACE_DEVICE_PATH, * PNVME_OF_NAMESPACE_DEVICE_PATH;
+
+using CNVME_OF_NAMESPACE_DEVICE_PATH = const NVME_OF_NAMESPACE_DEVICE_PATH;
+using PCNVME_OF_NAMESPACE_DEVICE_PATH = const NVME_OF_NAMESPACE_DEVICE_PATH*;
+
+constexpr CUINT8 MSG_DNS_DP = 0x1F;
+
+typedef union _EFI_IP_ADDRESS
+{
+	UINT32				Addr[4];
+	EFI_IPv4_ADDRESS	v4;
+	EFI_IPv6_ADDRESS	v6;
+} EFI_IP_ADDRESS, * PEFI_IP_ADDRESS;
+
+using CEFI_IP_ADDRESS = const EFI_IP_ADDRESS;
+using PCEFI_IP_ADDRESS = const EFI_IP_ADDRESS*;
+
+typedef struct _DNS_DEVICE_PATH
+{
+	EFI_DEVICE_PATH_PROTOCOL	Header;
+	UINT8						IsIPv6;
+	EFI_IP_ADDRESS				DnsServerIp[];
+} DNS_DEVICE_PATH, * PDNS_DEVICE_PATH;
+
+using CDNS_DEVICE_PATH = const DNS_DEVICE_PATH;
+using PCDNS_DEVICE_PATH = const DNS_DEVICE_PATH*;
+
+constexpr CUINT8 MSG_URI_DP = 0x18;
+
+typedef struct _URI_DEVICE_PATH
+{
+	EFI_DEVICE_PATH_PROTOCOL	Header;
+	CHAR						Uri[];
+} URI_DEVICE_PATH, * PURI_DEVICE_PATH;
+
+using CURI_DEVICE_PATH = const URI_DEVICE_PATH;
+using PCURI_DEVICE_PATH = const URI_DEVICE_PATH*;
+
+constexpr CUINT8 MSG_UFS_DP = 0x19;
+
+typedef struct _UFS_DEVICE_PATH
+{
+	EFI_DEVICE_PATH_PROTOCOL	Header;
+	UINT8						Pun;
+	UINT8						Lun;
+} UFS_DEVICE_PATH, * PUFS_DEVICE_PATH;
+
+using CUFS_DEVICE_PATH = const UFS_DEVICE_PATH;
+using PCUFS_DEVICE_PATH = const UFS_DEVICE_PATH*;
+
+constexpr CUINT8 MSG_SD_DP = 0x1A;
+
+typedef struct _SD_DEVICE_PATH
+{
+	EFI_DEVICE_PATH_PROTOCOL	Header;
+	UINT8						SlotNumber;
+} SD_DEVICE_PATH, * PSD_DEVICE_PATH;
+
+using CSD_DEVICE_PATH = const SD_DEVICE_PATH;
+using PCSD_DEVICE_PATH = const SD_DEVICE_PATH*;
+
+constexpr CUINT8 MSG_EMMC_DP = 0x1D;
+
+typedef struct _EMMC_DEVICE_PATH
+{
+	EFI_DEVICE_PATH_PROTOCOL	Header;
+	UINT8						SlotNumber;
+} EMMC_DEVICE_PATH, * PEMMC_DEVICE_PATH;
+
+using CEMMC_DEVICE_PATH = const EMMC_DEVICE_PATH;
+using PCEMMC_DEVICE_PATH = const EMMC_DEVICE_PATH*;
+
+constexpr CUINT8 MSG_ISCSI_DP = 0x13;
+
+typedef struct _ISCSI_DEVICE_PATH
+{
+	EFI_DEVICE_PATH_PROTOCOL	Header;
+	UINT16						NetworkProtocol;
+	UINT16						LoginOption;
+	UINT64						Lun;
+	UINT16						TargetPortalGroupTag;
+} ISCSI_DEVICE_PATH, * PISCSI_DEVICE_PATH;
+
+using CISCSI_DEVICE_PATH = const ISCSI_DEVICE_PATH;
+using PCISCSI_DEVICE_PATH = const ISCSI_DEVICE_PATH*;
+
+constexpr CUINT16 ISCSI_LOGIN_OPTION_NO_HEADER_DIGEST = 0x0000;
+constexpr CUINT16 ISCSI_LOGIN_OPTION_HEADER_DIGEST_USING_CRC32C = 0x0002;
+constexpr CUINT16 ISCSI_LOGIN_OPTION_NO_DATA_DIGEST = 0x0000;
+constexpr CUINT16 ISCSI_LOGIN_OPTION_DATA_DIGEST_USING_CRC32C = 0x0008;
+constexpr CUINT16 ISCSI_LOGIN_OPTION_AUTHMETHOD_CHAP = 0x0000;
+constexpr CUINT16 ISCSI_LOGIN_OPTION_AUTHMETHOD_NON = 0x1000;
+constexpr CUINT16 ISCSI_LOGIN_OPTION_CHAP_BI = 0x0000;
+constexpr CUINT16 ISCSI_LOGIN_OPTION_CHAP_UNI = 0x2000;
+
+constexpr CUINT8 MSG_VLAN_DP = 0x14;
+
+typedef struct _VLAN_DEVICE_PATH
+{
+	EFI_DEVICE_PATH_PROTOCOL	Header;
+	UINT16						VlanId;
+} VLAN_DEVICE_PATH, * PVLAN_DEVICE_PATH;
+
+using CVLAN_DEVICE_PATH = const VLAN_DEVICE_PATH;
+using PCVLAN_DEVICE_PATH = const VLAN_DEVICE_PATH*;
+
+constexpr CUINT8 MSG_BLUETOOTH_DP = 0x1B;
+
+typedef struct _BLUETOOTH_ADDRESS
+{
+	UINT8	Address[6];
+} BLUETOOTH_ADDRESS, * PBLUETOOTH_ADDRESS;
+
+using CBLUETOOTH_ADDRESS = const BLUETOOTH_ADDRESS;
+using PCBLUETOOTH_ADDRESS = const BLUETOOTH_ADDRESS*;
+
+typedef struct _BLUETOOTH_DEVICE_PATH
+{
+	EFI_DEVICE_PATH_PROTOCOL	Header;
+	BLUETOOTH_ADDRESS			BD_ADDR;
+} BLUETOOTH_DEVICE_PATH, * PBLUETOOTH_DEVICE_PATH;
+
+using CBLUETOOTH_DEVICE_PATH = const BLUETOOTH_DEVICE_PATH;
+using PCBLUETOOTH_DEVICE_PATH = const BLUETOOTH_DEVICE_PATH*;
+
+constexpr CUINT8 MSG_WIFI_DP = 0x1C;
+
+typedef struct _WIFI_DEVICE_PATH
+{
+	EFI_DEVICE_PATH_PROTOCOL	Header;
+	UINT8						SSId[32];
+} WIFI_DEVICE_PATH, * PWIFI_DEVICE_PATH;
+
+using CWIFI_DEVICE_PATH = const WIFI_DEVICE_PATH;
+using PCWIFI_DEVICE_PATH = const WIFI_DEVICE_PATH*;
+
+constexpr CUINT8 MSG_BLUETOOTH_LE_DP = 0x1E;
+
+typedef struct _BLUETOOTH_LE_DEVICE_PATH
+{
+	EFI_DEVICE_PATH_PROTOCOL	Header;
+	BLUETOOTH_ADDRESS			Address;
+} BLUETOOTH_LE_DEVICE_PATH, * PBLUETOOTH_LE_DEVICE_PATH;
+
+using CBLUETOOTH_LE_DEVICE_PATH = const BLUETOOTH_LE_DEVICE_PATH;
+using PCBLUETOOTH_LE_DEVICE_PATH = const BLUETOOTH_LE_DEVICE_PATH*;
+
+constexpr CUINT8 MEDIA_DEVICE_PATH = 0x04;
+constexpr CUINT8 MEDIA_HARDDRIVE_DP = 0x01;
+
+typedef struct _HARDDRIVE_DEVICE_PATH
+{
+	EFI_DEVICE_PATH_PROTOCOL	Header;
+	UINT32						PartitionNumber;
+	UINT64						PartitionStart;
+	UINT64						PartitionSize;
+	UINT8						Signature[16];
+	UINT8						MBRType;
+	UINT8						SignatureType;
+} HARDDRIVE_DEVICE_PATH, * PHARDDRIVE_DEVICE_PATH;
+
+using CHARDDRIVE_DEVICE_PATH = const HARDDRIVE_DEVICE_PATH;
+using PCHARDDRIVE_DEVICE_PATH = const HARDDRIVE_DEVICE_PATH*;
+
+constexpr CUINT8 MBR_TYPE_PCAT = 0x01;
+constexpr CUINT8 MBR_TYPE_EFI_PARTITION_TABLE_HEADER = 0x02;
+
+constexpr CUINT8 NO_DISK_SIGNATURE = 0x00;
+constexpr CUINT8 SIGNATURE_TYPE_MBR = 0x01;
+constexpr CUINT8 SIGNATURE_TYPE_GUID = 0x02;
+
+constexpr CUINT8 MEDIA_CDROM_DP = 0x02;
+
+typedef struct _CDROM_DEVICE_PATH
+{
+	EFI_DEVICE_PATH_PROTOCOL	Header;
+	UINT32						BootEntry;
+	UINT64 						PartitionStart;
+	UINT64 						PartitionSize;
+} CDROM_DEVICE_PATH, * PCDROM_DEVICE_PATH;
+
+using CCDROM_DEVICE_PATH = const CDROM_DEVICE_PATH;
+using PCCDROM_DEVICE_PATH = const CDROM_DEVICE_PATH*;
+
+constexpr CUINT8 MEDIA_VENDOR_DP = 0x03;
+constexpr CUINT8 MEDIA_FILEPATH_DP = 0x04;
+
+typedef struct _FILEPATH_DEVICE_PATH
+{
+	EFI_DEVICE_PATH_PROTOCOL	Header;
+	WCHAR						PathName[1];
+} FILEPATH_DEVICE_PATH, * PFILEPATH_DEVICE_PATH;
+
+using CFILEPATH_DEVICE_PATH = const FILEPATH_DEVICE_PATH;
+using PCFILEPATH_DEVICE_PATH = const FILEPATH_DEVICE_PATH*;
+
+constexpr CUINT64 SIZE_OF_FILEPATH_DEVICE_PATH = offsetof(FILEPATH_DEVICE_PATH, PathName);
+
+constexpr CUINT8 MEDIA_PROTOCOL_DP = 0x05;
+
+typedef struct _MEDIA_PROTOCOL_DEVICE_PATH
+{
+	EFI_DEVICE_PATH_PROTOCOL	Header;
+	EFI_GUID					Protocol;
+} MEDIA_PROTOCOL_DEVICE_PATH, * PMEDIA_PROTOCOL_DEVICE_PATH;
+
+using CMEDIA_PROTOCOL_DEVICE_PATH = const MEDIA_PROTOCOL_DEVICE_PATH;
+using PCMEDIA_PROTOCOL_DEVICE_PATH = const MEDIA_PROTOCOL_DEVICE_PATH*;
+
+constexpr CUINT8 MEDIA_PIWG_FW_FILE_DP = 0x06;
+
+typedef struct _MEDIA_FW_VOL_FILEPATH_DEVICE_PATH
+{
+	EFI_DEVICE_PATH_PROTOCOL	Header;
+	EFI_GUID 					FvFileName;
+} MEDIA_FW_VOL_FILEPATH_DEVICE_PATH, * PMEDIA_FW_VOL_FILEPATH_DEVICE_PATH;
+
+using CMEDIA_FW_VOL_FILEPATH_DEVICE_PATH = const MEDIA_FW_VOL_FILEPATH_DEVICE_PATH;
+using PCMEDIA_FW_VOL_FILEPATH_DEVICE_PATH = const MEDIA_FW_VOL_FILEPATH_DEVICE_PATH*;
+
+constexpr CUINT8 MEDIA_PIWG_FW_VOL_DP = 0x07;
+
+typedef struct _MEDIA_FW_VOL_DEVICE_PATH
+{
+	EFI_DEVICE_PATH_PROTOCOL	Header;
+	EFI_GUID 					FvName;
+} MEDIA_FW_VOL_DEVICE_PATH, * PMEDIA_FW_VOL_DEVICE_PATH;
+
+using CMEDIA_FW_VOL_DEVICE_PATH = const MEDIA_FW_VOL_DEVICE_PATH;
+using PCMEDIA_FW_VOL_DEVICE_PATH = const MEDIA_FW_VOL_DEVICE_PATH*;
+
+constexpr CUINT8 MEDIA_RELATIVE_OFFSET_RANGE_DP = 0x08;
+
+typedef struct _MEDIA_RELATIVE_OFFSET_RANGE_DEVICE_PATH
+{
+	EFI_DEVICE_PATH_PROTOCOL	Header;
+	UINT32						Reserved;
+	UINT64						StartingOffset;
+	UINT64						EndingOffset;
+} MEDIA_RELATIVE_OFFSET_RANGE_DEVICE_PATH, * PMEDIA_RELATIVE_OFFSET_RANGE_DEVICE_PATH;
+
+using CMEDIA_RELATIVE_OFFSET_RANGE_DEVICE_PATH = const MEDIA_RELATIVE_OFFSET_RANGE_DEVICE_PATH;
+using PCMEDIA_RELATIVE_OFFSET_RANGE_DEVICE_PATH = const MEDIA_RELATIVE_OFFSET_RANGE_DEVICE_PATH*;
+
+constexpr CEFI_GUID EFI_ACPI_6_0_NFIT_GUID_RAM_DISK_SUPPORTING_VIRTUAL_DISK_REGION_VOLATILE = { 0x77AB535A, 0x45FC, 0x624B, { 0x55, 0x60, 0xF7, 0xB2, 0x81, 0xD1, 0xF9, 0x6E } };
+constexpr CEFI_GUID EFI_ACPI_6_0_NFIT_GUID_RAM_DISK_SUPPORTING_VIRTUAL_CD_REGION_VOLATILE = { 0x3D5ABD30, 0x4175, 0x87CE, { 0x6D, 0x64, 0xD2, 0xAD, 0xE5, 0x23, 0xC4, 0xBB } };
+constexpr CEFI_GUID EFI_ACPI_6_0_NFIT_GUID_RAM_DISK_SUPPORTING_VIRTUAL_DISK_REGION_PERSISTENT = { 0x5CEA02C9, 0x4D07, 0x69D3, { 0x26, 0x9F ,0x44, 0x96, 0xFB, 0xE0, 0x96, 0xF9 } };
+constexpr CEFI_GUID EFI_ACPI_6_0_NFIT_GUID_RAM_DISK_SUPPORTING_VIRTUAL_CD_REGION_PERSISTENT = { 0x08018188, 0x42CD, 0xBB48, { 0x10, 0x0F, 0x53, 0x87, 0xD5, 0x3D, 0xED, 0x3D } };
+constexpr CEFI_GUID gEfiVirtualDiskGuid = EFI_ACPI_6_0_NFIT_GUID_RAM_DISK_SUPPORTING_VIRTUAL_DISK_REGION_VOLATILE;
+constexpr CEFI_GUID gEfiVirtualCdGuid = EFI_ACPI_6_0_NFIT_GUID_RAM_DISK_SUPPORTING_VIRTUAL_CD_REGION_VOLATILE;
+constexpr CEFI_GUID gEfiPersistentVirtualDiskGuid = EFI_ACPI_6_0_NFIT_GUID_RAM_DISK_SUPPORTING_VIRTUAL_DISK_REGION_PERSISTENT;
+constexpr CEFI_GUID gEfiPersistentVirtualCdGuid = EFI_ACPI_6_0_NFIT_GUID_RAM_DISK_SUPPORTING_VIRTUAL_CD_REGION_PERSISTENT;
+
+constexpr CUINT8 MEDIA_RAM_DISK_DP = 0x09;
+
+typedef struct _MEDIA_RAM_DISK_DEVICE_PATH
+{
+	EFI_DEVICE_PATH_PROTOCOL	Header;
+	UINT32						StartingAddr[2];
+	UINT32 						EndingAddr[2];
+	EFI_GUID					TypeGuid;
+	UINT16						Instance;
+} MEDIA_RAM_DISK_DEVICE_PATH, * PMEDIA_RAM_DISK_DEVICE_PATH;
+
+using CMEDIA_RAM_DISK_DEVICE_PATH = const MEDIA_RAM_DISK_DEVICE_PATH;
+using PCMEDIA_RAM_DISK_DEVICE_PATH = const MEDIA_RAM_DISK_DEVICE_PATH*;
+
+constexpr CUINT8 BBS_DEVICE_PATH = 0x05;
+constexpr CUINT8 BBS_BBS_DP = 0x01;
+
+typedef struct _BBS_BBS_DEVICE_PATH
+{
+	EFI_DEVICE_PATH_PROTOCOL	Header;
+	UINT16						DeviceType;
+	UINT16						StatusFlag;
+	CHAR						String[1];
+} BBS_BBS_DEVICE_PATH, * PBBS_BBS_DEVICE_PATH;
+
+using CBBS_BBS_DEVICE_PATH = const BBS_BBS_DEVICE_PATH;
+using PCBBS_BBS_DEVICE_PATH = const BBS_BBS_DEVICE_PATH*;
+
+constexpr CUINT8 BBS_TYPE_FLOPPY = 0x01;
+constexpr CUINT8 BBS_TYPE_HARDDRIVE = 0x02;
+constexpr CUINT8 BBS_TYPE_CDROM = 0x03;
+constexpr CUINT8 BBS_TYPE_PCMCIA = 0x04;
+constexpr CUINT8 BBS_TYPE_USB = 0x05;
+constexpr CUINT8 BBS_TYPE_EMBEDDED_NETWORK = 0x06;
+constexpr CUINT8 BBS_TYPE_BEV = 0x80;
+constexpr CUINT8 BBS_TYPE_UNKNOWN = 0xFF;
+
+typedef union _EFI_DEV_PATH
+{
+	EFI_DEVICE_PATH_PROTOCOL                   DevPath;
+	PCI_DEVICE_PATH                            Pci;
+	PCCARD_DEVICE_PATH                         PcCard;
+	MEMMAP_DEVICE_PATH                         MemMap;
+	VENDOR_DEVICE_PATH                         Vendor;
+
+	CONTROLLER_DEVICE_PATH                     Controller;
+	BMC_DEVICE_PATH                            Bmc;
+	ACPI_HID_DEVICE_PATH                       Acpi;
+	ACPI_EXTENDED_HID_DEVICE_PATH              ExtendedAcpi;
+	ACPI_ADR_DEVICE_PATH                       AcpiAdr;
+
+	ATAPI_DEVICE_PATH                          Atapi;
+	SCSI_DEVICE_PATH                           Scsi;
+	ISCSI_DEVICE_PATH                          Iscsi;
+	FIBRECHANNEL_DEVICE_PATH                   FibreChannel;
+	FIBRECHANNELEX_DEVICE_PATH                 FibreChannelEx;
+
+	F1394_DEVICE_PATH                          F1394;
+	USB_DEVICE_PATH                            Usb;
+	SATA_DEVICE_PATH                           Sata;
+	USB_CLASS_DEVICE_PATH                      UsbClass;
+	USB_WWID_DEVICE_PATH                       UsbWwid;
+	DEVICE_LOGICAL_UNIT_DEVICE_PATH            LogicUnit;
+	I2O_DEVICE_PATH                            I2O;
+	MAC_ADDR_DEVICE_PATH                       MacAddr;
+	IPv4_DEVICE_PATH                           Ipv4;
+	IPv6_DEVICE_PATH                           Ipv6;
+	VLAN_DEVICE_PATH                           Vlan;
+	INFINIBAND_DEVICE_PATH                     InfiniBand;
+	UART_DEVICE_PATH                           Uart;
+	UART_FLOW_CONTROL_DEVICE_PATH              UartFlowControl;
+	SAS_DEVICE_PATH                            Sas;
+	SASEX_DEVICE_PATH                          SasEx;
+	NVME_NAMESPACE_DEVICE_PATH                 NvmeNamespace;
+	NVME_OF_NAMESPACE_DEVICE_PATH              NvmeOfNamespace;
+	DNS_DEVICE_PATH                            Dns;
+	URI_DEVICE_PATH                            Uri;
+	BLUETOOTH_DEVICE_PATH                      Bluetooth;
+	WIFI_DEVICE_PATH                           WiFi;
+	UFS_DEVICE_PATH                            Ufs;
+	SD_DEVICE_PATH                             Sd;
+	EMMC_DEVICE_PATH                           Emmc;
+	HARDDRIVE_DEVICE_PATH                      HardDrive;
+	CDROM_DEVICE_PATH                          CD;
+
+	FILEPATH_DEVICE_PATH                       FilePath;
+	MEDIA_PROTOCOL_DEVICE_PATH                 MediaProtocol;
+
+	MEDIA_FW_VOL_DEVICE_PATH                   FirmwareVolume;
+	MEDIA_FW_VOL_FILEPATH_DEVICE_PATH          FirmwareFile;
+	MEDIA_RELATIVE_OFFSET_RANGE_DEVICE_PATH    Offset;
+	MEDIA_RAM_DISK_DEVICE_PATH                 RamDisk;
+	BBS_BBS_DEVICE_PATH                        Bbs;
+} EFI_DEV_PATH, * PEFI_DEV_PATH;
+
+using CEFI_DEV_PATH = const EFI_DEV_PATH;
+using PCEFI_DEV_PATH = const EFI_DEV_PATH*;
+
+typedef union _EFI_DEV_PATH_PTR
+{
+	PEFI_DEVICE_PATH_PROTOCOL					DevPath;
+	PPCI_DEVICE_PATH							Pci;
+	PPCCARD_DEVICE_PATH							PcCard;
+	PMEMMAP_DEVICE_PATH							MemMap;
+	PVENDOR_DEVICE_PATH							Vendor;
+
+	PCONTROLLER_DEVICE_PATH						Controller;
+	PBMC_DEVICE_PATH							Bmc;
+	PACPI_HID_DEVICE_PATH						Acpi;
+	PACPI_EXTENDED_HID_DEVICE_PATH				ExtendedAcpi;
+	PACPI_ADR_DEVICE_PATH						AcpiAdr;
+
+	PATAPI_DEVICE_PATH							Atapi;
+	PSCSI_DEVICE_PATH							Scsi;
+	PISCSI_DEVICE_PATH							Iscsi;
+	PFIBRECHANNEL_DEVICE_PATH					FibreChannel;
+	PFIBRECHANNELEX_DEVICE_PATH					FibreChannelEx;
+
+	PF1394_DEVICE_PATH							F1394;
+	PUSB_DEVICE_PATH							Usb;
+	PSATA_DEVICE_PATH							Sata;
+	PUSB_CLASS_DEVICE_PATH						UsbClass;
+	PUSB_WWID_DEVICE_PATH						UsbWwid;
+	PDEVICE_LOGICAL_UNIT_DEVICE_PATH			LogicUnit;
+	PI2O_DEVICE_PATH							I2O;
+	PMAC_ADDR_DEVICE_PATH						MacAddr;
+	PIPv4_DEVICE_PATH							Ipv4;
+	PIPv6_DEVICE_PATH							Ipv6;
+	PVLAN_DEVICE_PATH							Vlan;
+	PINFINIBAND_DEVICE_PATH						InfiniBand;
+	PUART_DEVICE_PATH							Uart;
+	PUART_FLOW_CONTROL_DEVICE_PATH				UartFlowControl;
+	PSAS_DEVICE_PATH							Sas;
+	PSASEX_DEVICE_PATH							SasEx;
+	PNVME_NAMESPACE_DEVICE_PATH					NvmeNamespace;
+	PNVME_OF_NAMESPACE_DEVICE_PATH				NvmeOfNamespace;
+	PDNS_DEVICE_PATH							Dns;
+	PURI_DEVICE_PATH							Uri;
+	PBLUETOOTH_DEVICE_PATH						Bluetooth;
+	PWIFI_DEVICE_PATH							WiFi;
+	PUFS_DEVICE_PATH							Ufs;
+	PSD_DEVICE_PATH								Sd;
+	PEMMC_DEVICE_PATH							Emmc;
+	PHARDDRIVE_DEVICE_PATH						HardDrive;
+	PCDROM_DEVICE_PATH							CD;
+
+	PFILEPATH_DEVICE_PATH						FilePath;
+	PMEDIA_PROTOCOL_DEVICE_PATH					MediaProtocol;
+
+	PMEDIA_FW_VOL_DEVICE_PATH					FirmwareVolume;
+	PMEDIA_FW_VOL_FILEPATH_DEVICE_PATH			FirmwareFile;
+	PMEDIA_RELATIVE_OFFSET_RANGE_DEVICE_PATH	Offset;
+	PMEDIA_RAM_DISK_DEVICE_PATH					RamDisk;
+	PBBS_BBS_DEVICE_PATH						Bbs;
+	PUINT8										Raw;
+} EFI_DEV_PATH_PTR, * PEFI_DEV_PATH_PTR;
+
+using CEFI_DEV_PATH_PTR = const EFI_DEV_PATH_PTR;
+using PCEFI_DEV_PATH_PTR = const EFI_DEV_PATH_PTR*;
+#pragma pack(pop)
+
+constexpr CUINT8 END_DEVICE_PATH_TYPE = 0x7F;
+constexpr CUINT8 END_ENTIRE_DEVICE_PATH_SUBTYPE = 0xFF;
+constexpr CUINT8 END_INSTANCE_DEVICE_PATH_SUBTYPE = 0x01;
+
+constexpr CEFI_GUID gEfiFileInfoGuid = { 0x09576E92, 0x6D3F, 0x11D2, { 0x8E, 0x39, 0x00, 0xA0, 0xC9, 0x69, 0x72, 0x3B } };
+
+typedef struct _EFI_FILE_INFO
+{
+	UINT64		Size;
+	UINT64		FileSize;
+	UINT64		PhysicalSize;
+	EFI_TIME	CreateTime;
+	EFI_TIME	LastAccessTime;
+	EFI_TIME	ModificationTime;
+	UINT64		Attribute;
+	WCHAR		FileName[1];
+} EFI_FILE_INFO, * PEFI_FILE_INFO;
+
+using CEFI_FILE_INFO = const EFI_FILE_INFO;
+using PCEFI_FILE_INFO = const EFI_FILE_INFO*;
+
+constexpr
+UINT64
+SIZE_OF_EFI_FILE_INFO(
+	VOID
+)
+{
+	return offsetof(EFI_FILE_INFO, FileName);
+}
+
+constexpr
+auto
+DevicePathType(
+	IN	PCEFI_DEVICE_PATH_PROTOCOL	Node
+) -> UINT8
+{
+	return Node->Type;
+}
+
+constexpr
+auto
+DevicePathSubType(
+	IN	PCEFI_DEVICE_PATH_PROTOCOL	Node
+) -> UINT8
+{
+	return Node->SubType;
+}
 
 using EfiDevicePathToTextPathFn = PCWSTR(__cdecl)(
 	IN PCEFI_DEVICE_PATH_PROTOCOL DevicePath,
@@ -1388,29 +2542,118 @@ typedef union {
 	EFI_IMAGE_OPTIONAL_HEADER_UNION* Union;
 } EFI_IMAGE_OPTIONAL_HEADER_PTR_UNION;
 
-extern "C"
-{
-	void __writecr3(unsigned __int64 Data);
-	unsigned __int64 __readcr4(void);
-	void __writecr4(unsigned __int64 Data);
-	unsigned __int64 __readmsr(int Register);
-	void __writemsr(unsigned long Register, unsigned __int64 Value);
-	unsigned __int64 __readcr0(void);
-	void __writecr0(unsigned __int64 Data);
-	void* _AddressOfReturnAddress();
-	unsigned __int64 __readcr3(void);
-	void __outbyte(unsigned short port, unsigned char value);
-	void __outword(unsigned short port, unsigned short value);
-	void __outdword(unsigned short port, unsigned long value);
-	unsigned char  __inbyte(unsigned short port);
-	unsigned short __inword(unsigned short port);
-	unsigned long  __indword(unsigned short port);
-	void __lidt(void* Source);
-	void __halt(void);
-}
-
 extern PEFI_SYSTEM_TABLE gST;
 extern EFI_HANDLE gImageHandle;
 extern PEFI_BOOT_SERVICES gBS;
 extern PEFI_SYSTEM_TABLE gST;
 extern PEFI_RUNTIME_SERVICES gRT;
+
+typedef struct _LIST_ENTRY {
+	struct _LIST_ENTRY *Flink;
+	struct _LIST_ENTRY *Blink;
+} LIST_ENTRY, *PLIST_ENTRY;
+
+typedef struct _FV_FILEPATH_DEVICE_PATH_LOCAL
+{
+	EFI_DEVICE_PATH_PROTOCOL Header;
+	EFI_GUID NameGuid;
+} FV_FILEPATH_DEVICE_PATH_LOCAL, * PFV_FILEPATH_DEVICE_PATH_LOCAL;
+
+static constexpr UINT8 MEDIA_FW_VOL_FILEPATH_DP_LOCAL = 0x06;
+
+
+typedef struct _IMAGE_SECTION_HEADER {
+	uint8_t  Name[8]; // IMAGE_SIZEOF_SHORT_NAME = 8
+
+	union {
+		uint32_t PhysicalAddress;
+		uint32_t VirtualSize;
+	} Misc;
+
+	uint32_t VirtualAddress;
+	uint32_t SizeOfRawData;
+	uint32_t PointerToRawData;
+	uint32_t PointerToRelocations;
+	uint32_t PointerToLinenumbers;
+	uint16_t NumberOfRelocations;
+	uint16_t NumberOfLinenumbers;
+	uint32_t Characteristics;
+
+} IMAGE_SECTION_HEADER, * PIMAGE_SECTION_HEADER;
+
+typedef struct _IMAGE_DOS_HEADER {
+    uint16_t e_magic;      // Magic number ("MZ" = 0x5A4D)
+    uint16_t e_cblp;       // Bytes on last page of file
+    uint16_t e_cp;         // Pages in file
+    uint16_t e_crlc;       // Relocations
+    uint16_t e_cparhdr;    // Size of header in paragraphs
+    uint16_t e_minalloc;   // Minimum extra paragraphs needed
+    uint16_t e_maxalloc;   // Maximum extra paragraphs needed
+    uint16_t e_ss;         // Initial (relative) SS value
+    uint16_t e_sp;         // Initial SP value
+    uint16_t e_csum;       // Checksum
+    uint16_t e_ip;         // Initial IP value
+    uint16_t e_cs;         // Initial (relative) CS value
+    uint16_t e_lfarlc;     // File address of relocation table
+    uint16_t e_ovno;       // Overlay number
+    uint16_t e_res[4];     // Reserved words
+    uint16_t e_oemid;      // OEM identifier (for e_oeminfo)
+    uint16_t e_oeminfo;    // OEM information
+    uint16_t e_res2[10];   // Reserved words
+    uint32_t e_lfanew;     // File offset to NT headers
+
+} IMAGE_DOS_HEADER, *PIMAGE_DOS_HEADER;
+
+typedef struct _IMAGE_FILE_HEADER {
+	uint16_t Machine;
+	uint16_t NumberOfSections;
+	uint32_t TimeDateStamp;
+	uint32_t PointerToSymbolTable;
+	uint32_t NumberOfSymbols;
+	uint16_t SizeOfOptionalHeader;
+	uint16_t Characteristics;
+} IMAGE_FILE_HEADER, * PIMAGE_FILE_HEADER;
+
+typedef struct _IMAGE_DATA_DIRECTORY {
+	uint32_t VirtualAddress;
+	uint32_t Size;
+} IMAGE_DATA_DIRECTORY, * PIMAGE_DATA_DIRECTORY;
+
+typedef struct _IMAGE_OPTIONAL_HEADER64 {
+	uint16_t Magic;
+	uint8_t  MajorLinkerVersion;
+	uint8_t  MinorLinkerVersion;
+	uint32_t SizeOfCode;
+	uint32_t SizeOfInitializedData;
+	uint32_t SizeOfUninitializedData;
+	uint32_t AddressOfEntryPoint;
+	uint32_t BaseOfCode;
+	uint64_t ImageBase;
+	uint32_t SectionAlignment;
+	uint32_t FileAlignment;
+	uint16_t MajorOperatingSystemVersion;
+	uint16_t MinorOperatingSystemVersion;
+	uint16_t MajorImageVersion;
+	uint16_t MinorImageVersion;
+	uint16_t MajorSubsystemVersion;
+	uint16_t MinorSubsystemVersion;
+	uint32_t Win32VersionValue;
+	uint32_t SizeOfImage;
+	uint32_t SizeOfHeaders;
+	uint32_t CheckSum;
+	uint16_t Subsystem;
+	uint16_t DllCharacteristics;
+	uint64_t SizeOfStackReserve;
+	uint64_t SizeOfStackCommit;
+	uint64_t SizeOfHeapReserve;
+	uint64_t SizeOfHeapCommit;
+	uint32_t LoaderFlags;
+	uint32_t NumberOfRvaAndSizes;
+	IMAGE_DATA_DIRECTORY DataDirectory[16];
+} IMAGE_OPTIONAL_HEADER64, * PIMAGE_OPTIONAL_HEADER64;
+
+typedef struct _IMAGE_NT_HEADERS64 {
+	uint32_t Signature;
+	IMAGE_FILE_HEADER FileHeader;
+	IMAGE_OPTIONAL_HEADER64 OptionalHeader;
+} IMAGE_NT_HEADERS64, * PIMAGE_NT_HEADERS64;

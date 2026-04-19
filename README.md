@@ -35,6 +35,10 @@ UEFI++ intentionally provides only a small foundational core. Most functionality
 
 - **Memory utilities**
 	- `new` and `delete` operator implementation
+	- Memory allocation and deallocation helpers
+	- Virtual to physical address translation
+	- Physical page or range mapping to virtual address space with specified attributes
+	- Bypass of write protection for memory copying
 
 - **Command line arguments**
 	- Access to UEFI load options as traditional `ArgC`/`ArgV`
@@ -42,17 +46,25 @@ UEFI++ intentionally provides only a small foundational core. Most functionality
 	- Quoted argument support
 	- Escape handling inside quoted arguments
 
-- **Image utilities**
-	- PE64 image inspection helpers
-	- NT header access
-	- Image size extraction
-	- Backward image base discovery from arbitrary addresses
+- **Environment utilities**
+	- Loading files by path
+	- Locating loaded images by file GUID
+	- Loading and unloading images by path
 
-- **Memory patching & detours**
-	- Write-protected memory copying with optional WP bypass
-	- Generic, type-safe function detour abstraction
-	- Supports temporary unhooking for original calls
-	- Pattern / signature-based memory scanning
+- **String**
+    - String class with basic operations (length, copy, compare)
+	- UTF-8 and UTF-16 conversion
+
+- **Dynamic array**
+    - Vector style dynamic array implementation
+
+- **PDB parser**
+    - Resolves symbols from a loaded PDB file
+	- Supports symbol lookup by name
+
+- **Detours**
+	- Modern C++ implementation of function detouring
+	- Optional write protection bypass for detouring code in protected memory regions
 ---
 
 ## Example Output

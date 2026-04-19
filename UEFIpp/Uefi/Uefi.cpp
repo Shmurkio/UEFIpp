@@ -2,16 +2,17 @@
 
 #include "Console/Console.hpp"
 #include "Serial/Serial.hpp"
-#include "Memory/Memory.hpp"
+#include "../Library/Memory/Memory.hpp"
 
 //
 // Required for compiler.
 //
-extern "C"
-VOID
-__chkstk(
-	VOID
-)
+extern "C" int atexit(void (*func)(void))
+{
+	return 0;
+}
+
+extern "C" VOID __chkstk()
 {
 	return;
 }
@@ -26,11 +27,7 @@ EFI_HANDLE gImageHandle = nullptr;
 PEFI_BOOT_SERVICES gBS = nullptr;
 PEFI_RUNTIME_SERVICES gRT = nullptr;
 
-EFI_STATUS
-EfiMain(
-	MAYBE_UNUSED IN PCSTR* ArgV,
-	MAYBE_UNUSED IN UINT64 ArgC
-);
+auto EfiMain([[maybe_unused]] const char** ArgV, [[maybe_unused]] uint64_t ArgC) -> EFI_STATUS;
 
 static
 EFI_STATUS
@@ -255,17 +252,20 @@ LoadOptionsToArgs(
 		}
 	}
 
-	ArgV = new PSTR[ArgC + 1];
-
-	if (!ArgV)
 	{
-		ArgC = 0;
-		return EFI_OUT_OF_RESOURCES;
-	}
+		void* Buffer = nullptr;
 
-	for (UINT64 i = 0; i < ArgC + 1; ++i)
-	{
-		ArgV[i] = nullptr;
+		if (!Memory::AllocatePool(
+			Buffer,
+			sizeof(PSTR) * (ArgC + 1),
+			false,
+			true))
+		{
+			ArgC = 0;
+			return EFI_OUT_OF_RESOURCES;
+		}
+
+		ArgV = reinterpret_cast<PSTR*>(Buffer);
 	}
 
 	auto
@@ -280,12 +280,20 @@ LoadOptionsToArgs(
 
 		for (UINT64 i = 0; i < ArgC; ++i)
 		{
-			delete[] ArgV[i];
-			ArgV[i] = nullptr;
+			if (ArgV[i])
+			{
+				void* Buffer = ArgV[i];
+				Memory::FreePool(Buffer, true);
+				ArgV[i] = nullptr;
+			}
 		}
 
-		delete[] ArgV;
-		ArgV = nullptr;
+		{
+			void* Buffer = ArgV;
+			Memory::FreePool(Buffer, true);
+			ArgV = nullptr;
+		}
+
 		ArgC = 0;
 	};
 
@@ -391,12 +399,22 @@ LoadOptionsToArgs(
 			}
 		}
 
-		PSTR Out = new CHAR[Need + 1];
+		PSTR Out = nullptr;
 
-		if (!Out)
 		{
-			Cleanup();
-			return EFI_OUT_OF_RESOURCES;
+			void* Buffer = nullptr;
+
+			if (!Memory::AllocatePool(
+				Buffer,
+				Need + 1,
+				false,
+				false))
+			{
+				Cleanup();
+				return EFI_OUT_OF_RESOURCES;
+			}
+
+			Out = reinterpret_cast<PSTR>(Buffer);
 		}
 
 		PSTR Cur = Out;
@@ -436,7 +454,8 @@ LoadOptionsToArgs(
 
 				if (EfiError(Status))
 				{
-					delete[] Out;
+					void* Buffer = Out;
+					Memory::FreePool(Buffer, true);
 					Cleanup();
 					return Status;
 				}
@@ -508,10 +527,19 @@ EfipMain(
 	{
 		for (UINT64 i = 0; i < ArgC; ++i)
 		{
-			delete[] ArgV[i];
+			if (ArgV[i])
+			{
+				void* Buffer = ArgV[i];
+				Memory::FreePool(Buffer, true);
+				ArgV[i] = nullptr;
+			}
 		}
 
-		delete[] ArgV;
+		{
+			void* Buffer = ArgV;
+			Memory::FreePool(Buffer, true);
+			ArgV = nullptr;
+		}
 	}
 
 	return Status;

@@ -129,6 +129,10 @@ Serial::OUT_STREAM& operator<<(Serial::OUT_STREAM& Stream, double Value);
 
 Serial::OUT_STREAM& operator<<(Serial::OUT_STREAM& Stream, CHAR Value);
 
+Serial::OUT_STREAM& operator<<(IN Serial::OUT_STREAM& Stream, IN CEFI_GUID& Guid);
+Serial::OUT_STREAM& operator<<(IN Serial::OUT_STREAM& Stream, IN PEFI_GUID Guid);
+Serial::OUT_STREAM& operator<<(IN Serial::OUT_STREAM& Stream, IN PCEFI_GUID Guid);
+
 namespace UTF8
 {
     //
@@ -270,3 +274,4 @@ namespace UTF8
     constexpr PCCHAR8 Slash = u8"/";
     constexpr PCCHAR8 Backslash = u8"\\";
 }
+

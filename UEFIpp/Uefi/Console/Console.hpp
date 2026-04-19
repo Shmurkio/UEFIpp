@@ -195,3 +195,21 @@ Console::OUT_STREAM&operator<<(Console::OUT_STREAM& Stream, Console::WIDTH Width
 // Set the padding character used when field width exceeds the value length.
 // The fill character remains active until changed explicitly.
 Console::OUT_STREAM& operator<<(Console::OUT_STREAM& Stream, Console::FILL Fill);
+
+Console::OUT_STREAM&
+operator<<(
+    IN Console::OUT_STREAM& Stream,
+    IN CEFI_GUID& Guid
+   );
+
+Console::OUT_STREAM&
+operator<<(
+    IN Console::OUT_STREAM& Stream,
+    IN PEFI_GUID Guid
+    );
+
+Console::OUT_STREAM&
+operator<<(
+    IN Console::OUT_STREAM& Stream,
+    IN PCEFI_GUID Guid
+    );
