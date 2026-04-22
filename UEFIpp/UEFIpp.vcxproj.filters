@@ -45,6 +45,12 @@
     <ClCompile Include="Library\SymbolResolver\SymbolResolver.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="Library\Network\IPv4\IPv4.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Library\Network\Tcp4Client\Tcp4Client.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Uefi\Uefi.hpp">
@@ -119,9 +125,18 @@
     <ClInclude Include="Library\Detour\Detour.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="Library\Network\Tcp4Client\Tcp4Client.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Library\Network\IPv4\IPv4.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <MASM Include="Library\Cpu\CpuAsm.asm">
+      <Filter>Source Files</Filter>
+    </MASM>
+    <MASM Include="Library\Util\RandomAsm.asm">
       <Filter>Source Files</Filter>
     </MASM>
   </ItemGroup>

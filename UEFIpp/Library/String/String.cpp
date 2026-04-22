@@ -489,6 +489,16 @@ auto String::At(uint64_t Index) const -> const wchar_t*
 	return &Data_[Index];
 }
 
+auto String::operator[](uint64_t Index) const -> wchar_t
+{
+	if (!Data_ || Index >= Size())
+	{
+		return L'\0';
+	}
+
+	return Data_[Index];
+}
+
 auto String::Set(uint64_t Index, wchar_t Character) -> bool
 {
 	if (Index >= Size()) return false;
@@ -501,26 +511,26 @@ auto String::Set(uint64_t Index, wchar_t Character) -> bool
 
 auto String::Set(uint64_t Index, char Character) -> bool
 {
-	return Set(Index, static_cast<wchar_t>(static_cast<unsigned char>(Character)));
+	return Set(Index, Cast::To<wchar_t>(Character));
 }
 
 static auto HexCharToValue(wchar_t Character, uint8_t& Value) -> bool
 {
 	if (Character >= L'0' && Character <= L'9')
 	{
-		Value = static_cast<uint8_t>(Character - L'0');
+		Value = Cast::To<uint8_t>(Character - L'0');
 		return true;
 	}
 
 	if (Character >= L'A' && Character <= L'F')
 	{
-		Value = static_cast<uint8_t>(Character - L'A' + 10);
+		Value = Cast::To<uint8_t>(Character - L'A' + 10);
 		return true;
 	}
 
 	if (Character >= L'a' && Character <= L'f')
 	{
-		Value = static_cast<uint8_t>(Character - L'a' + 10);
+		Value = Cast::To<uint8_t>(Character - L'a' + 10);
 		return true;
 	}
 
@@ -542,7 +552,7 @@ static auto ParseHexByte(const wchar_t* String, uint8_t& Value) -> bool
 		return false;
 	}
 
-	Value = static_cast<uint8_t>((High << 4) | Low);
+	Value = Cast::To<uint8_t>((High << 4) | Low);
 	return true;
 }
 
@@ -564,7 +574,7 @@ static auto ParseHexUint16(const wchar_t* String, uint16_t& Value) -> bool
 			return false;
 		}
 
-		Value = static_cast<uint16_t>((Value << 4) | Digit);
+		Value = Cast::To<uint16_t>((Value << 4) | Digit);
 	}
 
 	return true;
@@ -679,36 +689,36 @@ static auto NibbleToHexChar(uint8_t Value) -> wchar_t
 
 	if (Value < 10)
 	{
-		return static_cast<wchar_t>(L'0' + Value);
+		return Cast::To<wchar_t>(L'0' + Value);
 	}
 
-	return static_cast<wchar_t>(L'A' + (Value - 10));
+	return Cast::To<wchar_t>(L'A' + (Value - 10));
 }
 
 static auto WriteHexByte(wchar_t* Buffer, uint8_t Value) -> void
 {
-	Buffer[0] = NibbleToHexChar(static_cast<uint8_t>(Value >> 4));
-	Buffer[1] = NibbleToHexChar(static_cast<uint8_t>(Value & 0xF));
+	Buffer[0] = NibbleToHexChar(Cast::To<uint8_t>(Value >> 4));
+	Buffer[1] = NibbleToHexChar(Cast::To<uint8_t>(Value & 0xF));
 }
 
 static auto WriteHexUint16(wchar_t* Buffer, uint16_t Value) -> void
 {
-	Buffer[0] = NibbleToHexChar(static_cast<uint8_t>((Value >> 12) & 0xF));
-	Buffer[1] = NibbleToHexChar(static_cast<uint8_t>((Value >> 8) & 0xF));
-	Buffer[2] = NibbleToHexChar(static_cast<uint8_t>((Value >> 4) & 0xF));
-	Buffer[3] = NibbleToHexChar(static_cast<uint8_t>(Value & 0xF));
+	Buffer[0] = NibbleToHexChar(Cast::To<uint8_t>((Value >> 12) & 0xF));
+	Buffer[1] = NibbleToHexChar(Cast::To<uint8_t>((Value >> 8) & 0xF));
+	Buffer[2] = NibbleToHexChar(Cast::To<uint8_t>((Value >> 4) & 0xF));
+	Buffer[3] = NibbleToHexChar(Cast::To<uint8_t>(Value & 0xF));
 }
 
 static auto WriteHexUint32(wchar_t* Buffer, uint32_t Value) -> void
 {
-	Buffer[0] = NibbleToHexChar(static_cast<uint8_t>((Value >> 28) & 0xF));
-	Buffer[1] = NibbleToHexChar(static_cast<uint8_t>((Value >> 24) & 0xF));
-	Buffer[2] = NibbleToHexChar(static_cast<uint8_t>((Value >> 20) & 0xF));
-	Buffer[3] = NibbleToHexChar(static_cast<uint8_t>((Value >> 16) & 0xF));
-	Buffer[4] = NibbleToHexChar(static_cast<uint8_t>((Value >> 12) & 0xF));
-	Buffer[5] = NibbleToHexChar(static_cast<uint8_t>((Value >> 8) & 0xF));
-	Buffer[6] = NibbleToHexChar(static_cast<uint8_t>((Value >> 4) & 0xF));
-	Buffer[7] = NibbleToHexChar(static_cast<uint8_t>(Value & 0xF));
+	Buffer[0] = NibbleToHexChar(Cast::To<uint8_t>((Value >> 28) & 0xF));
+	Buffer[1] = NibbleToHexChar(Cast::To<uint8_t>((Value >> 24) & 0xF));
+	Buffer[2] = NibbleToHexChar(Cast::To<uint8_t>((Value >> 20) & 0xF));
+	Buffer[3] = NibbleToHexChar(Cast::To<uint8_t>((Value >> 16) & 0xF));
+	Buffer[4] = NibbleToHexChar(Cast::To<uint8_t>((Value >> 12) & 0xF));
+	Buffer[5] = NibbleToHexChar(Cast::To<uint8_t>((Value >> 8) & 0xF));
+	Buffer[6] = NibbleToHexChar(Cast::To<uint8_t>((Value >> 4) & 0xF));
+	Buffer[7] = NibbleToHexChar(Cast::To<uint8_t>(Value & 0xF));
 }
 
 String::String(CGUID& Guid) : Data_(nullptr), CharData_(nullptr), Length_(1), Capacity_(1), CharDataDirty_(true)
@@ -764,4 +774,304 @@ auto String::operator=(CGUID& Guid) -> String&
 {
 	Assign(Guid);
 	return *this;
+}
+
+auto String::StartsWith(const wchar_t* Prefix) const -> bool
+{
+	if (!Prefix || !Data_)
+	{
+		return false;
+	}
+
+	auto PrefixLength = WcharLength(Prefix);
+
+	if (PrefixLength > Size())
+	{
+		return false;
+	}
+
+	for (uint64_t i = 0; i < PrefixLength; ++i)
+	{
+		if (Data_[i] != Prefix[i])
+		{
+			return false;
+		}
+	}
+
+	return true;
+}
+
+auto String::StartsWith(const char* Prefix) const -> bool
+{
+	if (!Prefix)
+	{
+		return false;
+	}
+
+	auto PrefixLength = CharLength(Prefix);
+
+	if (PrefixLength > Size())
+	{
+		return false;
+	}
+
+	for (uint64_t i = 0; i < PrefixLength; ++i)
+	{
+		if (Data_[i] != Cast::To<wchar_t>(Prefix[i]))
+		{
+			return false;
+		}
+	}
+
+	return true;
+}
+
+auto String::Find(wchar_t Character, uint64_t StartIndex) const -> int64_t
+{
+	if (!Data_ || StartIndex >= Size())
+	{
+		return -1;
+	}
+
+	for (uint64_t i = StartIndex; i < Size(); ++i)
+	{
+		if (Data_[i] == Character)
+		{
+			return Cast::To<int64_t>(i);
+		}
+	}
+
+	return -1;
+}
+
+auto String::Find(char Character, uint64_t StartIndex) const -> int64_t
+{
+	return Find(Cast::To<wchar_t>(Character), StartIndex);
+}
+
+auto String::Find(const wchar_t* Str, uint64_t StartIndex) const -> int64_t
+{
+	if (!Str || !Data_)
+	{
+		return -1;
+	}
+
+	auto StrLength = WcharLength(Str);
+
+	if (!StrLength || StartIndex >= Size())
+	{
+		return -1;
+	}
+
+	for (uint64_t i = StartIndex; i <= Size() - StrLength; ++i)
+	{
+		bool Match = true;
+
+		for (uint64_t j = 0; j < StrLength; ++j)
+		{
+			if (Data_[i + j] != Str[j])
+			{
+				Match = false;
+				break;
+			}
+		}
+
+		if (Match)
+		{
+			return Cast::To<int64_t>(i);
+		}
+	}
+
+	return -1;
+}
+
+auto String::Find(const char* Str, uint64_t StartIndex) const -> int64_t
+{
+	if (!Str)
+	{
+		return -1;
+	}
+
+	auto StrLength = CharLength(Str);
+
+	if (!StrLength || StartIndex >= Size())
+	{
+		return -1;
+	}
+
+	for (uint64_t i = StartIndex; i <= Size() - StrLength; ++i)
+	{
+		bool Match = true;
+
+		for (uint64_t j = 0; j < StrLength; ++j)
+		{
+			if (Data_[i + j] != Cast::To<wchar_t>(Str[j]))
+			{
+				Match = false;
+				break;
+			}
+		}
+
+		if (Match)
+		{
+			return Cast::To<int64_t>(i);
+		}
+	}
+
+	return -1;
+}
+
+auto String::Substring(uint64_t StartIndex, uint64_t Length) const -> String
+{
+	String Result;
+
+	if (!Data_ || StartIndex >= Size() || !Length)
+	{
+		return Result;
+	}
+
+	uint64_t Available = Size() - StartIndex;
+	uint64_t CopyLength = (Length < Available) ? Length : Available;
+
+	wchar_t* Buffer = nullptr;
+
+	if (!Memory::AllocatePool(Cast::To<void*&>(Buffer), (CopyLength + 1) * sizeof(wchar_t), false, true) || !Buffer)
+	{
+		return Result;
+	}
+
+	for (uint64_t i = 0; i < CopyLength; ++i)
+	{
+		Buffer[i] = Data_[StartIndex + i];
+	}
+
+	Buffer[CopyLength] = L'\0';
+
+	Result.Assign(Buffer);
+
+	Memory::FreePool(Cast::To<void*&>(Buffer), true);
+
+	return Result;
+}
+auto String::Split(wchar_t Delimiter) const -> Vector<String>
+{
+	Vector<String> Parts;
+
+	if (!Data_)
+	{
+		return Parts;
+	}
+
+	uint64_t Start = 0;
+	uint64_t VisibleLength = Size();
+
+	for (uint64_t i = 0; i < VisibleLength; ++i)
+	{
+		if (Data_[i] == Delimiter)
+		{
+			Parts.PushBack(Substring(Start, i - Start));
+			Start = i + 1;
+		}
+	}
+
+	Parts.PushBack(Substring(Start, VisibleLength - Start));
+	return Parts;
+}
+
+auto String::Split(char Delimiter) const -> Vector<String>
+{
+	return Split(Cast::To<wchar_t>(Delimiter));
+}
+
+auto String::ToUInt32(uint32_t& Value) const -> bool
+{
+	Value = 0;
+
+	if (!Data_ || Empty())
+	{
+		return false;
+	}
+
+	for (uint64_t i = 0; i < Size(); ++i)
+	{
+		wchar_t Character = Data_[i];
+
+		if (!IsDigit(Character))
+		{
+			return false;
+		}
+
+		uint32_t Digit = Cast::To<uint32_t>(Character - L'0');
+
+		if (Value > ((0xFFFFFFFFu - Digit) / 10u))
+		{
+			return false;
+		}
+
+		Value = Value * 10u + Digit;
+	}
+
+	return true;
+}
+
+auto String::ToUInt8(uint8_t& Value) const -> bool
+{
+	Value = 0;
+
+	uint32_t Parsed = 0;
+	if (!ToUInt32(Parsed) || Parsed > 255u)
+	{
+		return false;
+	}
+
+	Value = Cast::To<uint8_t>(Parsed);
+	return true;
+}
+
+auto String::IsDigit(wchar_t Character) -> bool
+{
+	return Character >= L'0' && Character <= L'9';
+}
+
+auto String::IsDigit(char Character) -> bool
+{
+	return Character >= '0' && Character <= '9';
+}
+
+auto String::Append(wchar_t Character) -> bool
+{
+	wchar_t Buffer[2] = { Character, L'\0' };
+	return Append(Buffer);
+}
+
+auto String::Append(char Character) -> bool
+{
+	return Append(Cast::To<wchar_t>(Character));
+}
+
+auto String::AppendUInt32(uint32_t Value) -> bool
+{
+	wchar_t Buffer[11] = {};
+	uint32_t Index = 0;
+
+	if (Value == 0)
+	{
+		return Append(L'0');
+	}
+
+	while (Value > 0)
+	{
+		Buffer[Index++] = static_cast<wchar_t>(L'0' + (Value % 10));
+		Value /= 10;
+	}
+
+	for (int32_t i = static_cast<int32_t>(Index) - 1; i >= 0; --i)
+	{
+		if (!Append(Buffer[i]))
+		{
+			return false;
+		}
+	}
+
+	return true;
 }

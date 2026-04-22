@@ -2657,3 +2657,667 @@ typedef struct _IMAGE_NT_HEADERS64 {
 	IMAGE_FILE_HEADER FileHeader;
 	IMAGE_OPTIONAL_HEADER64 OptionalHeader;
 } IMAGE_NT_HEADERS64, * PIMAGE_NT_HEADERS64;
+
+constexpr CEFI_GUID gEfiHttpServiceBindingProtocolGuid = { 0xbdc8e6af, 0xd9bc, 0x4379, {0xa7, 0x2a, 0xe0, 0xc4, 0xe7, 0x5d, 0xae, 0x1c } };
+constexpr CEFI_GUID gEfiHttpProtocolGuid = { 0x7a59b29b, 0x910b, 0x4171, {0x82, 0x42, 0xa8, 0x5a, 0x0d, 0xf2, 0x5b, 0x5b } };
+
+typedef struct _EFI_HTTP_PROTOCOL EFI_HTTP_PROTOCOL, *PEFI_HTTP_PROTOCOL;
+
+typedef enum _EFI_HTTP_VERSION
+{
+	HttpVersion10,
+	HttpVersion11,
+	HttpVersionUnsupported
+} EFI_HTTP_VERSION, *PEFI_HTTP_VERSION;
+
+typedef enum _EFI_HTTP_METHOD
+{
+	HttpMethodGet,
+	HttpMethodPost,
+	HttpMethodPatch,
+	HttpMethodOptions,
+	HttpMethodConnect,
+	HttpMethodHead,
+	HttpMethodPut,
+	HttpMethodDelete,
+	HttpMethodTrace,
+	HttpMethodMax
+} EFI_HTTP_METHOD, *PEFI_HTTP_METHOD;
+
+typedef enum _EFI_HTTP_STATUS_CODE 
+{
+	HTTP_STATUS_UNSUPPORTED_STATUS = 0,
+	HTTP_STATUS_100_CONTINUE,
+	HTTP_STATUS_101_SWITCHING_PROTOCOLS,
+	HTTP_STATUS_200_OK,
+	HTTP_STATUS_201_CREATED,
+	HTTP_STATUS_202_ACCEPTED,
+	HTTP_STATUS_203_NON_AUTHORITATIVE_INFORMATION,
+	HTTP_STATUS_204_NO_CONTENT,
+	HTTP_STATUS_205_RESET_CONTENT,
+	HTTP_STATUS_206_PARTIAL_CONTENT,
+	HTTP_STATUS_300_MULTIPLE_CHOICES,
+	HTTP_STATUS_301_MOVED_PERMANENTLY,
+	HTTP_STATUS_302_FOUND,
+	HTTP_STATUS_303_SEE_OTHER,
+	HTTP_STATUS_304_NOT_MODIFIED,
+	HTTP_STATUS_305_USE_PROXY,
+	HTTP_STATUS_307_TEMPORARY_REDIRECT,
+	HTTP_STATUS_400_BAD_REQUEST,
+	HTTP_STATUS_401_UNAUTHORIZED,
+	HTTP_STATUS_402_PAYMENT_REQUIRED,
+	HTTP_STATUS_403_FORBIDDEN,
+	HTTP_STATUS_404_NOT_FOUND,
+	HTTP_STATUS_405_METHOD_NOT_ALLOWED,
+	HTTP_STATUS_406_NOT_ACCEPTABLE,
+	HTTP_STATUS_407_PROXY_AUTHENTICATION_REQUIRED,
+	HTTP_STATUS_408_REQUEST_TIME_OUT,
+	HTTP_STATUS_409_CONFLICT,
+	HTTP_STATUS_410_GONE,
+	HTTP_STATUS_411_LENGTH_REQUIRED,
+	HTTP_STATUS_412_PRECONDITION_FAILED,
+	HTTP_STATUS_413_REQUEST_ENTITY_TOO_LARGE,
+	HTTP_STATUS_414_REQUEST_URI_TOO_LARGE,
+	HTTP_STATUS_415_UNSUPPORTED_MEDIA_TYPE,
+	HTTP_STATUS_416_REQUESTED_RANGE_NOT_SATISFIED,
+	HTTP_STATUS_417_EXPECTATION_FAILED,
+	HTTP_STATUS_500_INTERNAL_SERVER_ERROR,
+	HTTP_STATUS_501_NOT_IMPLEMENTED,
+	HTTP_STATUS_502_BAD_GATEWAY,
+	HTTP_STATUS_503_SERVICE_UNAVAILABLE,
+	HTTP_STATUS_504_GATEWAY_TIME_OUT,
+	HTTP_STATUS_505_HTTP_VERSION_NOT_SUPPORTED,
+	HTTP_STATUS_308_PERMANENT_REDIRECT
+} EFI_HTTP_STATUS_CODE, *PEFI_HTTP_STATUS_CODE;
+
+typedef struct _EFI_HTTPv4_ACCESS_POINT 
+{
+	bool UseDefaultAddress;
+	EFI_IPv4_ADDRESS LocalAddress;
+	EFI_IPv4_ADDRESS LocalSubnet;
+	uint16_t LocalPort;
+} EFI_HTTPv4_ACCESS_POINT, *PEFI_HTTPv4_ACCESS_POINT;
+
+typedef struct _EFI_HTTPv6_ACCESS_POINT 
+{
+	EFI_IPv6_ADDRESS LocalAddress;
+	uint16_t LocalPort;
+} EFI_HTTPv6_ACCESS_POINT, *PEFI_HTTPv6_ACCESS_POINT;
+
+typedef struct _EFI_HTTP_CONFIG_DATA
+{
+	EFI_HTTP_VERSION HttpVersion;
+	uint32_t TimeOutMillisec;
+	bool LocalAddressIsIPv6;
+	union
+	{
+		PEFI_HTTPv4_ACCESS_POINT IPv4Node;
+		PEFI_HTTPv6_ACCESS_POINT IPv6Node;
+	} AccessPoint;
+} EFI_HTTP_CONFIG_DATA, *PEFI_HTTP_CONFIG_DATA;
+
+typedef struct _EFI_HTTP_REQUEST_DATA
+{
+	EFI_HTTP_METHOD Method;
+	wchar_t* Url;
+} EFI_HTTP_REQUEST_DATA, *PEFI_HTTP_REQUEST_DATA;
+
+typedef struct _EFI_HTTP_RESPONSE_DATA
+{
+	EFI_HTTP_STATUS_CODE StatusCode;
+} EFI_HTTP_RESPONSE_DATA, *PEFI_HTTP_RESPONSE_DATA;
+
+typedef struct _EFI_HTTP_HEADER
+{
+	char* FieldName;
+	char* FieldValue;
+} EFI_HTTP_HEADER ,*PEFI_HTTP_HEADER;
+
+typedef struct _EFI_HTTP_MESSAGE
+{
+	union
+	{
+		PEFI_HTTP_REQUEST_DATA Request;
+		PEFI_HTTP_RESPONSE_DATA Response;
+	} Data;
+	uint64_t HeaderCount;
+	PEFI_HTTP_HEADER Headers;
+	uint64_t BodyLength;
+	void* Body;
+} EFI_HTTP_MESSAGE, *PEFI_HTTP_MESSAGE;
+
+typedef struct _EFI_HTTP_TOKEN
+{
+	EFI_EVENT Event;
+	EFI_STATUS Status;
+	PEFI_HTTP_MESSAGE Message;
+} EFI_HTTP_TOKEN, *PEFI_HTTP_TOKEN;
+
+using EfiHttpGetModeDataFn = EFI_STATUS(__cdecl)(PEFI_HTTP_PROTOCOL This, PEFI_HTTP_CONFIG_DATA HttpConfigData);
+using EfiHttpConfigureFn = EFI_STATUS(__cdecl)(PEFI_HTTP_PROTOCOL This, PEFI_HTTP_CONFIG_DATA HttpConfigData);
+using EfiHttpRequestFn = EFI_STATUS(__cdecl)(PEFI_HTTP_PROTOCOL This, PEFI_HTTP_TOKEN Token);
+using EfiHttpCancelFn = EFI_STATUS(__cdecl)(PEFI_HTTP_PROTOCOL This, PEFI_HTTP_TOKEN Token);
+using EfiHttpResponseFn = EFI_STATUS(__cdecl)(PEFI_HTTP_PROTOCOL This, PEFI_HTTP_TOKEN Token);
+using EfiHttpPollFn = EFI_STATUS(__cdecl)(PEFI_HTTP_PROTOCOL This);
+
+struct _EFI_HTTP_PROTOCOL
+{
+	EfiHttpGetModeDataFn* GetModeData;
+	EfiHttpConfigureFn* Configure;
+	EfiHttpRequestFn* Request;
+	EfiHttpCancelFn* Cancel;
+	EfiHttpResponseFn* Response;
+	EfiHttpPollFn* Poll;
+};
+
+typedef struct _EFI_SERVICE_BINDING_PROTOCOL EFI_SERVICE_BINDING_PROTOCOL, *PEFI_SERVICE_BINDING_PROTOCOL;
+
+using EfiServiceBindingCreateChildFn = EFI_STATUS(__cdecl)(PEFI_SERVICE_BINDING_PROTOCOL This, PEFI_HANDLE ChildHandle);
+using EfiServiceBindingDestroyChildFn = EFI_STATUS(__cdecl)(PEFI_SERVICE_BINDING_PROTOCOL This, EFI_HANDLE ChildHandle);
+
+struct _EFI_SERVICE_BINDING_PROTOCOL
+{
+	EfiServiceBindingCreateChildFn* CreateChild;
+	EfiServiceBindingDestroyChildFn* DestroyChild;
+};
+
+#define EVT_TIMER          0x80000000
+#define EVT_RUNTIME        0x40000000
+#define EVT_NOTIFY_WAIT    0x00000100
+#define EVT_NOTIFY_SIGNAL  0x00000200
+
+#define EVT_SIGNAL_EXIT_BOOT_SERVICES      0x00000201
+#define EVT_SIGNAL_VIRTUAL_ADDRESS_CHANGE  0x60000202
+
+#define TPL_APPLICATION  4
+#define TPL_CALLBACK     8
+#define TPL_NOTIFY       16
+#define TPL_HIGH_LEVEL   31
+
+#define EFI_OPEN_PROTOCOL_BY_HANDLE_PROTOCOL   0x00000001
+#define EFI_OPEN_PROTOCOL_GET_PROTOCOL         0x00000002
+#define EFI_OPEN_PROTOCOL_TEST_PROTOCOL        0x00000004
+#define EFI_OPEN_PROTOCOL_BY_CHILD_CONTROLLER  0x00000008
+#define EFI_OPEN_PROTOCOL_BY_DRIVER            0x00000010
+#define EFI_OPEN_PROTOCOL_EXCLUSIVE            0x00000020
+
+typedef struct _EFI_TCP4_PROTOCOL EFI_TCP4_PROTOCOL, *PEFI_TCP4_PROTOCOL;
+
+typedef struct _EFI_TCP4_SERVICE_POINT {
+	EFI_HANDLE          InstanceHandle;
+	EFI_IPv4_ADDRESS    LocalAddress;
+	UINT16              LocalPort;
+	EFI_IPv4_ADDRESS    RemoteAddress;
+	UINT16              RemotePort;
+} EFI_TCP4_SERVICE_POINT, *PEFI_TCP4_SERVICE_POINT;
+
+typedef struct _EFI_TCP4_VARIABLE_DATA {
+	EFI_HANDLE                DriverHandle;
+	UINT32                    ServiceCount;
+	EFI_TCP4_SERVICE_POINT    Services[1];
+} EFI_TCP4_VARIABLE_DATA, *PEFI_TCP4_VARIABLE_DATA;
+
+typedef struct _EFI_TCP4_ACCESS_POINT  {
+	BOOLEAN             UseDefaultAddress;
+	EFI_IPv4_ADDRESS    StationAddress;
+	EFI_IPv4_ADDRESS    SubnetMask;
+	UINT16              StationPort;
+	EFI_IPv4_ADDRESS    RemoteAddress;
+	UINT16              RemotePort;
+	BOOLEAN             ActiveFlag;
+} EFI_TCP4_ACCESS_POINT, *PEFI_TCP4_ACCESS_POINT;
+
+typedef struct _EFI_TCP4_OPTION {
+	UINT32     ReceiveBufferSize;
+	UINT32     SendBufferSize;
+	UINT32     MaxSynBackLog;
+	UINT32     ConnectionTimeout;
+	UINT32     DataRetries;
+	UINT32     FinTimeout;
+	UINT32     TimeWaitTimeout;
+	UINT32     KeepAliveProbes;
+	UINT32     KeepAliveTime;
+	UINT32     KeepAliveInterval;
+	BOOLEAN    EnableNagle;
+	BOOLEAN    EnableTimeStamp;
+	BOOLEAN    EnableWindowScaling;
+	BOOLEAN    EnableSelectiveAck;
+	BOOLEAN    EnablePathMtuDiscovery;
+} EFI_TCP4_OPTION, *PEFI_TCP4_OPTION;
+
+typedef struct _EFI_TCP4_CONFIG_DATA {
+	//
+	// I/O parameters
+	//
+	UINT8                    TypeOfService;
+	UINT8                    TimeToLive;
+
+	//
+	// Access Point
+	//
+	EFI_TCP4_ACCESS_POINT    AccessPoint;
+
+	//
+	// TCP Control Options
+	//
+	EFI_TCP4_OPTION* ControlOption;
+} EFI_TCP4_CONFIG_DATA, *PEFI_TCP4_CONFIG_DATA;
+
+typedef enum _EFI_TCP4_CONNECTION_STATE {
+	Tcp4StateClosed = 0,
+	Tcp4StateListen = 1,
+	Tcp4StateSynSent = 2,
+	Tcp4StateSynReceived = 3,
+	Tcp4StateEstablished = 4,
+	Tcp4StateFinWait1 = 5,
+	Tcp4StateFinWait2 = 6,
+	Tcp4StateClosing = 7,
+	Tcp4StateTimeWait = 8,
+	Tcp4StateCloseWait = 9,
+	Tcp4StateLastAck = 10
+} EFI_TCP4_CONNECTION_STATE, *PEFI_TCP4_CONNECTION_STATE;
+
+typedef struct _EFI_TCP4_COMPLETION_TOKEN {
+	EFI_EVENT     Event;
+	EFI_STATUS    Status;
+} EFI_TCP4_COMPLETION_TOKEN, *PEFI_TCP4_COMPLETION_TOKEN;
+
+typedef struct _EFI_TCP4_CONNECTION_TOKEN {
+	///
+	/// The Status in the CompletionToken will be set to one of
+	/// the following values if the active open succeeds or an unexpected
+	/// error happens:
+	/// EFI_SUCCESS:              The active open succeeds and the instance's
+	///                           state is Tcp4StateEstablished.
+	/// EFI_CONNECTION_RESET:     The connect fails because the connection is reset
+	///                           either by instance itself or the communication peer.
+	/// EFI_CONNECTION_REFUSED:   The connect fails because this connection is initiated with
+	///                           an active open and the connection is refused.
+	/// EFI_ABORTED:              The active open is aborted.
+	/// EFI_TIMEOUT:              The connection establishment timer expires and
+	///                           no more specific information is available.
+	/// EFI_NETWORK_UNREACHABLE:  The active open fails because
+	///                           an ICMP network unreachable error is received.
+	/// EFI_HOST_UNREACHABLE:     The active open fails because an
+	///                           ICMP host unreachable error is received.
+	/// EFI_PROTOCOL_UNREACHABLE: The active open fails
+	///                           because an ICMP protocol unreachable error is received.
+	/// EFI_PORT_UNREACHABLE:     The connection establishment
+	///                           timer times out and an ICMP port unreachable error is received.
+	/// EFI_ICMP_ERROR:           The connection establishment timer timeout and some other ICMP
+	///                           error is received.
+	/// EFI_DEVICE_ERROR:         An unexpected system or network error occurred.
+	/// EFI_NO_MEDIA:             There was a media error.
+	///
+	EFI_TCP4_COMPLETION_TOKEN    CompletionToken;
+} EFI_TCP4_CONNECTION_TOKEN, *PEFI_TCP4_CONNECTION_TOKEN;
+
+typedef struct _EFI_TCP4_LISTEN_TOKEN {
+	EFI_TCP4_COMPLETION_TOKEN    CompletionToken;
+	EFI_HANDLE                   NewChildHandle;
+} EFI_TCP4_LISTEN_TOKEN, *PEFI_TCP4_LISTEN_TOKEN;
+
+typedef struct _EFI_TCP4_FRAGMENT_DATA {
+	UINT32    FragmentLength;
+	VOID* FragmentBuffer;
+} EFI_TCP4_FRAGMENT_DATA, *PEFI_TCP4_FRAGMENT_DATA;
+
+typedef struct _EFI_TCP4_RECEIVE_DATA {
+	BOOLEAN                   UrgentFlag;
+	UINT32                    DataLength;
+	UINT32                    FragmentCount;
+	EFI_TCP4_FRAGMENT_DATA    FragmentTable[1];
+} EFI_TCP4_RECEIVE_DATA, *PEFI_TCP4_RECEIVE_DATA;
+
+typedef struct _EFI_TCP4_TRANSMIT_DATA {
+	BOOLEAN                   Push;
+	BOOLEAN                   Urgent;
+	UINT32                    DataLength;
+	UINT32                    FragmentCount;
+	EFI_TCP4_FRAGMENT_DATA    FragmentTable[1];
+} EFI_TCP4_TRANSMIT_DATA, *PEFI_TCP4_TRANSMIT_DATA;
+
+typedef struct _EFI_TCP4_IO_TOKEN {
+	///
+	/// When transmission finishes or meets any unexpected error it will
+	/// be set to one of the following values:
+	/// EFI_SUCCESS:              The receiving or transmission operation
+	///                           completes successfully.
+	/// EFI_CONNECTION_FIN:       The receiving operation fails because the communication peer
+	///                           has closed the connection and there is no more data in the
+	///                           receive buffer of the instance.
+	/// EFI_CONNECTION_RESET:     The receiving or transmission operation fails
+	///                           because this connection is reset either by instance
+	///                           itself or the communication peer.
+	/// EFI_ABORTED:              The receiving or transmission is aborted.
+	/// EFI_TIMEOUT:              The transmission timer expires and no more
+	///                           specific information is available.
+	/// EFI_NETWORK_UNREACHABLE:  The transmission fails
+	///                           because an ICMP network unreachable error is received.
+	/// EFI_HOST_UNREACHABLE:     The transmission fails because an
+	///                           ICMP host unreachable error is received.
+	/// EFI_PROTOCOL_UNREACHABLE: The transmission fails
+	///                           because an ICMP protocol unreachable error is received.
+	/// EFI_PORT_UNREACHABLE:     The transmission fails and an
+	///                           ICMP port unreachable error is received.
+	/// EFI_ICMP_ERROR:           The transmission fails and some other
+	///                           ICMP error is received.
+	/// EFI_DEVICE_ERROR:         An unexpected system or network error occurs.
+	/// EFI_NO_MEDIA:             There was a media error.
+	///
+	EFI_TCP4_COMPLETION_TOKEN    CompletionToken;
+	union {
+		///
+		/// When this token is used for receiving, RxData is a pointer to EFI_TCP4_RECEIVE_DATA.
+		///
+		EFI_TCP4_RECEIVE_DATA* RxData;
+		///
+		/// When this token is used for transmitting, TxData is a pointer to EFI_TCP4_TRANSMIT_DATA.
+		///
+		EFI_TCP4_TRANSMIT_DATA* TxData;
+	} Packet;
+} EFI_TCP4_IO_TOKEN, *PEFI_TCP4_IO_TOKEN;
+
+typedef struct _EFI_TCP4_CLOSE_TOKEN {
+	EFI_TCP4_COMPLETION_TOKEN    CompletionToken;
+	BOOLEAN                      AbortOnClose;
+} EFI_TCP4_CLOSE_TOKEN, *PEFI_TCP4_CLOSE_TOKEN;
+
+typedef struct _EFI_IP4_CONFIG_DATA  {
+	///
+	/// The default IPv4 protocol packets to send and receive. Ignored
+	/// when AcceptPromiscuous is TRUE.
+	///
+	UINT8               DefaultProtocol;
+	///
+	/// Set to TRUE to receive all IPv4 packets that get through the receive filters.
+	/// Set to FALSE to receive only the DefaultProtocol IPv4
+	/// packets that get through the receive filters.
+	///
+	BOOLEAN             AcceptAnyProtocol;
+	///
+	/// Set to TRUE to receive ICMP error report packets. Ignored when
+	/// AcceptPromiscuous or AcceptAnyProtocol is TRUE.
+	///
+	BOOLEAN             AcceptIcmpErrors;
+	///
+	/// Set to TRUE to receive broadcast IPv4 packets. Ignored when
+	/// AcceptPromiscuous is TRUE.
+	/// Set to FALSE to stop receiving broadcast IPv4 packets.
+	///
+	BOOLEAN             AcceptBroadcast;
+	///
+	/// Set to TRUE to receive all IPv4 packets that are sent to any
+	/// hardware address or any protocol address.
+	/// Set to FALSE to stop receiving all promiscuous IPv4 packets
+	///
+	BOOLEAN             AcceptPromiscuous;
+	///
+	/// Set to TRUE to use the default IPv4 address and default routing table.
+	///
+	BOOLEAN             UseDefaultAddress;
+	///
+	/// The station IPv4 address that will be assigned to this EFI IPv4Protocol instance.
+	///
+	EFI_IPv4_ADDRESS    StationAddress;
+	///
+	/// The subnet address mask that is associated with the station address.
+	///
+	EFI_IPv4_ADDRESS    SubnetMask;
+	///
+	/// TypeOfService field in transmitted IPv4 packets.
+	///
+	UINT8               TypeOfService;
+	///
+	/// TimeToLive field in transmitted IPv4 packets.
+	///
+	UINT8               TimeToLive;
+	///
+	/// State of the DoNotFragment bit in transmitted IPv4 packets.
+	///
+	BOOLEAN             DoNotFragment;
+	///
+	/// Set to TRUE to send and receive unformatted packets. The other
+	/// IPv4 receive filters are still applied. Fragmentation is disabled for RawData mode.
+	///
+	BOOLEAN             RawData;
+	///
+	/// The timer timeout value (number of microseconds) for the
+	/// receive timeout event to be associated with each assembled
+	/// packet. Zero means do not drop assembled packets.
+	///
+	UINT32              ReceiveTimeout;
+	///
+	/// The timer timeout value (number of microseconds) for the
+	/// transmit timeout event to be associated with each outgoing
+	/// packet. Zero means do not drop outgoing packets.
+	///
+	UINT32              TransmitTimeout;
+} EFI_IP4_CONFIG_DATA, *PEFI_IP4_CONFIG_DATA;
+
+typedef struct _EFI_IP4_ROUTE_TABLE {
+	EFI_IPv4_ADDRESS    SubnetAddress;
+	EFI_IPv4_ADDRESS    SubnetMask;
+	EFI_IPv4_ADDRESS    GatewayAddress;
+} EFI_IP4_ROUTE_TABLE, *PEFI_IP4_ROUTE_TABLE;
+
+typedef struct _EFI_IP4_ICMP_TYPE {
+	UINT8    Type;
+	UINT8    Code;
+} EFI_IP4_ICMP_TYPE, *PEFI_IP4_ICMP_TYPE;
+
+typedef struct _EFI_IP4_MODE_DATA {
+	///
+	/// Set to TRUE after this EFI IPv4 Protocol instance has been successfully configured.
+	///
+	BOOLEAN                IsStarted;
+	///
+	/// The maximum packet size, in bytes, of the packet which the upper layer driver could feed.
+	///
+	UINT32                 MaxPacketSize;
+	///
+	/// Current configuration settings.
+	///
+	EFI_IP4_CONFIG_DATA    ConfigData;
+	///
+	/// Set to TRUE when the EFI IPv4 Protocol instance has a station address and subnet mask.
+	///
+	BOOLEAN                IsConfigured;
+	///
+	/// Number of joined multicast groups.
+	///
+	UINT32                 GroupCount;
+	///
+	/// List of joined multicast group addresses.
+	///
+	EFI_IPv4_ADDRESS* GroupTable;
+	///
+	/// Number of entries in the routing table.
+	///
+	UINT32                 RouteCount;
+	///
+	/// Routing table entries.
+	///
+	EFI_IP4_ROUTE_TABLE* RouteTable;
+	///
+	/// Number of entries in the supported ICMP types list.
+	///
+	UINT32                 IcmpTypeCount;
+	///
+	/// Array of ICMP types and codes that are supported by this EFI IPv4 Protocol driver
+	///
+	EFI_IP4_ICMP_TYPE* IcmpTypeList;
+} EFI_IP4_MODE_DATA, *PEFI_IP4_MODE_DATA;
+
+typedef struct _EFI_MANAGED_NETWORK_CONFIG_DATA {
+	///
+	/// Timeout value for a UEFI one-shot timer event. A packet that has not been removed
+	/// from the MNP receive queue will be dropped if its receive timeout expires.
+	///
+	UINT32     ReceivedQueueTimeoutValue;
+	///
+	/// Timeout value for a UEFI one-shot timer event. A packet that has not been removed
+	/// from the MNP transmit queue will be dropped if its receive timeout expires.
+	///
+	UINT32     TransmitQueueTimeoutValue;
+	///
+	/// Ethernet type II 16-bit protocol type in host byte order. Valid
+	/// values are zero and 1,500 to 65,535.
+	///
+	UINT16     ProtocolTypeFilter;
+	///
+	/// Set to TRUE to receive packets that are sent to the network
+	/// device MAC address. The startup default value is FALSE.
+	///
+	BOOLEAN    EnableUnicastReceive;
+	///
+	/// Set to TRUE to receive packets that are sent to any of the
+	/// active multicast groups. The startup default value is FALSE.
+	///
+	BOOLEAN    EnableMulticastReceive;
+	///
+	/// Set to TRUE to receive packets that are sent to the network
+	/// device broadcast address. The startup default value is FALSE.
+	///
+	BOOLEAN    EnableBroadcastReceive;
+	///
+	/// Set to TRUE to receive packets that are sent to any MAC address.
+	/// The startup default value is FALSE.
+	///
+	BOOLEAN    EnablePromiscuousReceive;
+	///
+	/// Set to TRUE to drop queued packets when the configuration
+	/// is changed. The startup default value is FALSE.
+	///
+	BOOLEAN    FlushQueuesOnReset;
+	///
+	/// Set to TRUE to timestamp all packets when they are received
+	/// by the MNP. Note that timestamps may be unsupported in some
+	/// MNP implementations. The startup default value is FALSE.
+	///
+	BOOLEAN    EnableReceiveTimestamps;
+	///
+	/// Set to TRUE to disable background polling in this MNP
+	/// instance. Note that background polling may not be supported in
+	/// all MNP implementations. The startup default value is FALSE,
+	/// unless background polling is not supported.
+	///
+	BOOLEAN    DisableBackgroundPolling;
+} EFI_MANAGED_NETWORK_CONFIG_DATA, *PEFI_MANAGED_NETWORK_CONFIG_DATA;
+#define MAX_MCAST_FILTER_CNT  16
+typedef struct _EFI_SIMPLE_NETWORK_MODE  {
+	///
+	/// Reports the current state of the network interface.
+	///
+	UINT32             State;
+	///
+	/// The size, in bytes, of the network interface's HW address.
+	///
+	UINT32             HwAddressSize;
+	///
+	/// The size, in bytes, of the network interface's media header.
+	///
+	UINT32             MediaHeaderSize;
+	///
+	/// The maximum size, in bytes, of the packets supported by the network interface.
+	///
+	UINT32             MaxPacketSize;
+	///
+	/// The size, in bytes, of the NVRAM device attached to the network interface.
+	///
+	UINT32             NvRamSize;
+	///
+	/// The size that must be used for all NVRAM reads and writes. The
+	/// start address for NVRAM read and write operations and the total
+	/// length of those operations, must be a multiple of this value. The
+	/// legal values for this field are 0, 1, 2, 4, and 8.
+	///
+	UINT32             NvRamAccessSize;
+	///
+	/// The multicast receive filter settings supported by the network interface.
+	///
+	UINT32             ReceiveFilterMask;
+	///
+	/// The current multicast receive filter settings.
+	///
+	UINT32             ReceiveFilterSetting;
+	///
+	/// The maximum number of multicast address receive filters supported by the driver.
+	///
+	UINT32             MaxMCastFilterCount;
+	///
+	/// The current number of multicast address receive filters.
+	///
+	UINT32             MCastFilterCount;
+	///
+	/// Array containing the addresses of the current multicast address receive filters.
+	///
+	EFI_MAC_ADDRESS    MCastFilter[MAX_MCAST_FILTER_CNT];
+	///
+	/// The current HW MAC address for the network interface.
+	///
+	EFI_MAC_ADDRESS    CurrentAddress;
+	///
+	/// The current HW MAC address for broadcast packets.
+	///
+	EFI_MAC_ADDRESS    BroadcastAddress;
+	///
+	/// The permanent HW MAC address for the network interface.
+	///
+	EFI_MAC_ADDRESS    PermanentAddress;
+	///
+	/// The interface type of the network interface.
+	///
+	UINT8              IfType;
+	///
+	/// TRUE if the HW MAC address can be changed.
+	///
+	BOOLEAN            MacAddressChangeable;
+	///
+	/// TRUE if the network interface can transmit more than one packet at a time.
+	///
+	BOOLEAN            MultipleTxSupported;
+	///
+	/// TRUE if the presence of media can be determined; otherwise FALSE.
+	///
+	BOOLEAN            MediaPresentSupported;
+	///
+	/// TRUE if media are connected to the network interface; otherwise FALSE.
+	///
+	BOOLEAN            MediaPresent;
+} EFI_SIMPLE_NETWORK_MODE, *PEFI_SIMPLE_NETWORK_MODE;
+
+using EfiTcp4GetModeDataFn = EFI_STATUS(__cdecl)(PEFI_TCP4_PROTOCOL This, PEFI_TCP4_CONNECTION_STATE Tcp4State, PEFI_TCP4_CONFIG_DATA Tcp4ConfigData, PEFI_IP4_MODE_DATA Ip4ModeData, PEFI_MANAGED_NETWORK_CONFIG_DATA MnpConfigData, PEFI_SIMPLE_NETWORK_MODE SnpModeData);
+using EfiTcp4ConfigureFn = EFI_STATUS(__cdecl)(PEFI_TCP4_PROTOCOL This, PEFI_TCP4_CONFIG_DATA Tcp4ConfigData);
+using EfiTcp4RoutesFn = EFI_STATUS(__cdecl)(PEFI_TCP4_PROTOCOL This, bool DeleteRoute, PEFI_IPv4_ADDRESS SubnetAddress, PEFI_IPv4_ADDRESS SubnetMask, PEFI_IPv4_ADDRESS GatewayAddress);
+using EfiTcp4ConnectFn = EFI_STATUS(__cdecl)(PEFI_TCP4_PROTOCOL This, PEFI_TCP4_CONNECTION_TOKEN ConnectionToken);
+using EfiTcp4AcceptFn = EFI_STATUS(__cdecl)(PEFI_TCP4_PROTOCOL This, PEFI_TCP4_LISTEN_TOKEN ListenToken);
+using EfiTcp4TransmitFn = EFI_STATUS(__cdecl)(PEFI_TCP4_PROTOCOL This, PEFI_TCP4_IO_TOKEN Token);
+using EfiTcp4ReceiveFn = EFI_STATUS(__cdecl)(PEFI_TCP4_PROTOCOL This, PEFI_TCP4_IO_TOKEN Token);
+using EfiTcp4CloseFn = EFI_STATUS(__cdecl)(PEFI_TCP4_PROTOCOL This, PEFI_TCP4_CLOSE_TOKEN CloseToken);
+using EfiTcp4CancelFn = EFI_STATUS(__cdecl)(PEFI_TCP4_PROTOCOL This, PEFI_TCP4_COMPLETION_TOKEN Token);
+using EfiTcp4PollFn = EFI_STATUS(__cdecl)(PEFI_TCP4_PROTOCOL This);
+
+struct _EFI_TCP4_PROTOCOL
+{
+	EfiTcp4GetModeDataFn* GetModeData;
+	EfiTcp4ConfigureFn* Configure;
+	EfiTcp4RoutesFn* Routes;
+	EfiTcp4ConnectFn* Connect;
+	EfiTcp4AcceptFn* Accept;
+	EfiTcp4TransmitFn* Transmit;
+	EfiTcp4ReceiveFn* Receive;
+	EfiTcp4CloseFn* Close;
+	EfiTcp4CancelFn* Cancel;
+	EfiTcp4PollFn* Poll;
+};
+
+constexpr CEFI_GUID gEfiTcp4ServiceBindingProtocolGuid = { 0x00720665, 0x67EB, 0x4A99, { 0xBA, 0xF7, 0xD3, 0xC3, 0x3A, 0x1C, 0x7C, 0xC9 } };
+constexpr CEFI_GUID gEfiTcp4ProtocolGuid = { 0x65530BC7, 0xA359, 0x410F, { 0xB0, 0x10, 0x5A, 0xAD, 0xC7, 0xEC, 0x2B, 0x62 } };
+
+typedef struct _EFI_TCP4_SERVICE_BINDING_PROTOCOL {
+	EfiServiceBindingCreateChildFn*   CreateChild;
+	EfiServiceBindingDestroyChildFn*  DestroyChild;
+} EFI_TCP4_SERVICE_BINDING_PROTOCOL, *PEFI_TCP4_SERVICE_BINDING_PROTOCOL;
+
+constexpr uint64_t EFI_PAGE_SIZE = 0x1000;

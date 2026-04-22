@@ -2,6 +2,7 @@
 
 #include <cstdint>
 #include "../../UEFIpp.hpp"
+#include "../Vector/Vector.hpp"
 
 class String
 {
@@ -50,6 +51,7 @@ public:
     auto Clear() -> void;                                       // Resets string to ""
     auto At(uint64_t Index) -> wchar_t*;                        // Returns pointer to character at Index or nullptr
     auto At(uint64_t Index) const -> const wchar_t*;            // Const version of At
+    auto operator[](uint64_t Index) const -> wchar_t;           // Returns character at Index or L'\0' when out of bounds
     auto Set(uint64_t Index, wchar_t Character) -> bool;        // Replaces character at Index
     auto Set(uint64_t Index, char Character) -> bool;           // Replaces character at Index (narrow)
 
@@ -61,6 +63,30 @@ public:
 
     auto Assign(CGUID& Guid) -> bool;
     auto operator=(CGUID& Guid) -> String&;
+
+    auto StartsWith(const char* Prefix) const -> bool;
+    auto StartsWith(const wchar_t* Prefix) const -> bool;
+
+    auto Find(wchar_t Character, uint64_t StartIndex = 0) const -> int64_t;
+    auto Find(char Character, uint64_t StartIndex = 0) const -> int64_t;
+
+    auto Find(const wchar_t* Str, uint64_t StartIndex = 0) const -> int64_t;
+    auto Find(const char* Str, uint64_t StartIndex = 0) const -> int64_t;
+
+    auto Substring(uint64_t StartIndex, uint64_t Length) const -> String;
+
+    auto Split(wchar_t Delimiter) const -> Vector<String>;
+    auto Split(char Delimiter) const -> Vector<String>;
+
+    auto ToUInt32(uint32_t& Value) const -> bool;
+    auto ToUInt8(uint8_t& Value) const -> bool;
+
+    static auto IsDigit(wchar_t Character) -> bool;
+    static auto IsDigit(char Character) -> bool;
+
+    auto AppendUInt32(uint32_t Value) -> bool;
+    auto Append(wchar_t Character) -> bool;
+	auto Append(char Character) -> bool;
 
 private:
     auto UpdateCharCache() const -> bool;                       // Rebuild CharData_ from Data_

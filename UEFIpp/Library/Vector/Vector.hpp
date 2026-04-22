@@ -270,4 +270,113 @@ public:
 
         return true;
     }
+
+    auto Resize(uint64_t NewSize) -> bool
+    {
+        if (NewSize < Size_)
+        {
+            for (uint64_t i = NewSize; i < Size_; ++i)
+            {
+                Destroy(&Data_[i]);
+            }
+
+            Size_ = NewSize;
+            return true;
+        }
+
+        if (NewSize > Capacity_)
+        {
+            if (!Reserve(NewSize))
+            {
+                return false;
+            }
+        }
+
+        for (uint64_t i = Size_; i < NewSize; ++i)
+        {
+            Construct(&Data_[i]);
+        }
+
+        Size_ = NewSize;
+        return true;
+    }
+
+    auto Append(const T* Source, uint64_t Count) -> bool
+    {
+        if (!Source || !Count)
+        {
+            return true;
+        }
+
+        if (Size_ + Count > Capacity_)
+        {
+            uint64_t NewCapacity = Capacity_ ? Capacity_ : 4;
+            while (NewCapacity < Size_ + Count)
+            {
+                NewCapacity *= 2;
+            }
+
+            if (!Reserve(NewCapacity))
+            {
+                return false;
+            }
+        }
+
+        for (uint64_t i = 0; i < Count; ++i)
+        {
+            Construct(&Data_[Size_ + i], Source[i]);
+        }
+
+        Size_ += Count;
+        return true;
+    }
+
+    auto RemovePrefix(uint64_t Count) -> bool
+    {
+        if (Count > Size_)
+        {
+            return false;
+        }
+
+        if (Count == 0)
+        {
+            return true;
+        }
+
+        const uint64_t Remaining = Size_ - Count;
+
+        for (uint64_t i = 0; i < Remaining; ++i)
+        {
+            Data_[i] = Memory::Move(Data_[i + Count]);
+        }
+
+        for (uint64_t i = Remaining; i < Size_; ++i)
+        {
+            Destroy(&Data_[i]);
+        }
+
+        Size_ = Remaining;
+        return true;
+    }
+
+    auto AppendByte(const T& Value) -> bool
+    {
+        return PushBack(Value);
+    }
+
+    auto AppendByte(T&& Value) -> bool
+    {
+        return PushBack(Memory::Move(Value));
+    }
+
+    auto Append(const Vector<T>& Other) -> bool
+    {
+        return Append(Other.Data(), Other.Size());
+    }
+
+    auto Assign(const T* Source, uint64_t Count) -> bool
+    {
+        Clear();
+        return Append(Source, Count);
+    }
 };

@@ -168,6 +168,8 @@
     <ClCompile Include="Library\Cpu\Cpu.cpp" />
     <ClCompile Include="Library\Environment\Environment.cpp" />
     <ClCompile Include="Library\Memory\Memory.cpp" />
+    <ClCompile Include="Library\Network\IPv4\IPv4.cpp" />
+    <ClCompile Include="Library\Network\Tcp4Client\Tcp4Client.cpp" />
     <ClCompile Include="Library\String\String.cpp" />
     <ClCompile Include="Library\SymbolResolver\SymbolResolver.cpp" />
     <ClCompile Include="Library\Util\Util.cpp" />
@@ -187,6 +189,8 @@
     <ClInclude Include="Library\Detour\Detour.hpp" />
     <ClInclude Include="Library\Environment\Environment.hpp" />
     <ClInclude Include="Library\Memory\Memory.hpp" />
+    <ClInclude Include="Library\Network\IPv4\IPv4.hpp" />
+    <ClInclude Include="Library\Network\Tcp4Client\Tcp4Client.hpp" />
     <ClInclude Include="Library\String\String.hpp" />
     <ClInclude Include="Library\SymbolResolver\SymbolResolver.hpp" />
     <ClInclude Include="Library\Util\Util.hpp" />
@@ -203,6 +207,7 @@
   </ItemGroup>
   <ItemGroup>
     <MASM Include="Library\Cpu\CpuAsm.asm" />
+    <MASM Include="Library\Util\RandomAsm.asm" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
