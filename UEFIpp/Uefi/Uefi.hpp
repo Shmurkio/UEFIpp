@@ -617,7 +617,7 @@ using EfiFileGetInfoFn = EFI_STATUS(__cdecl)(
 
 using EfiFileSetInfoFn = EFI_STATUS(__cdecl)(
 	IN	PEFI_FILE_PROTOCOL	This,
-	IN	PEFI_GUID			InformationType,
+	IN	PCEFI_GUID			InformationType,
 	IN	UINT64				BufferSize,
 	IN	PVOID				Buffer
 	);

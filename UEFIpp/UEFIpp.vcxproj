@@ -189,6 +189,7 @@
     <ClInclude Include="Library\Detour\Detour.hpp" />
     <ClInclude Include="Library\Environment\Environment.hpp" />
     <ClInclude Include="Library\Memory\Memory.hpp" />
+    <ClInclude Include="Library\Memory\MemView.hpp" />
     <ClInclude Include="Library\Network\IPv4\IPv4.hpp" />
     <ClInclude Include="Library\Network\Tcp4Client\Tcp4Client.hpp" />
     <ClInclude Include="Library\String\String.hpp" />

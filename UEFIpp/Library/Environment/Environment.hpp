@@ -28,6 +28,7 @@ namespace Environment
 
 	auto LoadFile(const String& FilePath, FILE& File) -> bool;
 	auto UnloadFile(FILE& File) -> bool;
+	auto WriteFile(const String& FilePath, const void* FileBuffer, uint64_t FileSize) -> bool;
 
 	auto LoadImage(const String& ImagePath, IMAGE& Image) -> bool;
 	auto UnloadImage(IMAGE& Image) -> bool;

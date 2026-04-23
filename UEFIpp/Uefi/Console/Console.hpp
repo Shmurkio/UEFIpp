@@ -2,6 +2,8 @@
 
 #include "../Uefi.hpp"
 
+class String;
+
 namespace Console
 {
     //
@@ -213,3 +215,5 @@ operator<<(
     IN Console::OUT_STREAM& Stream,
     IN PCEFI_GUID Guid
     );
+
+Console::OUT_STREAM& operator<<(Console::OUT_STREAM& Stream, const String& Value);

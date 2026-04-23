@@ -1075,3 +1075,102 @@ auto String::AppendUInt32(uint32_t Value) -> bool
 
 	return true;
 }
+
+auto String::operator!=(const char* CharStr) const -> bool
+{
+	return !(*this == CharStr);
+}
+
+auto String::operator!=(const wchar_t* WcharStr) const -> bool
+{
+	return !(*this == WcharStr);
+}
+
+auto String::operator<(const String& Other) const -> bool
+{
+	const uint64_t ThisSize = Size();
+	const uint64_t OtherSize = Other.Size();
+	const uint64_t Minimum = (ThisSize < OtherSize) ? ThisSize : OtherSize;
+
+	for (uint64_t Index = 0; Index < Minimum; ++Index)
+	{
+		if (Data_[Index] < Other.Data_[Index])
+		{
+			return true;
+		}
+
+		if (Data_[Index] > Other.Data_[Index])
+		{
+			return false;
+		}
+	}
+
+	return ThisSize < OtherSize;
+}
+
+auto String::operator<=(const String& Other) const -> bool
+{
+	return !(*this > Other);
+}
+
+auto String::operator>(const String& Other) const -> bool
+{
+	return Other < *this;
+}
+
+auto String::operator>=(const String& Other) const -> bool
+{
+	return !(*this < Other);
+}
+
+auto String::operator<(const char* CharStr) const -> bool
+{
+	return *this < String(CharStr);
+}
+
+auto String::operator<=(const char* CharStr) const -> bool
+{
+	return *this <= String(CharStr);
+}
+
+auto String::operator>(const char* CharStr) const -> bool
+{
+	return *this > String(CharStr);
+}
+
+auto String::operator>=(const char* CharStr) const -> bool
+{
+	return *this >= String(CharStr);
+}
+
+auto String::operator<(const wchar_t* WcharStr) const -> bool
+{
+	return *this < String(WcharStr);
+}
+
+auto String::operator<=(const wchar_t* WcharStr) const -> bool
+{
+	return *this <= String(WcharStr);
+}
+
+auto String::operator>(const wchar_t* WcharStr) const -> bool
+{
+	return *this > String(WcharStr);
+}
+
+auto String::operator>=(const wchar_t* WcharStr) const -> bool
+{
+	return *this >= String(WcharStr);
+}
+
+auto String::operator+=(char Character) -> String&
+{
+	Append(Character);
+	return *this;
+}
+
+auto String::operator+=(wchar_t Character) -> String&
+{
+	Append(Character);
+	return *this;
+}

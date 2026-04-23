@@ -498,3 +498,77 @@ auto Environment::FindImageByGuid(CEFI_GUID& ImageGuid, IMAGE& Image) -> bool
 
 	return false;
 }
+
+auto Environment::WriteFile(const String& FilePath, const void* FileBuffer, uint64_t FileSize) -> bool
+{
+	if (FilePath.Empty() || !FileBuffer || !FileSize)
+	{
+		return false;
+	}
+
+	PEFI_LOADED_IMAGE_PROTOCOL LoadedImage = nullptr;
+	auto Status = gBS->HandleProtocol(gImageHandle, &gEfiLoadedImageProtocolGuid, Cast::To<void**>(&LoadedImage));
+
+	if (EfiError(Status) || !LoadedImage || !LoadedImage->DeviceHandle)
+	{
+		return false;
+	}
+
+	PEFI_SIMPLE_FILE_SYSTEM_PROTOCOL Fs = nullptr;
+	Status = gBS->HandleProtocol(LoadedImage->DeviceHandle, &gEfiSimpleFileSystemProtocolGuid, Cast::To<void**>(&Fs));
+
+	if (EfiError(Status) || !Fs)
+	{
+		return false;
+	}
+
+	PEFI_FILE_PROTOCOL Root = nullptr;
+	Status = Fs->OpenVolume(Fs, &Root);
+
+	if (EfiError(Status) || !Root)
+	{
+		return false;
+	}
+
+	PEFI_FILE_PROTOCOL File = nullptr;
+	Status = Root->Open(Root, &File, FilePath.WcharStr(), EFI_FILE_MODE_READ | EFI_FILE_MODE_WRITE | EFI_FILE_MODE_CREATE, 0);
+
+	Root->Close(Root);
+
+	if (EfiError(Status) || !File)
+	{
+		return false;
+	}
+
+	PEFI_FILE_INFO FileInfo = nullptr;
+	auto InfoSize = SIZE_OF_EFI_FILE_INFO() + 512;
+
+	if (Memory::AllocatePool(FileInfo, InfoSize, false, true))
+	{
+		Status = File->GetInfo(File, &gEfiFileInfoGuid, &InfoSize, FileInfo);
+
+		if (!EfiError(Status))
+		{
+			FileInfo->FileSize = FileSize;
+			FileInfo->PhysicalSize = FileSize;
+			File->SetInfo(File, &gEfiFileInfoGuid, InfoSize, FileInfo);
+		}
+
+		Memory::FreePool(FileInfo, false);
+	}
+
+	Status = File->SetPosition(File, 0);
+
+	if (EfiError(Status))
+	{
+		File->Close(File);
+		return false;
+	}
+
+	auto WriteSize = FileSize;
+	Status = File->Write(File, &WriteSize, Cast::To<void*>(FileBuffer));
+
+	File->Close(File);
+
+	return !EfiError(Status) && WriteSize == FileSize;
+}

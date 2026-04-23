@@ -14,48 +14,67 @@ private:
     mutable bool CharDataDirty_;                                // True if CharData_ must be rebuilt from Data_
 
 public:
-    String();                                               // Constructs empty string ("")
+    String();
 
-    String(const char* CharStr);                            // Constructs from narrow string (ASCII widened to wchar_t)
-    String(const wchar_t* WcharStr);                        // Constructs from wide string
+    String(const char* CharStr);
+    String(const wchar_t* WcharStr);
 
-    ~String();                                              // Frees Data_ and CharData_
+    ~String();
 
-    String(const String& Other);                        // Deep copy (copies Data_, invalidates char cache)
-    String(String&& Other) noexcept;                    // Move (steals buffers, leaves Other empty)
+    String(const String& Other);
+    String(String&& Other) noexcept;
 
-    auto operator=(const String& Other) -> String&;     // Deep copy assignment
-    auto operator=(String&& Other) noexcept -> String&; // Move assignment (steals resources)
+    auto operator=(const String& Other) -> String&;
+    auto operator=(String&& Other) noexcept -> String&;
 
-    auto operator+=(const char* CharStr) -> String&;        // Appends narrow string
-    auto operator+=(const wchar_t* WcharStr) -> String&;    // Appends wide string
-    auto operator+=(const String& Other) -> String&;    // Appends another UefiString
+    auto operator+=(const char* CharStr) -> String&;
+    auto operator+=(const wchar_t* WcharStr) -> String&;
+    auto operator+=(const String& Other) -> String&;
+    auto operator+=(char Character) -> String&;
+    auto operator+=(wchar_t Character) -> String&;
 
-    auto operator==(const String& Other) const -> bool;     // Compares with another UefiString
-    auto operator!=(const String& Other) const -> bool;     // Inverse of operator==
-    auto operator==(const char* CharStr) const -> bool;         // Compares with narrow string
-    auto operator==(const wchar_t* WcharStr) const -> bool;     // Compares with wide string
+    auto operator==(const String& Other) const -> bool;
+    auto operator!=(const String& Other) const -> bool;
+    auto operator==(const char* CharStr) const -> bool;
+    auto operator==(const wchar_t* WcharStr) const -> bool;
+    auto operator!=(const char* CharStr) const -> bool;
+    auto operator!=(const wchar_t* WcharStr) const -> bool;
 
-    auto CharStr() const -> const char*;                        // Returns cached narrow string (rebuilds if dirty)
-    auto WcharStr() const -> const wchar_t*;                    // Returns internal wide string buffer
+    auto operator<(const String& Other) const -> bool;
+    auto operator<=(const String& Other) const -> bool;
+    auto operator>(const String& Other) const -> bool;
+    auto operator>=(const String& Other) const -> bool;
 
-    auto Size() const -> uint64_t;                              // Number of visible characters (excluding null terminator)
-    auto Empty() const -> bool;                                 // True if Size() == 0
+    auto operator<(const char* CharStr) const -> bool;
+    auto operator<=(const char* CharStr) const -> bool;
+    auto operator>(const char* CharStr) const -> bool;
+    auto operator>=(const char* CharStr) const -> bool;
 
-    auto Assign(const char* CharStr) -> bool;                   // Replace content from narrow string
-    auto Assign(const wchar_t* WcharStr) -> bool;               // Replace content from wide string
+    auto operator<(const wchar_t* WcharStr) const -> bool;
+    auto operator<=(const wchar_t* WcharStr) const -> bool;
+    auto operator>(const wchar_t* WcharStr) const -> bool;
+    auto operator>=(const wchar_t* WcharStr) const -> bool;
 
-    auto Append(const char* CharStr) -> bool;                   // Append narrow string (widened)
-    auto Append(const wchar_t* WcharStr) -> bool;               // Append wide string
+    auto CharStr() const -> const char*;
+    auto WcharStr() const -> const wchar_t*;
 
-    auto Clear() -> void;                                       // Resets string to ""
-    auto At(uint64_t Index) -> wchar_t*;                        // Returns pointer to character at Index or nullptr
-    auto At(uint64_t Index) const -> const wchar_t*;            // Const version of At
-    auto operator[](uint64_t Index) const -> wchar_t;           // Returns character at Index or L'\0' when out of bounds
-    auto Set(uint64_t Index, wchar_t Character) -> bool;        // Replaces character at Index
-    auto Set(uint64_t Index, char Character) -> bool;           // Replaces character at Index (narrow)
+    auto Size() const -> uint64_t;
+    auto Empty() const -> bool;
 
-    auto Reserve(uint64_t NewCapacity) -> bool;                 // Ensure capacity >= NewCapacity (may reallocate)
+    auto Assign(const char* CharStr) -> bool;
+    auto Assign(const wchar_t* WcharStr) -> bool;
+
+    auto Append(const char* CharStr) -> bool;
+    auto Append(const wchar_t* WcharStr) -> bool;
+
+    auto Clear() -> void;
+    auto At(uint64_t Index) -> wchar_t*;
+    auto At(uint64_t Index) const -> const wchar_t*;
+    auto operator[](uint64_t Index) const -> wchar_t;
+    auto Set(uint64_t Index, wchar_t Character) -> bool;
+    auto Set(uint64_t Index, char Character) -> bool;
+
+    auto Reserve(uint64_t NewCapacity) -> bool;
 
     auto Guid() const -> GUID;
 
@@ -86,8 +105,103 @@ public:
 
     auto AppendUInt32(uint32_t Value) -> bool;
     auto Append(wchar_t Character) -> bool;
-	auto Append(char Character) -> bool;
+    auto Append(char Character) -> bool;
 
 private:
-    auto UpdateCharCache() const -> bool;                       // Rebuild CharData_ from Data_
+    auto UpdateCharCache() const -> bool;
 };
+
+inline auto operator+(const String& Left, const String& Right) -> String
+{
+    String Result(Left);
+    Result += Right;
+    return Result;
+}
+
+inline auto operator+(const String& Left, const char* Right) -> String
+{
+    String Result(Left);
+    Result += Right;
+    return Result;
+}
+
+inline auto operator+(const char* Left, const String& Right) -> String
+{
+    String Result(Left);
+    Result += Right;
+    return Result;
+}
+
+inline auto operator+(const String& Left, const wchar_t* Right) -> String
+{
+    String Result(Left);
+    Result += Right;
+    return Result;
+}
+
+inline auto operator+(const wchar_t* Left, const String& Right) -> String
+{
+    String Result(Left);
+    Result += Right;
+    return Result;
+}
+
+inline auto operator==(const char* Left, const String& Right) -> bool
+{
+    return Right == Left;
+}
+
+inline auto operator==(const wchar_t* Left, const String& Right) -> bool
+{
+    return Right == Left;
+}
+
+inline auto operator!=(const char* Left, const String& Right) -> bool
+{
+    return !(Right == Left);
+}
+
+inline auto operator!=(const wchar_t* Left, const String& Right) -> bool
+{
+    return !(Right == Left);
+}
+
+inline auto operator<(const char* Left, const String& Right) -> bool
+{
+    return String(Left) < Right;
+}
+
+inline auto operator<(const wchar_t* Left, const String& Right) -> bool
+{
+    return String(Left) < Right;
+}
+
+inline auto operator<=(const char* Left, const String& Right) -> bool
+{
+    return String(Left) <= Right;
+}
+
+inline auto operator<=(const wchar_t* Left, const String& Right) -> bool
+{
+    return String(Left) <= Right;
+}
+
+inline auto operator>(const char* Left, const String& Right) -> bool
+{
+    return String(Left) > Right;
+}
+
+inline auto operator>(const wchar_t* Left, const String& Right) -> bool
+{
+    return String(Left) > Right;
+}
+
+inline auto operator>=(const char* Left, const String& Right) -> bool
+{
+    return String(Left) >= Right;
+}
+
+inline auto operator>=(const wchar_t* Left, const String& Right) -> bool
+{
+    return String(Left) >= Right;
+}

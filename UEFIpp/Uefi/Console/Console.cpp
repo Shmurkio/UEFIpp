@@ -1,13 +1,14 @@
 #include "Console.hpp"
+#include "../../Library/String/String.hpp"
 
 namespace Console
 {
 	OUT_STREAM Out{};
 
 	VOID
-	OutInit(
-		IN PEFI_SIMPLE_TEXT_OUTPUT_PROTOCOL OutProtocol
-	)
+		OutInit(
+			IN PEFI_SIMPLE_TEXT_OUTPUT_PROTOCOL OutProtocol
+		)
 	{
 		Out.Out = OutProtocol;
 		Out.Length = 0;
@@ -394,7 +395,7 @@ Console::OUT_STREAM&
 operator<<(
 	IN Console::OUT_STREAM& Stream,
 	IN PCSTR String
-)
+	)
 {
 	PushString(Stream, String);
 	return Stream;
@@ -404,7 +405,7 @@ Console::OUT_STREAM&
 operator<<(
 	IN Console::OUT_STREAM& Stream,
 	IN Console::ENDL
-)
+	)
 {
 	PushChar(Stream, '\r');
 	PushChar(Stream, '\n');
@@ -416,7 +417,7 @@ Console::OUT_STREAM&
 operator<<(
 	IN Console::OUT_STREAM& Stream,
 	IN UINT8 Value
-)
+	)
 {
 	PushUnsignedAuto(Stream, Value);
 	return Stream;
@@ -426,7 +427,7 @@ Console::OUT_STREAM&
 operator<<(
 	IN Console::OUT_STREAM& Stream,
 	IN UINT16 Value
-)
+	)
 {
 	PushUnsignedAuto(Stream, Value);
 	return Stream;
@@ -436,7 +437,7 @@ Console::OUT_STREAM&
 operator<<(
 	IN Console::OUT_STREAM& Stream,
 	IN UINT32 Value
-)
+	)
 {
 	PushUnsignedAuto(Stream, Value);
 	return Stream;
@@ -446,7 +447,7 @@ Console::OUT_STREAM&
 operator<<(
 	IN Console::OUT_STREAM& Stream,
 	IN UINT64 Value
-)
+	)
 {
 	PushUnsignedAuto(Stream, Value);
 	return Stream;
@@ -456,7 +457,7 @@ Console::OUT_STREAM&
 operator<<(
 	IN Console::OUT_STREAM& Stream,
 	IN INT8 Value
-)
+	)
 {
 	PushSignedAuto(Stream, Value);
 	return Stream;
@@ -466,7 +467,7 @@ Console::OUT_STREAM&
 operator<<(
 	IN Console::OUT_STREAM& Stream,
 	IN INT16 Value
-)
+	)
 {
 	PushSignedAuto(Stream, (INT64)Value);
 	return Stream;
@@ -476,7 +477,7 @@ Console::OUT_STREAM&
 operator<<(
 	IN Console::OUT_STREAM& Stream,
 	IN INT32 Value
-)
+	)
 {
 	PushSignedAuto(Stream, (INT64)Value);
 	return Stream;
@@ -486,7 +487,7 @@ Console::OUT_STREAM&
 operator<<(
 	IN Console::OUT_STREAM& Stream,
 	IN INT64 Value
-)
+	)
 {
 	PushSignedAuto(Stream, Value);
 	return Stream;
@@ -496,7 +497,7 @@ Console::OUT_STREAM&
 operator<<(
 	IN Console::OUT_STREAM& Stream,
 	IN Console::HEX
-)
+	)
 {
 	Stream.Base = Console::BASE::Hex;
 	return Stream;
@@ -506,7 +507,7 @@ Console::OUT_STREAM&
 operator<<(
 	IN Console::OUT_STREAM& Stream,
 	IN Console::DEC
-)
+	)
 {
 	Stream.Base = Console::BASE::Dec;
 	return Stream;
@@ -516,7 +517,7 @@ Console::OUT_STREAM&
 operator<<(
 	IN Console::OUT_STREAM& Stream,
 	IN PCVOID Pointer
-)
+	)
 {
 	PushUnsignedHex(Stream, reinterpret_cast<UINT64>(Pointer));
 	return Stream;
@@ -526,7 +527,7 @@ Console::OUT_STREAM&
 operator<<(
 	IN Console::OUT_STREAM& Stream,
 	IN Console::CLEAR
-)
+	)
 {
 	if (!Stream.Out)
 	{
@@ -573,7 +574,7 @@ Console::OUT_STREAM&
 operator<<(
 	IN Console::OUT_STREAM& Stream,
 	IN Console::UPPER
-)
+	)
 {
 	Stream.HexCase = Console::HEXCASE::Upper;
 	return Stream;
@@ -583,7 +584,7 @@ Console::OUT_STREAM&
 operator<<(
 	IN Console::OUT_STREAM& Stream,
 	IN Console::LOWER
-)
+	)
 {
 	Stream.HexCase = Console::HEXCASE::Lower;
 	return Stream;
@@ -593,7 +594,7 @@ Console::OUT_STREAM&
 operator<<(
 	IN Console::OUT_STREAM& Stream,
 	IN Console::WIDTH Width
-)
+	)
 {
 	Stream.Width = Width.Value;
 	return Stream;
@@ -603,7 +604,7 @@ Console::OUT_STREAM&
 operator<<(
 	IN Console::OUT_STREAM& Stream,
 	IN Console::FILL Fill
-)
+	)
 {
 	Stream.Fill = Fill.Value;
 	return Stream;
@@ -613,7 +614,7 @@ Console::OUT_STREAM&
 operator<<(
 	IN Console::OUT_STREAM& Stream,
 	IN CHAR Value
-)
+	)
 {
 	PushChar(Stream, Value);
 	return Stream;
@@ -623,7 +624,7 @@ Console::OUT_STREAM&
 operator<<(
 	IN Console::OUT_STREAM& Stream,
 	IN CEFI_GUID& Guid
-)
+	)
 {
 	PushGuid(Stream, Guid);
 	return Stream;
@@ -660,3 +661,9 @@ operator<<(
 	PushGuid(Stream, *Guid);
 	return Stream;
 }
+
+Console::OUT_STREAM& operator<<(Console::OUT_STREAM& Stream, const String& Value)
+{
+	return Stream << Value.CharStr();
+}
+
