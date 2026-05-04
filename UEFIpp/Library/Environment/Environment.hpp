@@ -2,6 +2,7 @@
 
 #include "File.hpp"
 #include "FrameBuffer.hpp"
+#include "Keyboard.hpp"
 
 namespace Environment
 {
