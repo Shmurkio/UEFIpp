@@ -167,6 +167,8 @@
     <ClCompile Include="Entry.cpp" />
     <ClCompile Include="Library\Cpu\Cpu.cpp" />
     <ClCompile Include="Library\Environment\Environment.cpp" />
+    <ClCompile Include="Library\Environment\File.cpp" />
+    <ClCompile Include="Library\Environment\FrameBuffer.cpp" />
     <ClCompile Include="Library\Memory\Memory.cpp" />
     <ClCompile Include="Library\Network\IPv4\IPv4.cpp" />
     <ClCompile Include="Library\Network\Tcp4Client\Tcp4Client.cpp" />
@@ -188,6 +190,8 @@
     <ClInclude Include="Library\Cpu\Cpu.hpp" />
     <ClInclude Include="Library\Detour\Detour.hpp" />
     <ClInclude Include="Library\Environment\Environment.hpp" />
+    <ClInclude Include="Library\Environment\File.hpp" />
+    <ClInclude Include="Library\Environment\FrameBuffer.hpp" />
     <ClInclude Include="Library\Memory\Memory.hpp" />
     <ClInclude Include="Library\Memory\MemView.hpp" />
     <ClInclude Include="Library\Network\IPv4\IPv4.hpp" />

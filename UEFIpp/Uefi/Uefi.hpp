@@ -3321,3 +3321,73 @@ typedef struct _EFI_TCP4_SERVICE_BINDING_PROTOCOL {
 } EFI_TCP4_SERVICE_BINDING_PROTOCOL, *PEFI_TCP4_SERVICE_BINDING_PROTOCOL;
 
 constexpr uint64_t EFI_PAGE_SIZE = 0x1000;
+
+constexpr CEFI_GUID gEfiGraphicsOutputProtocolGuid = { 0x9042a9de, 0x23dc, 0x4a38, { 0x96, 0xfb, 0x7a, 0xde, 0xd0, 0x80, 0x51, 0x6a } };
+
+typedef struct _EFI_GRAPHICS_OUTPUT_PROTOCOL EFI_GRAPHICS_OUTPUT_PROTOCOL, *PEFI_GRAPHICS_OUTPUT_PROTOCOL;
+
+typedef struct _EFI_PIXEL_BITMASK {
+	UINT32            RedMask;
+	UINT32            GreenMask;
+	UINT32            BlueMask;
+	UINT32            ReservedMask;
+} EFI_PIXEL_BITMASK, *PEFI_PIXEL_BITMASK;
+
+typedef enum _EFI_GRAPHICS_PIXEL_FORMAT {
+	PixelRedGreenBlueReserved8BitPerColor,
+	PixelBlueGreenRedReserved8BitPerColor,
+	PixelBitMask,
+	PixelBltOnly,
+	PixelFormatMax
+} EFI_GRAPHICS_PIXEL_FORMAT, *PEFI_GRAPHICS_PIXEL_FORMAT;
+
+typedef struct _EFI_GRAPHICS_OUTPUT_MODE_INFORMATION {
+	UINT32                     Version;
+	UINT32                     HorizontalResolution;
+	UINT32                     VerticalResolution;
+	EFI_GRAPHICS_PIXEL_FORMAT  PixelFormat;
+	EFI_PIXEL_BITMASK          PixelInformation;
+	UINT32                     PixelsPerScanLine;
+} EFI_GRAPHICS_OUTPUT_MODE_INFORMATION, *PEFI_GRAPHICS_OUTPUT_MODE_INFORMATION;
+
+using EfiGraphicsOuputProtocolQueryModeFn = EFI_STATUS(__cdecl)(PEFI_GRAPHICS_OUTPUT_PROTOCOL This, UINT32 ModeNumber, UINTN* SizeOfInfo, PEFI_GRAPHICS_OUTPUT_MODE_INFORMATION* Info);
+using EfiGraphicsOuputProtocolSetModeFn = EFI_STATUS(__cdecl)(PEFI_GRAPHICS_OUTPUT_PROTOCOL This, UINT32 ModeNumber);
+
+typedef struct _EFI_GRAPHICS_OUTPUT_BLT_PIXEL {
+	UINT8 Blue;
+	UINT8 Green;
+	UINT8 Red;
+	UINT8 Reserved;
+} EFI_GRAPHICS_OUTPUT_BLT_PIXEL, *PEFI_GRAPHICS_OUTPUT_BLT_PIXEL;
+
+typedef union _EFI_GRAPHICS_OUTPUT_BLT_PIXEL_UNION {
+	EFI_GRAPHICS_OUTPUT_BLT_PIXEL Pixel;
+	UINT32                        Raw;
+} EFI_GRAPHICS_OUTPUT_BLT_PIXEL_UNION, *PEFI_GRAPHICS_OUTPUT_BLT_PIXEL_UNION;
+
+typedef enum _EFI_GRAPHICS_OUTPUT_BLT_OPERATION {
+	EfiBltVideoFill,
+	EfiBltVideoToBltBuffer,
+	EfiBltBufferToVideo,
+	EfiBltVideoToVideo,
+	EfiGraphicsOutputBltOperationMax
+} EFI_GRAPHICS_OUTPUT_BLT_OPERATION, *PEFI_GRAPHICS_OUTPUT_BLT_OPERATION;
+
+using EfiGraphicsOuputProtocolBltFn = EFI_STATUS(__cdecl)(PEFI_GRAPHICS_OUTPUT_PROTOCOL This, EFI_GRAPHICS_OUTPUT_BLT_PIXEL* BltBuffer, EFI_GRAPHICS_OUTPUT_BLT_OPERATION BltOperation, UINTN SourceX, UINTN SourceY, UINTN DestinationX, UINTN DestinationY, UINTN Width, UINTN Height, UINTN Delta);
+
+typedef struct _EFI_GRAPHICS_OUTPUT_PROTOCOL_MODE {
+	UINT32                                 MaxMode;
+	UINT32                                 Mode;
+	PEFI_GRAPHICS_OUTPUT_MODE_INFORMATION Info;
+	UINTN                                  SizeOfInfo;
+	UINTN                   FrameBufferBase;
+	UINTN                                  FrameBufferSize;
+} EFI_GRAPHICS_OUTPUT_PROTOCOL_MODE, *PEFI_GRAPHICS_OUTPUT_PROTOCOL_MODE;
+
+struct _EFI_GRAPHICS_OUTPUT_PROTOCOL
+{
+	EfiGraphicsOuputProtocolQueryModeFn* QueryMode;
+	EfiGraphicsOuputProtocolSetModeFn* SetMode;
+	EfiGraphicsOuputProtocolBltFn* Blt;
+	PEFI_GRAPHICS_OUTPUT_PROTOCOL_MODE Mode;
+};

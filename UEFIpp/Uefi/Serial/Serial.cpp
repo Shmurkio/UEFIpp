@@ -1,4 +1,5 @@
 #include "Serial.hpp"
+#include "../../Library/String/String.hpp"
 
 extern "C" void __outbyte(unsigned short, unsigned char);
 extern "C" unsigned char __inbyte(unsigned short);
@@ -664,4 +665,14 @@ operator<<(
 
 	PushGuid(Stream, *Guid);
 	return Stream;
+}
+
+Serial::OUT_STREAM& operator<<(Serial::OUT_STREAM& Stream, const String& Value)
+{
+	return Stream << Value.CharStr();
+}
+
+Serial::OUT_STREAM& operator<<(Serial::OUT_STREAM& Stream, String& Value)
+{
+	return Stream << Value.CharStr();
 }

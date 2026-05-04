@@ -275,3 +275,7 @@ namespace UTF8
     constexpr PCCHAR8 Backslash = u8"\\";
 }
 
+class String;
+
+Serial::OUT_STREAM& operator<<(Serial::OUT_STREAM& Stream, const String& Value);
+Serial::OUT_STREAM& operator<<(Serial::OUT_STREAM& Stream, String& Value);
