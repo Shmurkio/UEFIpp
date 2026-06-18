@@ -42,34 +42,34 @@ namespace UEFIpp::Reverse
 		[[nodiscard]] auto FindVa(const Foundation::Char* Name, Foundation::Void*& Address) const -> Foundation::Bool;
 
 		template<typename T>
-		[[nodiscard]] auto FindVa(const Library::String& Name) const -> T*
+		[[nodiscard]] auto FindVa(const Library::String& Name) const -> T
 		{
 			Foundation::Void* Address{};
-			return FindVa(Name, Address) ? Foundation::Cast::Auto<T*>(Address) : nullptr;
+			return FindVa(Name, Address) ? Foundation::Cast::Auto<T>(Address) : nullptr;
 		}
 
 		template<typename T>
-		[[nodiscard]] auto FindVa(Library::StringView Name) const -> T*
+		[[nodiscard]] auto FindVa(Library::StringView Name) const -> T
 		{
 			Foundation::Void* Address{};
-			return FindVa(Name, Address) ? Foundation::Cast::Auto<T*>(Address) : nullptr;
+			return FindVa(Name, Address) ? Foundation::Cast::Auto<T>(Address) : nullptr;
 		}
 
 		template<typename T>
-		[[nodiscard]] auto FindVa(const Foundation::Char* Name) const -> T*
+		[[nodiscard]] auto FindVa(const Foundation::Char* Name) const -> T
 		{
 			Foundation::Void* Address{};
-			return FindVa(Name, Address) ? Foundation::Cast::Auto<T*>(Address) : nullptr;
+			return FindVa(Name, Address) ? Foundation::Cast::Auto<T>(Address) : nullptr;
 		}
 
 		[[nodiscard]] auto FindRvaByHash(Foundation::Uint64 NameHash, Foundation::Uint64& Rva) const -> Foundation::Bool;
 		[[nodiscard]] auto FindVaByHash(Foundation::Uint64 NameHash, Foundation::Void*& Address) const -> Foundation::Bool;
 
 		template<typename T>
-		[[nodiscard]] auto FindVaByHash(Foundation::Uint64 NameHash) const -> T*
+		[[nodiscard]] auto FindVaByHash(Foundation::Uint64 NameHash) const -> T
 		{
 			Foundation::Void* Address{};
-			return FindVaByHash(NameHash, Address) ? Foundation::Cast::Auto<T*>(Address) : nullptr;
+			return FindVaByHash(NameHash, Address) ? Foundation::Cast::Auto<T>(Address) : nullptr;
 		}
 
 		[[nodiscard]] auto Capacity() const -> Foundation::Uint64;
