@@ -32,7 +32,7 @@ auto Main([[maybe_unused]] const Vector<String>& Args) -> Foundation::Bool
     // File output stream
     Stream::FileOutputStream Log{ "\\Sample.txt" };
 
-    Log << "UEFI++ File Stream Example"  << Stream::Endl
+    Log << "UEFI++ File Stream Example" << Stream::Endl
         << "Name: " << Name << Stream::Endl
         << "Number: " << 12345 << Stream::Endl
         << "Hex: " << Stream::Hexadecimal << 0xDEADBEEF << Stream::Decimal << Stream::Endl;
@@ -41,7 +41,7 @@ auto Main([[maybe_unused]] const Vector<String>& Args) -> Foundation::Bool
     Stream::FileInputStream Input{ "\\Sample.txt" };
 
     String Line{};
-    Stream::Out::Console << "Contents of Sample.txt:"  << Stream::Endl;
+    Stream::Out::Console << "Contents of Sample.txt:" << Stream::Endl;
 
     while (Input.ReadLine(Line))
     {

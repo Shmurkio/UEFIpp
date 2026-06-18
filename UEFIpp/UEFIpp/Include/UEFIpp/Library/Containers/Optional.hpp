@@ -262,7 +262,11 @@ namespace UEFIpp::Library
 			return HasValue_;
 		}
 
-		[[nodiscard]] auto operator==(const Optional& Other) const -> Foundation::Bool
+		template<typename U = T>
+		[[nodiscard]] auto operator==(const Optional& Other) const -> Foundation::Bool requires requires(const U& A, const U& B)
+		{
+			A == B;
+		}
 		{
 			if (HasValue_ != Other.HasValue_)
 			{
@@ -272,7 +276,11 @@ namespace UEFIpp::Library
 			return !HasValue_ || Value() == Other.Value();
 		}
 
-		[[nodiscard]] auto operator==(const T& Other) const -> Foundation::Bool
+		template<typename U = T>
+		[[nodiscard]] auto operator==(const T& Other) const -> Foundation::Bool requires requires(const U& A, const T& B)
+		{
+			A == B;
+		}
 		{
 			return HasValue_ && Value() == Other;
 		}

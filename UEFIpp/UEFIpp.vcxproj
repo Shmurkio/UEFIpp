@@ -189,6 +189,10 @@
     <ClInclude Include="DFA\RegexToPostfix.hpp" />
     <ClInclude Include="DFA\RegexToken.hpp" />
     <ClInclude Include="DFA\RegexValidate.hpp" />
+    <ClInclude Include="UEFIpp\Include\UEFIpp\Hooking\CallHook.hpp" />
+    <ClInclude Include="UEFIpp\Include\UEFIpp\Hooking\CodePatch.hpp" />
+    <ClInclude Include="UEFIpp\Include\UEFIpp\Hooking\Detour.hpp" />
+    <ClInclude Include="UEFIpp\Include\UEFIpp\Hooking\Hooking.hpp" />
     <ClInclude Include="UEFIpp\Include\UEFIpp\Architecture\Architecture.hpp" />
     <ClInclude Include="UEFIpp\Include\UEFIpp\Architecture\X64\Common\Msr.hpp" />
     <ClInclude Include="UEFIpp\Include\UEFIpp\Architecture\X64\Common\Registers.hpp" />
@@ -235,6 +239,13 @@
     <ClInclude Include="UEFIpp\Include\UEFIpp\Foundation\Traits.hpp" />
     <ClInclude Include="UEFIpp\Include\UEFIpp\Foundation\Types.hpp" />
     <ClInclude Include="UEFIpp\Include\UEFIpp\Foundation\Utility.hpp" />
+    <ClInclude Include="UEFIpp\Include\UEFIpp\Hooking\Patch.hpp" />
+    <ClInclude Include="UEFIpp\Include\UEFIpp\Hooking\VTableHook.hpp" />
+    <ClInclude Include="UEFIpp\Include\UEFIpp\Hooking\X64\AbsoluteJump.hpp" />
+    <ClInclude Include="UEFIpp\Include\UEFIpp\Hooking\X64\Instruction.hpp" />
+    <ClInclude Include="UEFIpp\Include\UEFIpp\Hooking\X64\RelativeCall.hpp" />
+    <ClInclude Include="UEFIpp\Include\UEFIpp\Hooking\X64\RelativeJump.hpp" />
+    <ClInclude Include="UEFIpp\Include\UEFIpp\Hooking\X64\X64.hpp" />
     <ClInclude Include="UEFIpp\Include\UEFIpp\Library\Containers\Array.hpp" />
     <ClInclude Include="UEFIpp\Include\UEFIpp\Library\Containers\Containers.hpp" />
     <ClInclude Include="UEFIpp\Include\UEFIpp\Library\Containers\Optional.hpp" />
@@ -246,7 +257,9 @@
     <ClInclude Include="UEFIpp\Include\UEFIpp\Library\String\StringView.hpp" />
     <ClInclude Include="UEFIpp\Include\UEFIpp\Loader\LoadedImageFinder.hpp" />
     <ClInclude Include="UEFIpp\Include\UEFIpp\Loader\Loader.hpp" />
+    <ClInclude Include="UEFIpp\Include\UEFIpp\Loader\PeDirectory.hpp" />
     <ClInclude Include="UEFIpp\Include\UEFIpp\Loader\PeImage.hpp" />
+    <ClInclude Include="UEFIpp\Include\UEFIpp\Loader\PeTypes.hpp" />
     <ClInclude Include="UEFIpp\Include\UEFIpp\Memory\Allocator.hpp" />
     <ClInclude Include="UEFIpp\Include\UEFIpp\Memory\Memory.hpp" />
     <ClInclude Include="UEFIpp\Include\UEFIpp\Nvram\Attribute.hpp" />
