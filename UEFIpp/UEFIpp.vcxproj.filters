@@ -54,6 +54,15 @@
     <ClCompile Include="UEFIpp\Source\Reverse\Pattern.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="UEFIpp\Source\FileSystem\FileInfo.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="UEFIpp\Source\FileSystem\File.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="UEFIpp\Source\Reverse\SymbolResolver.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="DFA\Alphabet.hpp">
@@ -444,6 +453,21 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="UEFIpp\Include\UEFIpp\Loader\LoadedImageFinder.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="UEFIpp\Include\UEFIpp\FileSystem\File.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="UEFIpp\Include\UEFIpp\Stream\Out\File.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="UEFIpp\Include\UEFIpp\Stream\FileOutputStream.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="UEFIpp\Include\UEFIpp\Stream\FileInputStream.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="UEFIpp\Include\UEFIpp\Reverse\SymbolResolver.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

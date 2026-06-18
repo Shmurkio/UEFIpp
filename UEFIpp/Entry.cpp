@@ -26,8 +26,27 @@ auto Main([[maybe_unused]] const Vector<String>& Args) -> Foundation::Bool
     Stream::Out::Console << "Enter name: " << Stream::FlushNow;
     Stream::In::Console >> Name;
 
-    Stream::Out::Console << "Hello, " << Name << "!"  << Stream::Endl;
+    Stream::Out::Console << "Hello, " << Name << "!" << Stream::Endl;
     Stream::Out::Serial << "Entered name: " << Name << Stream::Endl;
+
+    // File output stream
+    Stream::FileOutputStream Log{ "\\Sample.txt" };
+
+    Log << "UEFI++ File Stream Example"  << Stream::Endl
+        << "Name: " << Name << Stream::Endl
+        << "Number: " << 12345 << Stream::Endl
+        << "Hex: " << Stream::Hexadecimal << 0xDEADBEEF << Stream::Decimal << Stream::Endl;
+
+    // File input stream
+    Stream::FileInputStream Input{ "\\Sample.txt" };
+
+    String Line{};
+    Stream::Out::Console << "Contents of Sample.txt:"  << Stream::Endl;
+
+    while (Input.ReadLine(Line))
+    {
+        Stream::Out::Console << Line << Stream::Endl;
+    }
 
     return true;
 }

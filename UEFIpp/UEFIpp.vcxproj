@@ -170,13 +170,16 @@
     <ClCompile Include="UEFIpp\Source\CRT\New.cpp" />
     <ClCompile Include="UEFIpp\Source\CRT\StdLib.cpp" />
     <ClCompile Include="UEFIpp\Source\CRT\String.cpp" />
+    <ClCompile Include="UEFIpp\Source\FileSystem\File.cpp" />
     <ClCompile Include="UEFIpp\Source\FileSystem\FileAttributes.cpp" />
+    <ClCompile Include="UEFIpp\Source\FileSystem\FileInfo.cpp" />
     <ClCompile Include="UEFIpp\Source\FileSystem\Time.cpp" />
     <ClCompile Include="UEFIpp\Source\FileSystem\Path.cpp" />
     <ClCompile Include="UEFIpp\Source\Memory\Allocator.cpp" />
     <ClCompile Include="UEFIpp\Source\Memory\Memory.cpp" />
     <ClCompile Include="UEFIpp\Source\Reverse\Pattern.cpp" />
     <ClCompile Include="UEFIpp\Source\Reverse\Scanner.cpp" />
+    <ClCompile Include="UEFIpp\Source\Reverse\SymbolResolver.cpp" />
     <ClCompile Include="UEFIpp\Source\UEFI\EntryPoint.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -216,6 +219,7 @@
     <ClInclude Include="UEFIpp\Include\UEFIpp\Crypto\Random.hpp" />
     <ClInclude Include="UEFIpp\Include\UEFIpp\Crypto\SecureBuffer.hpp" />
     <ClInclude Include="UEFIpp\Include\UEFIpp\Crypto\SecureZero.hpp" />
+    <ClInclude Include="UEFIpp\Include\UEFIpp\FileSystem\File.hpp" />
     <ClInclude Include="UEFIpp\Include\UEFIpp\FileSystem\FileAttributes.hpp" />
     <ClInclude Include="UEFIpp\Include\UEFIpp\FileSystem\Time.hpp" />
     <ClInclude Include="UEFIpp\Include\UEFIpp\FileSystem\FileInfo.hpp" />
@@ -269,10 +273,14 @@
     <ClInclude Include="UEFIpp\Include\UEFIpp\Reverse\PatternByte.hpp" />
     <ClInclude Include="UEFIpp\Include\UEFIpp\Reverse\Reverse.hpp" />
     <ClInclude Include="UEFIpp\Include\UEFIpp\Reverse\Scanner.hpp" />
+    <ClInclude Include="UEFIpp\Include\UEFIpp\Reverse\SymbolResolver.hpp" />
+    <ClInclude Include="UEFIpp\Include\UEFIpp\Stream\FileInputStream.hpp" />
+    <ClInclude Include="UEFIpp\Include\UEFIpp\Stream\FileOutputStream.hpp" />
     <ClInclude Include="UEFIpp\Include\UEFIpp\Stream\In\Common.hpp" />
     <ClInclude Include="UEFIpp\Include\UEFIpp\Stream\In\Console.hpp" />
     <ClInclude Include="UEFIpp\Include\UEFIpp\Stream\In\In.hpp" />
     <ClInclude Include="UEFIpp\Include\UEFIpp\Stream\Out\Console.hpp" />
+    <ClInclude Include="UEFIpp\Include\UEFIpp\Stream\Out\File.hpp" />
     <ClInclude Include="UEFIpp\Include\UEFIpp\Stream\Out\Out.hpp" />
     <ClInclude Include="UEFIpp\Include\UEFIpp\Stream\Out\Serial.hpp" />
     <ClInclude Include="UEFIpp\Include\UEFIpp\Stream\Out\Common.hpp" />

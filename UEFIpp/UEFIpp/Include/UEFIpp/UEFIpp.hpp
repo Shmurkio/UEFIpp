@@ -30,4 +30,5 @@ namespace Time = UEFIpp::Time;
 namespace Nvram = UEFIpp::Nvram;
 namespace Crypto = UEFIpp::Crypto;
 namespace Loader = UEFIpp::Loader;
+namespace FileSystem = UEFIpp::FileSystem;
 using namespace UEFIpp::Library;

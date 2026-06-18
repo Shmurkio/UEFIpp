@@ -8,19 +8,29 @@ high-level C++ abstractions for common firmware tasks such as:
 
 - Containers (`String`, `Vector`, `Optional`, `Span`)
 - CRT compatibility layer
-- Input (console) and output (console, serial) streams
+- Input (console, file) and output (console, serial, file) streams
 - NVRAM access
 - Filesystem operations
 - Time and date handling
 - Cryptography
 - Memory management
-- Reverse engineering utilities
-- PE image parsing and loading
+- Reverse engineering utilities (pattern scanning, symbol resolution)
+- PE image parsing
 
 The framework is designed to build out-of-the-box using
 Microsoft Visual Studio without requiring an EDK2-based build environment.
 
 **Tested with Microsoft Visual Studio 2026 (/std:c++latest).**
+
+---
+
+## Showcase
+
+The screenshot below shows a UEFI++ application running in the UEFI Shell,
+demonstrating command-line argument parsing, console I/O, serial logging,
+and file streams.
+
+![UEFI++ Sample Application](Docs/Screenshot.png)
 
 ---
 
