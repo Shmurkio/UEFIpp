@@ -63,6 +63,12 @@
     <ClCompile Include="UEFIpp\Source\Reverse\SymbolResolver.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="UEFIpp\Source\Bus\PciDevice.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="UEFIpp\Source\Bus\Pci.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="DFA\Alphabet.hpp">
@@ -507,6 +513,21 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="UEFIpp\Include\UEFIpp\Loader\PeDirectory.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="UEFIpp\Include\UEFIpp\Protocols\PciIo.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="UEFIpp\Include\UEFIpp\Bus\PciDevice.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="UEFIpp\Include\UEFIpp\Bus\Pci.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="UEFIpp\Include\UEFIpp\Bus\PciClass.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="UEFIpp\Include\UEFIpp\Bus\Bus.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

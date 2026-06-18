@@ -16,6 +16,7 @@
 #include <UEFIpp/Nvram/Nvram.hpp>
 #include <UEFIpp/Crypto/Crypto.hpp>
 #include <UEFIpp/Hooking/Hooking.hpp>
+#include <UEFIpp/Bus/Bus.hpp>
 
 namespace UEFI = UEFIpp::UEFI;
 namespace Stream = UEFIpp::Stream;
@@ -33,4 +34,5 @@ namespace Crypto = UEFIpp::Crypto;
 namespace Loader = UEFIpp::Loader;
 namespace FileSystem = UEFIpp::FileSystem;
 namespace Hooking = UEFIpp::Hooking;
+namespace Bus = UEFIpp::Bus;
 using namespace UEFIpp::Library;

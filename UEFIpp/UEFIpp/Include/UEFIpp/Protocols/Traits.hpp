@@ -7,6 +7,7 @@
 #include <UEFIpp/Protocols/SimpleFileSystem.hpp>
 #include <UEFIpp/Protocols/File.hpp>
 #include <UEFIpp/Protocols/LoadedImage.hpp>
+#include <UEFIpp/Protocols/PciIo.hpp>
 
 namespace UEFIpp::Protocols
 {
@@ -59,5 +60,11 @@ namespace UEFIpp::Protocols
 	{
 	public:
 		inline static constexpr UEFI::Guid Id{ 0x5b1b31a1, 0x9562, 0x11d2, { 0x8e, 0x3f, 0x00, 0xa0, 0xc9, 0x69, 0x72, 0x3b } };
+	};
+	template<>
+	class ProtocolTraits<PciIo>
+	{
+	public:
+		inline static constexpr UEFI::Guid Id{ 0x4cf5b200, 0x68b8, 0x4ca5, { 0x9e, 0xec, 0xb2, 0x3e, 0x3f, 0x50, 0x02, 0x9a } };
 	};
 }

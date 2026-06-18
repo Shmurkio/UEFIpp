@@ -166,6 +166,8 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="Entry.cpp" />
+    <ClCompile Include="UEFIpp\Source\Bus\Pci.cpp" />
+    <ClCompile Include="UEFIpp\Source\Bus\PciDevice.cpp" />
     <ClCompile Include="UEFIpp\Source\CRT\Heap.cpp" />
     <ClCompile Include="UEFIpp\Source\CRT\New.cpp" />
     <ClCompile Include="UEFIpp\Source\CRT\StdLib.cpp" />
@@ -189,6 +191,10 @@
     <ClInclude Include="DFA\RegexToPostfix.hpp" />
     <ClInclude Include="DFA\RegexToken.hpp" />
     <ClInclude Include="DFA\RegexValidate.hpp" />
+    <ClInclude Include="UEFIpp\Include\UEFIpp\Bus\Bus.hpp" />
+    <ClInclude Include="UEFIpp\Include\UEFIpp\Bus\Pci.hpp" />
+    <ClInclude Include="UEFIpp\Include\UEFIpp\Bus\PciClass.hpp" />
+    <ClInclude Include="UEFIpp\Include\UEFIpp\Bus\PciDevice.hpp" />
     <ClInclude Include="UEFIpp\Include\UEFIpp\Hooking\CallHook.hpp" />
     <ClInclude Include="UEFIpp\Include\UEFIpp\Hooking\CodePatch.hpp" />
     <ClInclude Include="UEFIpp\Include\UEFIpp\Hooking\Detour.hpp" />
@@ -275,6 +281,7 @@
     <ClInclude Include="UEFIpp\Include\UEFIpp\Protocols\File.hpp" />
     <ClInclude Include="UEFIpp\Include\UEFIpp\Protocols\InputKey.hpp" />
     <ClInclude Include="UEFIpp\Include\UEFIpp\Protocols\LoadedImage.hpp" />
+    <ClInclude Include="UEFIpp\Include\UEFIpp\Protocols\PciIo.hpp" />
     <ClInclude Include="UEFIpp\Include\UEFIpp\Protocols\Protocols.hpp" />
     <ClInclude Include="UEFIpp\Include\UEFIpp\Protocols\SimpleFileSystem.hpp" />
     <ClInclude Include="UEFIpp\Include\UEFIpp\Protocols\SimpleTextInput.hpp" />
