@@ -29,7 +29,7 @@ mono_crash.*
 bld/
 [Bb]in/
 [Oo]bj/
-[Oo]ut/
+/[Oo]ut/
 [Ll]og/
 [Ll]ogs/
 

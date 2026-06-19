@@ -530,6 +530,9 @@
     <ClInclude Include="UEFIpp\Include\UEFIpp\Bus\Bus.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="UEFIpp\Include\UEFIpp\Stream\Out\HexDump.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <MASM Include="UEFIpp\Include\UEFIpp\Architecture\X64\Cpu\RandomAsm.asm">

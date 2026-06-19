@@ -301,6 +301,7 @@
     <ClInclude Include="UEFIpp\Include\UEFIpp\Stream\In\In.hpp" />
     <ClInclude Include="UEFIpp\Include\UEFIpp\Stream\Out\Console.hpp" />
     <ClInclude Include="UEFIpp\Include\UEFIpp\Stream\Out\File.hpp" />
+    <ClInclude Include="UEFIpp\Include\UEFIpp\Stream\Out\HexDump.hpp" />
     <ClInclude Include="UEFIpp\Include\UEFIpp\Stream\Out\Out.hpp" />
     <ClInclude Include="UEFIpp\Include\UEFIpp\Stream\Out\Serial.hpp" />
     <ClInclude Include="UEFIpp\Include\UEFIpp\Stream\Out\Common.hpp" />

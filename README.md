@@ -27,8 +27,8 @@ Microsoft Visual Studio without requiring an EDK2-based build environment.
 ## Showcase
 
 The screenshot below shows a UEFI++ application running in the UEFI Shell,
-demonstrating command-line argument parsing, console I/O, serial logging,
-and file streams.
+demonstrating command-line argument parsing, console and serial I/O,
+file streams, DXE image discovery, and memory hex dumping.
 
 ![UEFI++ Sample Application](Docs/Screenshot.png)
 
