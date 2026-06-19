@@ -2,6 +2,7 @@
 
 #include <UEFIpp/Foundation/Foundation.hpp>
 #include <UEFIpp/Library/String/String.hpp>
+#include <UEFIpp/Library/Functional/Event.hpp>
 #include <UEFIpp/Protocols/SimpleTextInputEx.hpp>
 
 namespace UEFIpp::Stream
@@ -9,6 +10,11 @@ namespace UEFIpp::Stream
 	template<typename TSource>
 	class Input
 	{
+	public:
+		Library::Event<Protocols::KeyData> OnKey{};
+		Library::Event<Library::String::ValueType> OnCharacter{};
+		Library::Event<Library::StringView> OnLine{};
+
 	public:
 		constexpr Input() = default;
 
@@ -23,12 +29,19 @@ namespace UEFIpp::Stream
 
 		[[nodiscard]] auto ReadKey() -> Protocols::KeyData
 		{
-			return Source_.ReadKey();
+			auto Key = Source_.ReadKey();
+			OnKey.Emit(Key);
+
+			return Key;
 		}
 
 		[[nodiscard]] auto ReadKeyEcho() -> Protocols::KeyData
 		{
-			return Source_.ReadKeyEcho();
+			auto Key = Source_.ReadKeyEcho();
+
+			OnKey.Emit(Key);
+
+			return Key;
 		}
 
 		[[nodiscard]] auto GetKey() -> Protocols::KeyData
@@ -50,7 +63,9 @@ namespace UEFIpp::Stream
 
 				if (Key.HasUnicode())
 				{
-					return Foundation::Cast::Auto<Library::String::ValueType>(Key.Key.UnicodeChar);
+					const auto Character = Foundation::Cast::Auto<Library::String::ValueType>(Key.Key.UnicodeChar);
+					OnCharacter.Emit(Character);
+					return Character;
 				}
 			}
 		}
@@ -63,7 +78,9 @@ namespace UEFIpp::Stream
 
 				if (Key.HasUnicode())
 				{
-					return Foundation::Cast::Auto<Library::String::ValueType>(Key.Key.UnicodeChar);
+					const auto Character = Foundation::Cast::Auto<Library::String::ValueType>(Key.Key.UnicodeChar);
+					OnCharacter.Emit(Character);
+					return Character;
 				}
 			}
 		}
@@ -104,6 +121,8 @@ namespace UEFIpp::Stream
 
 				String.PushBack(Character);
 			}
+
+			OnLine.Emit(String.View());
 		}
 
 		[[nodiscard]] constexpr auto Source() -> TSource&

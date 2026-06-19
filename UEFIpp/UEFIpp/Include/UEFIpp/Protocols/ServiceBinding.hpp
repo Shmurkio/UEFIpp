@@ -1,6 +1,5 @@
 #pragma once
 
-#include <UEFIpp/Foundation/Foundation.hpp>
 #include <UEFIpp/UEFI/Status.hpp>
 #include <UEFIpp/UEFI/Types.hpp>
 
@@ -16,5 +15,6 @@ namespace UEFIpp::Protocols
         DestroyChildFn DestroyChild;
     };
 
-    using Tcp4ServiceBinding = ServiceBinding;
+    class Tcp4ServiceBinding : public ServiceBinding {};
+    class Udp4ServiceBinding : public ServiceBinding {};
 }

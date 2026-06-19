@@ -10,6 +10,7 @@
 #include <UEFIpp/Protocols/PciIo.hpp>
 #include <UEFIpp/Protocols/Tcp4.hpp>
 #include <UEFIpp/Protocols/ServiceBinding.hpp>
+#include <UEFIpp/Protocols/Udp4.hpp>
 
 namespace UEFIpp::Protocols
 {
@@ -83,5 +84,19 @@ namespace UEFIpp::Protocols
 	{
 	public:
 		inline static constexpr UEFI::Guid Id{ 0x65530bc7, 0xa359, 0x410f, { 0xb0, 0x10, 0x5a, 0xad, 0xc7, 0xec, 0x2b, 0x62 } };
+	};
+
+	template<>
+	class ProtocolTraits<Udp4ServiceBinding>
+	{
+	public:
+		inline static constexpr UEFI::Guid Id{ 0x83f01464, 0x99bd, 0x45e5, { 0xb3, 0x83, 0xaf, 0x63, 0x05, 0xd8, 0xe9, 0xe6 } };
+	};
+
+	template<>
+	class ProtocolTraits<Udp4>
+	{
+	public:
+		inline static constexpr UEFI::Guid Id{ 0x3ad9df29, 0x4501, 0x478d, { 0xb1, 0xf8, 0x7f, 0x7f, 0xe7, 0x0e, 0x50, 0xf3 } };
 	};
 }

@@ -16,6 +16,7 @@ high-level C++ abstractions for common firmware tasks such as:
 - Memory management
 - Reverse engineering utilities (pattern scanning, symbol resolution)
 - PE image parsing
+- TCP4 client, UDP4 client, HTTP client, DNS client
 
 The framework is designed to build out-of-the-box using
 Microsoft Visual Studio without requiring an EDK2-based build environment.

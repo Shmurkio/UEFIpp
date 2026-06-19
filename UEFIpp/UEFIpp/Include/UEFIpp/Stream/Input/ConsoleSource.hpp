@@ -13,11 +13,7 @@ namespace UEFIpp::Stream
 	public:
 		constexpr ConsoleInputSource() = default;
 
-		constexpr ConsoleInputSource(
-			UEFI::Table::BootServices* BootServices,
-			Protocols::SimpleTextInputEx* Input
-		) : BootServices_(BootServices),
-			Input_(Input)
+		constexpr ConsoleInputSource(UEFI::Table::BootServices* BootServices, Protocols::SimpleTextInputEx* Input) : BootServices_(BootServices), Input_(Input)
 		{
 		}
 
@@ -31,10 +27,7 @@ namespace UEFIpp::Stream
 			return Valid();
 		}
 
-		auto Reset(
-			UEFI::Table::BootServices* BootServices,
-			Protocols::SimpleTextInputEx* Input
-		) -> Foundation::Void
+		auto Reset(UEFI::Table::BootServices* BootServices, Protocols::SimpleTextInputEx* Input) -> Foundation::Void
 		{
 			BootServices_ = BootServices;
 			Input_ = Input;

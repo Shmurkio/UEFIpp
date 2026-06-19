@@ -72,6 +72,15 @@
     <ClCompile Include="UEFIpp\Source\Network\Tcp4Client.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="UEFIpp\Source\Network\HttpClient.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="UEFIpp\Source\Network\Udp4Client.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="UEFIpp\Source\Network\DnsClient.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="DFA\Alphabet.hpp">
@@ -576,6 +585,39 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="UEFIpp\Include\UEFIpp\Stream\Input\ConsoleSource.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="UEFIpp\Include\UEFIpp\Network\HttpClient.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="UEFIpp\Include\UEFIpp\Network\HttpResponse.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="UEFIpp\Include\UEFIpp\Network\HttpHeader.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="UEFIpp\Include\UEFIpp\Network\Udp4Client.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="UEFIpp\Include\UEFIpp\Protocols\Udp4.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="UEFIpp\Include\UEFIpp\Network\DnsHeader.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="UEFIpp\Include\UEFIpp\Network\DnsRecord.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="UEFIpp\Include\UEFIpp\Network\DnsResponse.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="UEFIpp\Include\UEFIpp\Network\DnsClient.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="UEFIpp\Include\UEFIpp\Network\Url.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="UEFIpp\Include\UEFIpp\Network\HttpRedirect.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
