@@ -7,7 +7,7 @@
 #include <UEFIpp/UEFI/Types.hpp>
 #include <UEFIpp/Protocols/Traits.hpp>
 #include <UEFIpp/Library/Containers/Vector.hpp>
-#include <UEFIpp/Stream/Out/Out.hpp>
+#include <UEFIpp/Stream/Output/Output.hpp>
 
 namespace UEFIpp::Protocols
 {

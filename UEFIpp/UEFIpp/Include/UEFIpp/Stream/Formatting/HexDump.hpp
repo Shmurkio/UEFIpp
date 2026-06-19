@@ -1,6 +1,6 @@
 #pragma once
 
-#include <UEFIpp/Stream/Out/Common.hpp>
+#include <UEFIpp/Stream/Output/Output.hpp>
 
 namespace UEFIpp::Stream
 {

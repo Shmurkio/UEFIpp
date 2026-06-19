@@ -2,7 +2,7 @@
 
 #include <UEFIpp/Foundation/Foundation.hpp>
 #include <UEFIpp/FileSystem/File.hpp>
-#include <UEFIpp/Stream/Out/Out.hpp>
+#include <UEFIpp/Stream/Output/Output.hpp>
 
 namespace UEFIpp::Stream
 {

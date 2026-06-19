@@ -49,21 +49,21 @@ auto Main([[maybe_unused]] const Vector<String>& Args) -> Foundation::Bool
     }
 
     // Locate a loaded DXE image by file GUID
-	constexpr UEFI::Guid PcdDxeGuid{ 0x80CF7257, 0x87AB, 0x47F9, { 0xA3, 0xFE, 0xD5, 0x0B, 0x76, 0xD8, 0x95, 0x41 } };
-	Protocols::Access Access{ &UEFI::Context::BootServices() };
+    constexpr UEFI::Guid PcdDxeGuid{ 0x80CF7257, 0x87AB, 0x47F9, { 0xA3, 0xFE, 0xD5, 0x0B, 0x76, 0xD8, 0x95, 0x41 } };
+    Protocols::Access Access{ &UEFI::Context::BootServices() };
 
-	const auto PcdDxe = Loader::FindLoadedImageByFileGuid(Access, PcdDxeGuid);
+    const auto PcdDxe = Loader::FindLoadedImageByFileGuid(Access, PcdDxeGuid);
 
-	if (!PcdDxe)
-	{
-		Stream::Out::Serial << "PcdDxe not found" << Stream::Endl;
-		return false;
-	}
+    if (!PcdDxe)
+    {
+        Stream::Out::Serial << "PcdDxe not found" << Stream::Endl;
+        return false;
+    }
 
-	Stream::Out::Serial << "PcdDxe found at " << PcdDxe->Base << " (size: " << PcdDxe->Size << " bytes)" << Stream::Endl;
+    Stream::Out::Serial << "PcdDxe found at " << PcdDxe->Base << " (size: " << PcdDxe->Size << " bytes)" << Stream::Endl;
 
     // Hex dump
-	Stream::Out::Serial << Stream::HexDump(PcdDxe->Base, 100, PcdDxe->Base);
+    Stream::Out::Serial << Stream::HexDump(PcdDxe->Base, 100, PcdDxe->Base);
 
     return true;
 }

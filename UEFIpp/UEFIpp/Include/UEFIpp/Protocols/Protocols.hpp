@@ -9,3 +9,5 @@
 #include <UEFIpp/Protocols/File.hpp>
 #include <UEFIpp/Protocols/SimpleFileSystem.hpp>
 #include <UEFIpp/Protocols/LoadedImage.hpp>
+#include <UEFIpp/Protocols/Tcp4.hpp>
+#include <UEFIpp/Protocols/ServiceBinding.hpp>

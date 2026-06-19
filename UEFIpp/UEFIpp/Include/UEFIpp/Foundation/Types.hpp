@@ -41,6 +41,8 @@ namespace UEFIpp::Foundation
 
 	using Bool = bool;
 
+	using NullPtr = decltype(nullptr);
+
 	static_assert(sizeof(Int8) == 1);
 	static_assert(sizeof(Int16) == 2);
 	static_assert(sizeof(Int32) == 4);

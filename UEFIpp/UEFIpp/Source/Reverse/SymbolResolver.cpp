@@ -1,7 +1,7 @@
 #include <UEFIpp/Reverse/SymbolResolver.hpp>
 
 #include <UEFIpp/Memory/Memory.hpp>
-#include <UEFIpp/Stream/FileInputStream.hpp>
+#include <UEFIpp/Stream/File/FileInputStream.hpp>
 
 namespace UEFIpp::Reverse
 {

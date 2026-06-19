@@ -4,10 +4,16 @@
 #include <UEFIpp/UEFI/Status.hpp>
 #include <UEFIpp/UEFI/Types.hpp>
 #include <UEFIpp/UEFI/SystemTable.hpp>
-#include <UEFIpp/Stream/Out/Out.hpp>
-#include <UEFIpp/Stream/In/In.hpp>
+#include <UEFIpp/Stream/Output/Output.hpp>
+#include <UEFIpp/Stream/Output/ConsoleSink.hpp>
+#include <UEFIpp/Stream/Output/SerialSink.hpp>
+#include <UEFIpp/Stream/Input/Input.hpp>
+#include <UEFIpp/Stream/Input/ConsoleSource.hpp>
 #include <UEFIpp/Protocols/Access.hpp>
 #include <UEFIpp/Protocols/SimpleTextInputEx.hpp>
+#include <UEFIpp/Loader/PeImage.hpp>
+
+extern "C" UEFIpp::Foundation::Uint8 __ImageBase;
 
 namespace UEFIpp::UEFI
 {
@@ -33,6 +39,8 @@ namespace UEFIpp::UEFI
 
 			BootServices_ = SystemTable->BootServices;
 			RuntimeServices_ = SystemTable->RuntimeServices;
+
+			OwnImage_ = Loader::PeImage(&__ImageBase);
 
 			Stream::Out::Serial.SetSink(Stream::SerialSink(SerialPort));
 			Stream::Out::Console.SetSink(Stream::ConsoleOutputSink(SystemTable->ConsoleOut));
@@ -97,6 +105,11 @@ namespace UEFIpp::UEFI
 			return ImageHandle_ && SystemTable_ && BootServices_ && RuntimeServices_ && SystemTable_->ConsoleOut && SystemTable_->ConsoleIn;
 		}
 
+		[[nodiscard]] static auto OwnImage() -> Loader::PeImage&
+		{
+			return OwnImage_;
+		}
+
 		[[nodiscard]] constexpr auto operator<=>(const Context&) const = default;
 
 	private:
@@ -105,5 +118,6 @@ namespace UEFIpp::UEFI
 		inline static Table::BootServices* BootServices_{};
 		inline static Table::RuntimeServices* RuntimeServices_{};
 		inline static MemoryType CrtMemoryType_{ MemoryType::BootServicesData };
+		inline static Loader::PeImage OwnImage_{};
 	};
 }

@@ -69,6 +69,9 @@
     <ClCompile Include="UEFIpp\Source\Bus\Pci.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="UEFIpp\Source\Network\Tcp4Client.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="DFA\Alphabet.hpp">
@@ -173,16 +176,13 @@
     <ClInclude Include="UEFIpp\Include\UEFIpp\Protocols\Protocols.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="UEFIpp\Include\UEFIpp\Stream\Out\Common.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="UEFIpp\Include\UEFIpp\UEFI\UEFI.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="UEFIpp\Include\UEFIpp\Stream\Out\Serial.hpp">
+    <ClInclude Include="UEFIpp\Include\UEFIpp\Stream\Output\SerialSink.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="UEFIpp\Include\UEFIpp\Stream\Out\Console.hpp">
+    <ClInclude Include="UEFIpp\Include\UEFIpp\Stream\Output\ConsoleSink.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="UEFIpp\Include\UEFIpp\Stream\Stream.hpp">
@@ -200,7 +200,7 @@
     <ClInclude Include="UEFIpp\Include\UEFIpp\Architecture\Architecture.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="UEFIpp\Include\UEFIpp\Stream\Out\Out.hpp">
+    <ClInclude Include="UEFIpp\Include\UEFIpp\Stream\Output\Output.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="UEFIpp\Include\UEFIpp\Memory\Allocator.hpp">
@@ -323,13 +323,7 @@
     <ClInclude Include="UEFIpp\Include\UEFIpp\Protocols\SimpleTextInputEx.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="UEFIpp\Include\UEFIpp\Stream\In\Common.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="UEFIpp\Include\UEFIpp\Stream\In\Console.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="UEFIpp\Include\UEFIpp\Stream\In\In.hpp">
+    <ClInclude Include="UEFIpp\Include\UEFIpp\Stream\Input\Input.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="UEFIpp\Include\UEFIpp\Protocols\LoadedImage.hpp">
@@ -464,13 +458,13 @@
     <ClInclude Include="UEFIpp\Include\UEFIpp\FileSystem\File.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="UEFIpp\Include\UEFIpp\Stream\Out\File.hpp">
+    <ClInclude Include="UEFIpp\Include\UEFIpp\Stream\Output\FileSink.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="UEFIpp\Include\UEFIpp\Stream\FileOutputStream.hpp">
+    <ClInclude Include="UEFIpp\Include\UEFIpp\Stream\File\FileOutputStream.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="UEFIpp\Include\UEFIpp\Stream\FileInputStream.hpp">
+    <ClInclude Include="UEFIpp\Include\UEFIpp\Stream\File\FileInputStream.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="UEFIpp\Include\UEFIpp\Reverse\SymbolResolver.hpp">
@@ -530,7 +524,58 @@
     <ClInclude Include="UEFIpp\Include\UEFIpp\Bus\Bus.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="UEFIpp\Include\UEFIpp\Stream\Out\HexDump.hpp">
+    <ClInclude Include="UEFIpp\Include\UEFIpp\Stream\Formatting\HexDump.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="UEFIpp\Include\UEFIpp\Protocols\ServiceBinding.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="UEFIpp\Include\UEFIpp\Protocols\Tcp4.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="UEFIpp\Include\UEFIpp\Network\IPv4Address.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="UEFIpp\Include\UEFIpp\Network\Tcp4Client.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="UEFIpp\Include\UEFIpp\Network\Network.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="UEFIpp\Include\UEFIpp\Library\Functional\Function.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="UEFIpp\Include\UEFIpp\Library\Functional\Event.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="UEFIpp\Include\UEFIpp\Library\Functional\Functional.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="UEFIpp\Include\UEFIpp\Library\Functional\EventConnection.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="UEFIpp\Include\UEFIpp\Library\Functional\EventResult.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="UEFIpp\Include\UEFIpp\Library\Functional\FunctionDetail.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="UEFIpp\Include\UEFIpp\Library\Functional\FunctionRef.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="UEFIpp\Include\UEFIpp\Library\Functional\MoveOnlyFunction.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="UEFIpp\Include\UEFIpp\Library\Functional\ScopedEventConnection.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="UEFIpp\Include\UEFIpp\Library\Functional\StopEvent.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="UEFIpp\Include\UEFIpp\Stream\Formatting\Common.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="UEFIpp\Include\UEFIpp\Stream\Input\ConsoleSource.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

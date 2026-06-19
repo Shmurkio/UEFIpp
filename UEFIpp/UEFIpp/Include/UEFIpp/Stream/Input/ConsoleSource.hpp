@@ -1,7 +1,7 @@
 #pragma once
 
-#include <UEFIpp/Stream/In/Common.hpp>
-#include <UEFIpp/Stream/Out/Out.hpp>
+#include <UEFIpp/Stream/Input/Input.hpp>
+#include <UEFIpp/Stream/Output/ConsoleSink.hpp>
 #include <UEFIpp/UEFI/BootServices.hpp>
 #include <UEFIpp/UEFI/Status.hpp>
 #include <UEFIpp/Protocols/SimpleTextInputEx.hpp>
