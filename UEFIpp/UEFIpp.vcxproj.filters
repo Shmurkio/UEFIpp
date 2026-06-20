@@ -655,5 +655,8 @@
     <MASM Include="UEFIpp\Include\UEFIpp\Architecture\X64\Cpu\RandomAsm.asm">
       <Filter>Source Files</Filter>
     </MASM>
+    <MASM Include="UEFIpp\Source\Memory\MemoryAsm.asm">
+      <Filter>Source Files</Filter>
+    </MASM>
   </ItemGroup>
 </Project>
