@@ -2,8 +2,8 @@
 
 #include <UEFIpp/Foundation/Foundation.hpp>
 #include <UEFIpp/Library/Containers/Vector.hpp>
-#include <UEFIpp/Network/DnsHeader.hpp>
-#include <UEFIpp/Network/DnsRecord.hpp>
+#include <UEFIpp/Network/DNS/DnsHeader.hpp>
+#include <UEFIpp/Network/DNS/DnsRecord.hpp>
 #include <UEFIpp/Network/IPv4Address.hpp>
 
 namespace UEFIpp::Network

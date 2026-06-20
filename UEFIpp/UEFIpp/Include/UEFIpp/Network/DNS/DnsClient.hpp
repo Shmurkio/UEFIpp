@@ -4,9 +4,9 @@
 #include <UEFIpp/Library/Functional/Event.hpp>
 #include <UEFIpp/Library/String/String.hpp>
 #include <UEFIpp/Library/String/StringView.hpp>
-#include <UEFIpp/Network/DnsResponse.hpp>
+#include <UEFIpp/Network/DNS/DnsResponse.hpp>
 #include <UEFIpp/Network/IPv4Address.hpp>
-#include <UEFIpp/Network/Udp4Client.hpp>
+#include <UEFIpp/Network/Transport/Udp4Client.hpp>
 #include <UEFIpp/UEFI/Status.hpp>
 
 namespace UEFIpp::Network

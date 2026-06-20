@@ -1,7 +1,7 @@
 #pragma once
 
-#include <UEFIpp/Network/HttpResponse.hpp>
-#include <UEFIpp/Network/Url.hpp>
+#include <UEFIpp/Network/HTTP/HttpResponse.hpp>
+#include <UEFIpp/Network/Utility/Url.hpp>
 
 namespace UEFIpp::Network
 {

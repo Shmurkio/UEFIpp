@@ -1,5 +1,5 @@
-#include <UEFIpp/Network/HttpClient.hpp>
-#include <UEFIpp/Network/DnsClient.hpp>
+#include <UEFIpp/Network/HTTP/HttpClient.hpp>
+#include <UEFIpp/Network/DNS/DnsClient.hpp>
 
 namespace
 {

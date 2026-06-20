@@ -53,6 +53,26 @@ namespace UEFIpp::Stream
 			return File_.Valid();
 		}
 
+		[[nodiscard]] auto Write(const Foundation::Void* Data, Foundation::Size Size) -> Foundation::Bool
+		{
+			if (!Data && Size != 0)
+			{
+				return false;
+			}
+
+			return File_.Write(Foundation::Cast::Auto<const Foundation::Uint8*>(Data), Foundation::Cast::Auto<Foundation::Uint64>(Size));
+		}
+
+		[[nodiscard]] auto Write(Library::Span<const Foundation::Byte> Data) -> Foundation::Bool
+		{
+			return Write(Data.Data(), Data.SizeInBytes());
+		}
+
+		[[nodiscard]] auto Write(const Library::Vector<Foundation::Byte>& Data) -> Foundation::Bool
+		{
+			return Write({ Data.Data(), Data.Size() });
+		}
+
 		template<typename TValue>
 		auto operator<<(const TValue& Value) -> FileOutputStream&
 		{

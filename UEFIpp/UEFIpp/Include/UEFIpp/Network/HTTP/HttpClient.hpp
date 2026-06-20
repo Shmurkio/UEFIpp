@@ -5,11 +5,11 @@
 #include <UEFIpp/Library/String/String.hpp>
 #include <UEFIpp/Library/String/StringView.hpp>
 #include <UEFIpp/Network/IPv4Address.hpp>
-#include <UEFIpp/Network/Tcp4Client.hpp>
-#include <UEFIpp/Network/HttpResponse.hpp>
+#include <UEFIpp/Network/Transport/Tcp4Client.hpp>
+#include <UEFIpp/Network/HTTP/HttpResponse.hpp>
 #include <UEFIpp/UEFI/Status.hpp>
-#include <UEFIpp/Network/Url.hpp>
-#include <UEFIpp/Network/HttpRedirect.hpp>
+#include <UEFIpp/Network/Utility/Url.hpp>
+#include <UEFIpp/Network/HTTP/HttpRedirect.hpp>
 
 namespace UEFIpp::Network
 {

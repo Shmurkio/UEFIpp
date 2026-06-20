@@ -1,4 +1,4 @@
-#include <UEFIpp/Network/Udp4Client.hpp>
+#include <UEFIpp/Network/Transport/Udp4Client.hpp>
 
 #include <UEFIpp/Protocols/Traits.hpp>
 #include <UEFIpp/UEFI/Context.hpp>
@@ -47,6 +47,14 @@ namespace UEFIpp::Network
 
     auto Udp4Client::Open(Foundation::Uint16 LocalPort) -> Foundation::Bool
     {
+        Udp4Config Config{};
+        Config.StationPort = LocalPort;
+
+        return Open(Config);
+    }
+
+    auto Udp4Client::Open(const Udp4Config& Config) -> Foundation::Bool
+    {
         Close();
 
         LastStatus_ = CreateChild();
@@ -58,7 +66,7 @@ namespace UEFIpp::Network
             return false;
         }
 
-        LastStatus_ = Configure(LocalPort);
+        LastStatus_ = Configure(Config);
 
         if (UEFI::IsError(LastStatus_))
         {
@@ -71,6 +79,19 @@ namespace UEFIpp::Network
         OnOpened();
 
         return true;
+    }
+
+    auto Udp4Client::OpenBroadcast(Foundation::Uint16 LocalPort) -> Foundation::Bool
+    {
+        Udp4Config Config{};
+        Config.StationPort = LocalPort;
+        Config.AcceptBroadcast = true;
+        Config.AllowDuplicatePort = true;
+        Config.UseDefaultAddress = false;
+        Config.StationAddress = IPv4Address{};
+        Config.SubnetMask = IPv4Address{};
+
+        return Open(Config);
     }
 
     auto Udp4Client::SendTo(const IPv4Address& Address, Foundation::Uint16 Port, ByteSpan Data) -> Foundation::Bool
@@ -324,7 +345,7 @@ namespace UEFIpp::Network
         Opened_ = false;
     }
 
-    auto Udp4Client::Configure(Foundation::Uint16 LocalPort) -> UEFI::StatusCode
+    auto Udp4Client::Configure(const Udp4Config& Options) -> UEFI::StatusCode
     {
         if (!Udp4_)
         {
@@ -332,22 +353,25 @@ namespace UEFIpp::Network
         }
 
         Protocols::Udp4ConfigData Config{};
-        Config.AcceptBroadcast = false;
-        Config.AcceptPromiscuous = false;
-        Config.AcceptAnyPort = false;
-        Config.AllowDuplicatePort = false;
-        Config.TypeOfService = 0;
-        Config.TimeToLive = 64;
-        Config.DoNotFragment = false;
-        Config.ReceiveTimeout = 0;
-        Config.TransmitTimeout = 0;
-        Config.UseDefaultAddress = true;
-        Config.StationPort = LocalPort;
-        Config.RemotePort = 0;
+        Config.AcceptBroadcast = Options.AcceptBroadcast;
+        Config.AcceptPromiscuous = Options.AcceptPromiscuous;
+        Config.AcceptAnyPort = Options.AcceptAnyPort;
+        Config.AllowDuplicatePort = Options.AllowDuplicatePort;
+        Config.TypeOfService = Options.TypeOfService;
+        Config.TimeToLive = Options.TimeToLive;
+        Config.DoNotFragment = Options.DoNotFragment;
+        Config.ReceiveTimeout = Options.ReceiveTimeout;
+        Config.TransmitTimeout = Options.TransmitTimeout;
+        Config.UseDefaultAddress = Options.UseDefaultAddress;
+        Config.StationAddress = ToRawAddress(Options.StationAddress);
+        Config.SubnetMask = ToRawAddress(Options.SubnetMask);
+        Config.StationPort = Options.StationPort;
+        Config.RemoteAddress = ToRawAddress(Options.RemoteAddress);
+        Config.RemotePort = Options.RemotePort;
 
         auto Status = Udp4_->Configure(Udp4_, &Config);
 
-        if (Status == UEFI::StatusCode::NoMapping)
+        if (Status == UEFI::StatusCode::NoMapping && Options.UseDefaultAddress)
         {
             auto& BootServices = UEFI::Context::BootServices();
 

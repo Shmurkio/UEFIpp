@@ -4,7 +4,7 @@
 #include <UEFIpp/Library/Containers/Vector.hpp>
 #include <UEFIpp/Library/String/String.hpp>
 #include <UEFIpp/Library/String/StringView.hpp>
-#include <UEFIpp/Network/HttpHeader.hpp>
+#include <UEFIpp/Network/HTTP/HttpHeader.hpp>
 
 namespace UEFIpp::Network
 {

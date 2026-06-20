@@ -1,10 +1,11 @@
-#include <UEFIpp/Network/DnsClient.hpp>
+#include <UEFIpp/Network/DNS/DnsClient.hpp>
+#include <UEFIpp/Network/NetworkManager.hpp>
 
 namespace
 {
     using namespace UEFIpp;
 
-    inline constexpr auto DefaultDnsServer = Network::IPv4Address{ 192, 168, 2, 1 };
+    inline constexpr auto FallbackDnsServer = Network::IPv4Address{ 192, 168, 2, 1 };
     inline constexpr auto DnsPort = Foundation::Uint16{ 53 };
     inline constexpr auto DefaultTransactionId = Foundation::Uint16{ 0x1234 };
 
@@ -29,17 +30,38 @@ namespace UEFIpp::Network
 {
     auto DnsClient::Resolve(Library::StringView Hostname, IPv4Address& Address) -> Foundation::Bool
     {
-        return Resolve(DefaultDnsServer, Hostname, Address);
+        IPv4Address Server{};
+
+        if (!NetworkManager::DefaultDnsServer(Server))
+        {
+            Server = FallbackDnsServer;
+        }
+
+        return Resolve(Server, Hostname, Address);
     }
 
     auto DnsClient::Resolve(Library::StringView Hostname, DnsResponse& Response) -> Foundation::Bool
     {
-        return Resolve(DefaultDnsServer, Hostname, Response);
+        IPv4Address Server{};
+
+        if (!NetworkManager::DefaultDnsServer(Server))
+        {
+            Server = FallbackDnsServer;
+        }
+
+        return Resolve(Server, Hostname, Response);
     }
 
     auto DnsClient::Resolve(Library::StringView Hostname, IPv4Address& Address, DnsResponse& Response) -> Foundation::Bool
     {
-        return Resolve(DefaultDnsServer, Hostname, Address, Response);
+        IPv4Address Server{};
+
+        if (!NetworkManager::DefaultDnsServer(Server))
+        {
+            Server = FallbackDnsServer;
+        }
+
+        return Resolve(Server, Hostname, Address, Response);
     }
 
     auto DnsClient::Resolve(const IPv4Address& Server, Library::StringView Hostname, IPv4Address& Address) -> Foundation::Bool

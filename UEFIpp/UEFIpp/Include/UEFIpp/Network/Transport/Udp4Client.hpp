@@ -14,6 +14,28 @@
 
 namespace UEFIpp::Network
 {
+    class Udp4Config
+    {
+    public:
+        IPv4Address StationAddress{};
+        IPv4Address SubnetMask{};
+        IPv4Address RemoteAddress{};
+
+        Foundation::Uint16 StationPort{};
+        Foundation::Uint16 RemotePort{};
+        Foundation::Byte TypeOfService{};
+        Foundation::Byte TimeToLive{ 64 };
+        Foundation::Uint32 ReceiveTimeout{};
+        Foundation::Uint32 TransmitTimeout{};
+
+        Foundation::Bool AcceptBroadcast{};
+        Foundation::Bool AcceptPromiscuous{};
+        Foundation::Bool AcceptAnyPort{};
+        Foundation::Bool AllowDuplicatePort{};
+        Foundation::Bool DoNotFragment{};
+        Foundation::Bool UseDefaultAddress{ true };
+    };
+
     class Udp4Client
     {
     public:
@@ -39,6 +61,8 @@ namespace UEFIpp::Network
         auto operator=(Udp4Client&& Other) noexcept -> Udp4Client&;
 
         [[nodiscard]] auto Open(Foundation::Uint16 LocalPort = 0) -> Foundation::Bool;
+        [[nodiscard]] auto Open(const Udp4Config& Config) -> Foundation::Bool;
+        [[nodiscard]] auto OpenBroadcast(Foundation::Uint16 LocalPort = 0) -> Foundation::Bool;
         [[nodiscard]] auto SendTo(const IPv4Address& Address, Foundation::Uint16 Port, ByteSpan Data) -> Foundation::Bool;
         [[nodiscard]] auto SendTo(const IPv4Address& Address, Foundation::Uint16 Port, Library::StringView Text) -> Foundation::Bool;
         [[nodiscard]] auto ReceiveFrom(IPv4Address& Address, Foundation::Uint16& Port, Library::Vector<Foundation::Byte>& Data, Foundation::Size Capacity = 4096) -> Foundation::Bool;
@@ -59,7 +83,7 @@ namespace UEFIpp::Network
     private:
         [[nodiscard]] auto CreateChild() -> UEFI::StatusCode;
         auto DestroyChild() -> Foundation::Void;
-        [[nodiscard]] auto Configure(Foundation::Uint16 LocalPort) -> UEFI::StatusCode;
+        [[nodiscard]] auto Configure(const Udp4Config& Config) -> UEFI::StatusCode;
         [[nodiscard]] auto CreateTokenEvent(UEFI::Event& Event) -> UEFI::StatusCode;
         [[nodiscard]] auto WaitForToken(UEFI::Event Event, UEFI::StatusCode& CompletionStatus) -> UEFI::StatusCode;
         auto MoveFrom(Udp4Client& Other) -> Foundation::Void;
