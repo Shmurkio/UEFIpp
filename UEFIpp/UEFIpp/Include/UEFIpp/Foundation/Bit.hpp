@@ -143,5 +143,17 @@ namespace UEFIpp::Foundation
 			Count %= Bits;
 			return Count == U{ 0 } ? Value : static_cast<T>((Value >> Count) | (Value << (Bits - Count)));
 		}
+
+		template<typename T, typename U>
+		[[nodiscard]] static constexpr auto Byte(T Value, U Index) -> Foundation::Byte
+		{
+			return static_cast<Foundation::Byte>((Value >> (Index * U{ 8 })) & T { 0xFF });
+		}
+
+		template<typename T, typename U>
+		[[nodiscard]] static constexpr auto FromByte(Foundation::Byte Value, U Index) -> T
+		{
+			return static_cast<T>(static_cast<T>(Value) << (Index * U{ 8 }));
+		}
 	};
 }

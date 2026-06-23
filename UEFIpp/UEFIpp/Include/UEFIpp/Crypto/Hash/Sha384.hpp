@@ -1,0 +1,332 @@
+#pragma once
+
+#include <UEFIpp/Crypto/Hash/Hash.hpp>
+#include <UEFIpp/Crypto/SecureZero.hpp>
+#include <UEFIpp/Foundation/Foundation.hpp>
+#include <UEFIpp/Library/Containers/Array.hpp>
+#include <UEFIpp/Library/Containers/Span.hpp>
+
+namespace UEFIpp::Crypto::Hash
+{
+    class Sha384
+    {
+    public:
+        using Byte = Foundation::Uint8;
+        using Word = Foundation::Uint64;
+        using SizeType = Foundation::Size;
+        using ByteSpan = Library::Span<const Byte>;
+        using MutableByteSpan = Library::Span<Byte>;
+        using DigestType = Sha384Digest;
+
+        static constexpr auto BlockSize = SizeType{ 128 };
+        static constexpr auto DigestSize = SizeType{ 48 };
+        static constexpr auto AlgorithmId = Algorithm::Sha384;
+
+    public:
+        Sha384()
+        {
+            Reset();
+        }
+
+        auto Reset() -> Foundation::Void
+        {
+            State_[0] = 0xCBBB9D5DC1059ED8ULL;
+            State_[1] = 0x629A292A367CD507ULL;
+            State_[2] = 0x9159015A3070DD17ULL;
+            State_[3] = 0x152FECD8F70E5939ULL;
+            State_[4] = 0x67332667FFC00B31ULL;
+            State_[5] = 0x8EB44A8768581511ULL;
+            State_[6] = 0xDB0C2E0D64F98FA7ULL;
+            State_[7] = 0x47B5481DBEFA4FA4ULL;
+
+            BitCountLow_ = 0;
+            BitCountHigh_ = 0;
+            BufferSize_ = 0;
+            Finalized_ = false;
+            Buffer_.Fill(0);
+        }
+
+        auto Update(ByteSpan Data) -> Foundation::Void
+        {
+            if (Finalized_ || Data.Empty())
+            {
+                return;
+            }
+
+            AddBitCount(Data.Size());
+
+            SizeType Offset{};
+
+            if (BufferSize_ != 0)
+            {
+                const auto Space = BlockSize - BufferSize_;
+                const auto Count = Data.Size() < Space ? Data.Size() : Space;
+
+                CopyBytes(Buffer_.Data() + BufferSize_, Data.Data(), Count);
+                BufferSize_ += Count;
+                Offset += Count;
+
+                if (BufferSize_ == BlockSize)
+                {
+                    Transform(Buffer_.Data());
+                    BufferSize_ = 0;
+                }
+            }
+
+            while (Offset + BlockSize <= Data.Size())
+            {
+                Transform(Data.Data() + Offset);
+                Offset += BlockSize;
+            }
+
+            if (Offset < Data.Size())
+            {
+                BufferSize_ = Data.Size() - Offset;
+                CopyBytes(Buffer_.Data(), Data.Data() + Offset, BufferSize_);
+            }
+        }
+
+        [[nodiscard]] auto Final(MutableByteSpan Digest) -> Foundation::Bool
+        {
+            if (Digest.Size() < DigestSize)
+            {
+                return false;
+            }
+
+            if (!Finalized_)
+            {
+                FinalizeInternal();
+            }
+
+            for (SizeType i = 0; i < 6; ++i)
+            {
+                StoreBig64(State_[i], Digest.Data() + (i * 8));
+            }
+
+            return true;
+        }
+
+        [[nodiscard]] auto Final() -> DigestType
+        {
+            DigestType Digest{};
+            Final(Digest.View());
+            return Digest;
+        }
+
+        [[nodiscard]] static auto Compute(ByteSpan Data, MutableByteSpan Digest) -> Foundation::Bool
+        {
+            Sha384 Context{};
+            Context.Update(Data);
+            return Context.Final(Digest);
+        }
+
+        [[nodiscard]] static auto Compute(ByteSpan Data) -> DigestType
+        {
+            DigestType Digest{};
+            Compute(Data, Digest.View());
+            return Digest;
+        }
+
+    private:
+        static constexpr Word K_[80]
+        {
+            0x428A2F98D728AE22ULL, 0x7137449123EF65CDULL,
+            0xB5C0FBCFEC4D3B2FULL, 0xE9B5DBA58189DBBCULL,
+            0x3956C25BF348B538ULL, 0x59F111F1B605D019ULL,
+            0x923F82A4AF194F9BULL, 0xAB1C5ED5DA6D8118ULL,
+            0xD807AA98A3030242ULL, 0x12835B0145706FBEULL,
+            0x243185BE4EE4B28CULL, 0x550C7DC3D5FFB4E2ULL,
+            0x72BE5D74F27B896FULL, 0x80DEB1FE3B1696B1ULL,
+            0x9BDC06A725C71235ULL, 0xC19BF174CF692694ULL,
+            0xE49B69C19EF14AD2ULL, 0xEFBE4786384F25E3ULL,
+            0x0FC19DC68B8CD5B5ULL, 0x240CA1CC77AC9C65ULL,
+            0x2DE92C6F592B0275ULL, 0x4A7484AA6EA6E483ULL,
+            0x5CB0A9DCBD41FBD4ULL, 0x76F988DA831153B5ULL,
+            0x983E5152EE66DFABULL, 0xA831C66D2DB43210ULL,
+            0xB00327C898FB213FULL, 0xBF597FC7BEEF0EE4ULL,
+            0xC6E00BF33DA88FC2ULL, 0xD5A79147930AA725ULL,
+            0x06CA6351E003826FULL, 0x142929670A0E6E70ULL,
+            0x27B70A8546D22FFCULL, 0x2E1B21385C26C926ULL,
+            0x4D2C6DFC5AC42AEDULL, 0x53380D139D95B3DFULL,
+            0x650A73548BAF63DEULL, 0x766A0ABB3C77B2A8ULL,
+            0x81C2C92E47EDAEE6ULL, 0x92722C851482353BULL,
+            0xA2BFE8A14CF10364ULL, 0xA81A664BBC423001ULL,
+            0xC24B8B70D0F89791ULL, 0xC76C51A30654BE30ULL,
+            0xD192E819D6EF5218ULL, 0xD69906245565A910ULL,
+            0xF40E35855771202AULL, 0x106AA07032BBD1B8ULL,
+            0x19A4C116B8D2D0C8ULL, 0x1E376C085141AB53ULL,
+            0x2748774CDF8EEB99ULL, 0x34B0BCB5E19B48A8ULL,
+            0x391C0CB3C5C95A63ULL, 0x4ED8AA4AE3418ACBULL,
+            0x5B9CCA4F7763E373ULL, 0x682E6FF3D6B2B8A3ULL,
+            0x748F82EE5DEFB2FCULL, 0x78A5636F43172F60ULL,
+            0x84C87814A1F0AB72ULL, 0x8CC702081A6439ECULL,
+            0x90BEFFFA23631E28ULL, 0xA4506CEBDE82BDE9ULL,
+            0xBEF9A3F7B2C67915ULL, 0xC67178F2E372532BULL,
+            0xCA273ECEEA26619CULL, 0xD186B8C721C0C207ULL,
+            0xEADA7DD6CDE0EB1EULL, 0xF57D4F7FEE6ED178ULL,
+            0x06F067AA72176FBAULL, 0x0A637DC5A2C898A6ULL,
+            0x113F9804BEF90DAEULL, 0x1B710B35131C471BULL,
+            0x28DB77F523047D84ULL, 0x32CAAB7B40C72493ULL,
+            0x3C9EBE0A15C9BEBCULL, 0x431D67C49C100D4CULL,
+            0x4CC5D4BECB3E42B6ULL, 0x597F299CFC657E2AULL,
+            0x5FCB6FAB3AD6FAECULL, 0x6C44198C4A475817ULL,
+        };
+
+        [[nodiscard]] static constexpr auto Choose(Word X, Word Y, Word Z) -> Word
+        {
+            return (X & Y) ^ (~X & Z);
+        }
+
+        [[nodiscard]] static constexpr auto Majority(Word X, Word Y, Word Z) -> Word
+        {
+            return (X & Y) ^ (X & Z) ^ (Y & Z);
+        }
+
+        [[nodiscard]] static constexpr auto BigSigma0(Word X) -> Word
+        {
+            return Foundation::Bit::RotateRight(X, 28) ^ Foundation::Bit::RotateRight(X, 34) ^ Foundation::Bit::RotateRight(X, 39);
+        }
+
+        [[nodiscard]] static constexpr auto BigSigma1(Word X) -> Word
+        {
+            return Foundation::Bit::RotateRight(X, 14) ^ Foundation::Bit::RotateRight(X, 18) ^ Foundation::Bit::RotateRight(X, 41);
+        }
+
+        [[nodiscard]] static constexpr auto SmallSigma0(Word X) -> Word
+        {
+            return Foundation::Bit::RotateRight(X, 1) ^ Foundation::Bit::RotateRight(X, 8) ^ (X >> 7);
+        }
+
+        [[nodiscard]] static constexpr auto SmallSigma1(Word X) -> Word
+        {
+            return Foundation::Bit::RotateRight(X, 19) ^ Foundation::Bit::RotateRight(X, 61) ^ (X >> 6);
+        }
+
+        [[nodiscard]] static constexpr auto LoadBig64(const Byte* Data) -> Word
+        {
+            return (Foundation::Cast::Auto<Word>(Data[0]) << 56) | (Foundation::Cast::Auto<Word>(Data[1]) << 48) | (Foundation::Cast::Auto<Word>(Data[2]) << 40) | (Foundation::Cast::Auto<Word>(Data[3]) << 32) | (Foundation::Cast::Auto<Word>(Data[4]) << 24) | (Foundation::Cast::Auto<Word>(Data[5]) << 16) | (Foundation::Cast::Auto<Word>(Data[6]) << 8) | Foundation::Cast::Auto<Word>(Data[7]);
+        }
+
+        static constexpr auto StoreBig64(Word Value, Byte* Data) -> Foundation::Void
+        {
+            Data[0] = Foundation::Cast::Auto<Byte>(Value >> 56);
+            Data[1] = Foundation::Cast::Auto<Byte>(Value >> 48);
+            Data[2] = Foundation::Cast::Auto<Byte>(Value >> 40);
+            Data[3] = Foundation::Cast::Auto<Byte>(Value >> 32);
+            Data[4] = Foundation::Cast::Auto<Byte>(Value >> 24);
+            Data[5] = Foundation::Cast::Auto<Byte>(Value >> 16);
+            Data[6] = Foundation::Cast::Auto<Byte>(Value >> 8);
+            Data[7] = Foundation::Cast::Auto<Byte>(Value);
+        }
+
+        static constexpr auto CopyBytes(Byte* Destination, const Byte* Source, SizeType Size) -> Foundation::Void
+        {
+            for (SizeType i = 0; i < Size; ++i)
+            {
+                Destination[i] = Source[i];
+            }
+        }
+
+        auto AddBitCount(SizeType ByteCount) -> Foundation::Void
+        {
+            const auto BitsLow = Foundation::Cast::Auto<Foundation::Uint64>(ByteCount) << 3;
+            const auto BitsHigh = Foundation::Cast::Auto<Foundation::Uint64>(ByteCount) >> 61;
+
+            const auto OldLow = BitCountLow_;
+            BitCountLow_ += BitsLow;
+            BitCountHigh_ += BitsHigh;
+
+            if (BitCountLow_ < OldLow)
+            {
+                ++BitCountHigh_;
+            }
+        }
+
+        auto Transform(const Byte* Block) -> Foundation::Void
+        {
+            Word W[80]{};
+
+            for (SizeType i = 0; i < 16; ++i)
+            {
+                W[i] = LoadBig64(Block + (i * 8));
+            }
+
+            for (SizeType i = 16; i < 80; ++i)
+            {
+                W[i] = SmallSigma1(W[i - 2]) + W[i - 7] + SmallSigma0(W[i - 15]) + W[i - 16];
+            }
+
+            auto A = State_[0];
+            auto B = State_[1];
+            auto C = State_[2];
+            auto D = State_[3];
+            auto E = State_[4];
+            auto F = State_[5];
+            auto G = State_[6];
+            auto H = State_[7];
+
+            for (SizeType i = 0; i < 80; ++i)
+            {
+                const auto T1 = H + BigSigma1(E) + Choose(E, F, G) + K_[i] + W[i];
+                const auto T2 = BigSigma0(A) + Majority(A, B, C);
+
+                H = G;
+                G = F;
+                F = E;
+                E = D + T1;
+                D = C;
+                C = B;
+                B = A;
+                A = T1 + T2;
+            }
+
+            State_[0] += A;
+            State_[1] += B;
+            State_[2] += C;
+            State_[3] += D;
+            State_[4] += E;
+            State_[5] += F;
+            State_[6] += G;
+            State_[7] += H;
+
+            Crypto::SecureZero::Memory(W, sizeof(W));
+        }
+
+        auto FinalizeInternal() -> Foundation::Void
+        {
+            Buffer_[BufferSize_++] = 0x80;
+
+            if (BufferSize_ > 112)
+            {
+                while (BufferSize_ < BlockSize)
+                {
+                    Buffer_[BufferSize_++] = 0;
+                }
+
+                Transform(Buffer_.Data());
+                BufferSize_ = 0;
+            }
+
+            while (BufferSize_ < 112)
+            {
+                Buffer_[BufferSize_++] = 0;
+            }
+
+            StoreBig64(BitCountHigh_, Buffer_.Data() + 112);
+            StoreBig64(BitCountLow_, Buffer_.Data() + 120);
+
+            Transform(Buffer_.Data());
+
+            BufferSize_ = 0;
+            Finalized_ = true;
+        }
+
+    private:
+        Word State_[8]{};
+        Foundation::Uint64 BitCountLow_{};
+        Foundation::Uint64 BitCountHigh_{};
+        SizeType BufferSize_{};
+        Foundation::Bool Finalized_{};
+        Library::Array<Byte, BlockSize> Buffer_{};
+    };
+}

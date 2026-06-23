@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup Label="ProjectConfigurations">
     <ProjectConfiguration Include="Debug|Win32">
@@ -154,6 +154,7 @@
       <WholeProgramOptimization>false</WholeProgramOptimization>
       <AdditionalOptions>/Gs- %(AdditionalOptions)</AdditionalOptions>
       <AdditionalIncludeDirectories>$(ProjectDir)UEFIpp\Include</AdditionalIncludeDirectories>
+      <UseFullPaths>false</UseFullPaths>
     </ClCompile>
     <Link>
       <SubSystem>EFI Application</SubSystem>
@@ -172,6 +173,9 @@
     <ClCompile Include="UEFIpp\Source\CRT\New.cpp" />
     <ClCompile Include="UEFIpp\Source\CRT\StdLib.cpp" />
     <ClCompile Include="UEFIpp\Source\CRT\String.cpp" />
+    <ClCompile Include="UEFIpp\Source\Crypto\Cipher\Aes.cpp" />
+    <ClCompile Include="UEFIpp\Source\Crypto\Cipher\AesGcm.cpp" />
+    <ClCompile Include="UEFIpp\Source\Crypto\PublicKey\X25519.cpp" />
     <ClCompile Include="UEFIpp\Source\FileSystem\File.cpp" />
     <ClCompile Include="UEFIpp\Source\FileSystem\FileAttributes.cpp" />
     <ClCompile Include="UEFIpp\Source\FileSystem\FileInfo.cpp" />
@@ -179,13 +183,6 @@
     <ClCompile Include="UEFIpp\Source\FileSystem\Path.cpp" />
     <ClCompile Include="UEFIpp\Source\Memory\Allocator.cpp" />
     <ClCompile Include="UEFIpp\Source\Memory\Memory.cpp" />
-    <ClCompile Include="UEFIpp\Source\Network\DHCP\DhcpClient.cpp" />
-    <ClCompile Include="UEFIpp\Source\Network\DNS\DnsClient.cpp" />
-    <ClCompile Include="UEFIpp\Source\Network\FTP\FtpClient.cpp" />
-    <ClCompile Include="UEFIpp\Source\Network\HTTP\HttpClient.cpp" />
-    <ClCompile Include="UEFIpp\Source\Network\NetworkManager.cpp" />
-    <ClCompile Include="UEFIpp\Source\Network\Transport\Tcp4Client.cpp" />
-    <ClCompile Include="UEFIpp\Source\Network\Transport\Udp4Client.cpp" />
     <ClCompile Include="UEFIpp\Source\Reverse\Pattern.cpp" />
     <ClCompile Include="UEFIpp\Source\Reverse\Scanner.cpp" />
     <ClCompile Include="UEFIpp\Source\Reverse\SymbolResolver.cpp" />
@@ -202,6 +199,10 @@
     <ClInclude Include="UEFIpp\Include\UEFIpp\Bus\Pci.hpp" />
     <ClInclude Include="UEFIpp\Include\UEFIpp\Bus\PciClass.hpp" />
     <ClInclude Include="UEFIpp\Include\UEFIpp\Bus\PciDevice.hpp" />
+    <ClInclude Include="UEFIpp\Include\UEFIpp\Crypto\Cipher\Aes.hpp" />
+    <ClInclude Include="UEFIpp\Include\UEFIpp\Crypto\Cipher\AesGcm.hpp" />
+    <ClInclude Include="UEFIpp\Include\UEFIpp\Crypto\Hash\Sha384.hpp" />
+    <ClInclude Include="UEFIpp\Include\UEFIpp\Crypto\PublicKey\X25519.hpp" />
     <ClInclude Include="UEFIpp\Include\UEFIpp\Hooking\CallHook.hpp" />
     <ClInclude Include="UEFIpp\Include\UEFIpp\Hooking\CodePatch.hpp" />
     <ClInclude Include="UEFIpp\Include\UEFIpp\Hooking\Detour.hpp" />
@@ -261,6 +262,7 @@
     <ClInclude Include="UEFIpp\Include\UEFIpp\Hooking\X64\X64.hpp" />
     <ClInclude Include="UEFIpp\Include\UEFIpp\Library\Containers\Array.hpp" />
     <ClInclude Include="UEFIpp\Include\UEFIpp\Library\Containers\Containers.hpp" />
+    <ClInclude Include="UEFIpp\Include\UEFIpp\Library\Containers\Expected.hpp" />
     <ClInclude Include="UEFIpp\Include\UEFIpp\Library\Containers\Optional.hpp" />
     <ClInclude Include="UEFIpp\Include\UEFIpp\Library\Containers\Span.hpp" />
     <ClInclude Include="UEFIpp\Include\UEFIpp\Library\Containers\Vector.hpp" />
@@ -285,26 +287,10 @@
     <ClInclude Include="UEFIpp\Include\UEFIpp\Loader\PeTypes.hpp" />
     <ClInclude Include="UEFIpp\Include\UEFIpp\Memory\Allocator.hpp" />
     <ClInclude Include="UEFIpp\Include\UEFIpp\Memory\Memory.hpp" />
-    <ClInclude Include="UEFIpp\Include\UEFIpp\Network\DHCP\DhcpClient.hpp" />
-    <ClInclude Include="UEFIpp\Include\UEFIpp\Network\DHCP\DhcpLease.hpp" />
-    <ClInclude Include="UEFIpp\Include\UEFIpp\Network\DNS\DnsClient.hpp" />
-    <ClInclude Include="UEFIpp\Include\UEFIpp\Network\DNS\DnsHeader.hpp" />
-    <ClInclude Include="UEFIpp\Include\UEFIpp\Network\DNS\DnsRecord.hpp" />
-    <ClInclude Include="UEFIpp\Include\UEFIpp\Network\DNS\DnsResponse.hpp" />
-    <ClInclude Include="UEFIpp\Include\UEFIpp\Network\FTP\FtpClient.hpp" />
-    <ClInclude Include="UEFIpp\Include\UEFIpp\Network\FTP\FtpEntry.hpp" />
-    <ClInclude Include="UEFIpp\Include\UEFIpp\Network\FTP\FtpResponse.hpp" />
-    <ClInclude Include="UEFIpp\Include\UEFIpp\Network\HTTP\HttpClient.hpp" />
-    <ClInclude Include="UEFIpp\Include\UEFIpp\Network\HTTP\HttpHeader.hpp" />
-    <ClInclude Include="UEFIpp\Include\UEFIpp\Network\HTTP\HttpRedirect.hpp" />
-    <ClInclude Include="UEFIpp\Include\UEFIpp\Network\HTTP\HttpResponse.hpp" />
-    <ClInclude Include="UEFIpp\Include\UEFIpp\Network\IPv4Address.hpp" />
-    <ClInclude Include="UEFIpp\Include\UEFIpp\Network\Network.hpp" />
-    <ClInclude Include="UEFIpp\Include\UEFIpp\Network\NetworkConfiguration.hpp" />
-    <ClInclude Include="UEFIpp\Include\UEFIpp\Network\NetworkManager.hpp" />
-    <ClInclude Include="UEFIpp\Include\UEFIpp\Network\Transport\Tcp4Client.hpp" />
+    <ClInclude Include="UEFIpp\Include\UEFIpp\Network\Address\IPv4Address.hpp" />
+    <ClInclude Include="UEFIpp\Include\UEFIpp\Network\Address\Url.hpp" />
     <ClInclude Include="UEFIpp\Include\UEFIpp\Network\Transport\Udp4Client.hpp" />
-    <ClInclude Include="UEFIpp\Include\UEFIpp\Network\Utility\Url.hpp" />
+    <ClInclude Include="UEFIpp\Include\UEFIpp\Network\Transport\Udp4Error.hpp" />
     <ClInclude Include="UEFIpp\Include\UEFIpp\Nvram\Attribute.hpp" />
     <ClInclude Include="UEFIpp\Include\UEFIpp\Nvram\Nvram.hpp" />
     <ClInclude Include="UEFIpp\Include\UEFIpp\Nvram\QueryInfo.hpp" />
@@ -345,6 +331,11 @@
     <ClInclude Include="UEFIpp\Include\UEFIpp\Stream\Output\Output.hpp" />
     <ClInclude Include="UEFIpp\Include\UEFIpp\Stream\Output\SerialSink.hpp" />
     <ClInclude Include="UEFIpp\Include\UEFIpp\Stream\Stream.hpp" />
+    <ClInclude Include="UEFIpp\Include\UEFIpp\Synchronization\ScopedEvent.hpp" />
+    <ClInclude Include="UEFIpp\Include\UEFIpp\Synchronization\Synchronization.hpp" />
+    <ClInclude Include="UEFIpp\Include\UEFIpp\Synchronization\TimerEvent.hpp" />
+    <ClInclude Include="UEFIpp\Include\UEFIpp\Synchronization\WaitableEvent.hpp" />
+    <ClInclude Include="UEFIpp\Include\UEFIpp\Synchronization\WaitSet.hpp" />
     <ClInclude Include="UEFIpp\Include\UEFIpp\Text\Encoding.hpp" />
     <ClInclude Include="UEFIpp\Include\UEFIpp\Text\Format.hpp" />
     <ClInclude Include="UEFIpp\Include\UEFIpp\Text\Parse.hpp" />

@@ -69,25 +69,13 @@
     <ClCompile Include="UEFIpp\Source\Bus\Pci.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="UEFIpp\Source\Network\Transport\Tcp4Client.cpp">
+    <ClCompile Include="UEFIpp\Source\Crypto\PublicKey\X25519.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="UEFIpp\Source\Network\HTTP\HttpClient.cpp">
+    <ClCompile Include="UEFIpp\Source\Crypto\Cipher\Aes.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="UEFIpp\Source\Network\Transport\Udp4Client.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="UEFIpp\Source\Network\DNS\DnsClient.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="UEFIpp\Source\Network\DHCP\DhcpClient.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="UEFIpp\Source\Network\NetworkManager.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="UEFIpp\Source\Network\FTP\FtpClient.cpp">
+    <ClCompile Include="UEFIpp\Source\Crypto\Cipher\AesGcm.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -551,15 +539,6 @@
     <ClInclude Include="UEFIpp\Include\UEFIpp\Protocols\Tcp4.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="UEFIpp\Include\UEFIpp\Network\IPv4Address.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="UEFIpp\Include\UEFIpp\Network\Transport\Tcp4Client.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="UEFIpp\Include\UEFIpp\Network\Network.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="UEFIpp\Include\UEFIpp\Library\Functional\Function.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -596,58 +575,49 @@
     <ClInclude Include="UEFIpp\Include\UEFIpp\Stream\Input\ConsoleSource.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="UEFIpp\Include\UEFIpp\Network\HTTP\HttpClient.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="UEFIpp\Include\UEFIpp\Network\HTTP\HttpResponse.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="UEFIpp\Include\UEFIpp\Network\HTTP\HttpHeader.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="UEFIpp\Include\UEFIpp\Network\Transport\Udp4Client.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="UEFIpp\Include\UEFIpp\Protocols\Udp4.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="UEFIpp\Include\UEFIpp\Network\DNS\DnsHeader.hpp">
+    <ClInclude Include="UEFIpp\Include\UEFIpp\Crypto\PublicKey\X25519.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="UEFIpp\Include\UEFIpp\Network\DNS\DnsRecord.hpp">
+    <ClInclude Include="UEFIpp\Include\UEFIpp\Crypto\Cipher\Aes.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="UEFIpp\Include\UEFIpp\Network\DNS\DnsResponse.hpp">
+    <ClInclude Include="UEFIpp\Include\UEFIpp\Crypto\Cipher\AesGcm.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="UEFIpp\Include\UEFIpp\Network\DNS\DnsClient.hpp">
+    <ClInclude Include="UEFIpp\Include\UEFIpp\Crypto\Hash\Sha384.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="UEFIpp\Include\UEFIpp\Network\Utility\Url.hpp">
+    <ClInclude Include="UEFIpp\Include\UEFIpp\Library\Containers\Expected.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="UEFIpp\Include\UEFIpp\Network\HTTP\HttpRedirect.hpp">
+    <ClInclude Include="UEFIpp\Include\UEFIpp\Network\Address\IPv4Address.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="UEFIpp\Include\UEFIpp\Network\DHCP\DhcpClient.hpp">
+    <ClInclude Include="UEFIpp\Include\UEFIpp\Network\Address\Url.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="UEFIpp\Include\UEFIpp\Network\DHCP\DhcpLease.hpp">
+    <ClInclude Include="UEFIpp\Include\UEFIpp\Network\Transport\Udp4Error.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="UEFIpp\Include\UEFIpp\Network\NetworkConfiguration.hpp">
+    <ClInclude Include="UEFIpp\Include\UEFIpp\Synchronization\WaitableEvent.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="UEFIpp\Include\UEFIpp\Network\NetworkManager.hpp">
+    <ClInclude Include="UEFIpp\Include\UEFIpp\Synchronization\ScopedEvent.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="UEFIpp\Include\UEFIpp\Network\FTP\FtpClient.hpp">
+    <ClInclude Include="UEFIpp\Include\UEFIpp\Synchronization\TimerEvent.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="UEFIpp\Include\UEFIpp\Network\FTP\FtpEntry.hpp">
+    <ClInclude Include="UEFIpp\Include\UEFIpp\Synchronization\WaitSet.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="UEFIpp\Include\UEFIpp\Network\FTP\FtpResponse.hpp">
+    <ClInclude Include="UEFIpp\Include\UEFIpp\Synchronization\Synchronization.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="UEFIpp\Include\UEFIpp\Network\Transport\Udp4Client.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

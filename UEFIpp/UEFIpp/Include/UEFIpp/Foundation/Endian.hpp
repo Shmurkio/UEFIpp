@@ -72,5 +72,89 @@ namespace UEFIpp::Foundation
 		{
 			return Swap(Value);
 		}
+
+		template<Concepts::Integral T>
+		[[nodiscard]] static constexpr auto LoadBig(const Byte* Data) -> T
+		{
+			if constexpr (sizeof(T) == 1)
+			{
+				return static_cast<T>(Data[0]);
+			}
+			else if constexpr (sizeof(T) == 2)
+			{
+				return static_cast<T>(
+					(static_cast<Uint16>(Data[0]) << 8) |
+					(static_cast<Uint16>(Data[1]))
+					);
+			}
+			else if constexpr (sizeof(T) == 4)
+			{
+				return static_cast<T>(
+					(static_cast<Uint32>(Data[0]) << 24) |
+					(static_cast<Uint32>(Data[1]) << 16) |
+					(static_cast<Uint32>(Data[2]) << 8) |
+					(static_cast<Uint32>(Data[3]))
+					);
+			}
+			else if constexpr (sizeof(T) == 8)
+			{
+				return static_cast<T>(
+					(static_cast<Uint64>(Data[0]) << 56) |
+					(static_cast<Uint64>(Data[1]) << 48) |
+					(static_cast<Uint64>(Data[2]) << 40) |
+					(static_cast<Uint64>(Data[3]) << 32) |
+					(static_cast<Uint64>(Data[4]) << 24) |
+					(static_cast<Uint64>(Data[5]) << 16) |
+					(static_cast<Uint64>(Data[6]) << 8) |
+					(static_cast<Uint64>(Data[7]))
+					);
+			}
+			else
+			{
+				static_assert(sizeof(T) == 1 || sizeof(T) == 2 || sizeof(T) == 4 || sizeof(T) == 8);
+			}
+		}
+
+		template<Concepts::Integral T>
+		static constexpr auto StoreBig(Byte * Data, T Value) -> void
+		{
+			if constexpr (sizeof(T) == 1)
+			{
+				Data[0] = static_cast<Byte>(Value);
+			}
+			else if constexpr (sizeof(T) == 2)
+			{
+				const auto V = static_cast<Uint16>(Value);
+
+				Data[0] = static_cast<Byte>(V >> 8);
+				Data[1] = static_cast<Byte>(V);
+			}
+			else if constexpr (sizeof(T) == 4)
+			{
+				const auto V = static_cast<Uint32>(Value);
+
+				Data[0] = static_cast<Byte>(V >> 24);
+				Data[1] = static_cast<Byte>(V >> 16);
+				Data[2] = static_cast<Byte>(V >> 8);
+				Data[3] = static_cast<Byte>(V);
+			}
+			else if constexpr (sizeof(T) == 8)
+			{
+				const auto V = static_cast<Uint64>(Value);
+
+				Data[0] = static_cast<Byte>(V >> 56);
+				Data[1] = static_cast<Byte>(V >> 48);
+				Data[2] = static_cast<Byte>(V >> 40);
+				Data[3] = static_cast<Byte>(V >> 32);
+				Data[4] = static_cast<Byte>(V >> 24);
+				Data[5] = static_cast<Byte>(V >> 16);
+				Data[6] = static_cast<Byte>(V >> 8);
+				Data[7] = static_cast<Byte>(V);
+			}
+			else
+			{
+				static_assert(sizeof(T) == 1 || sizeof(T) == 2 || sizeof(T) == 4 || sizeof(T) == 8);
+			}
+		}
 	};
 }

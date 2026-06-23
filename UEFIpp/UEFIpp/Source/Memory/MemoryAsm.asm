@@ -19,13 +19,7 @@ FastCopy PROC
     cmp     r8, 256
     jb      copy_xmm_64_255
 
-    cmp     r8, 4096
-    jb      copy_rep_movsb
-
-    cmp     r8, 1048576
-    jae     copy_avx2_nt
-
-    jmp     copy_avx2
+    jmp     copy_rep_movsb
 
 copy_scalar:
 scalar_loop:
@@ -112,63 +106,10 @@ copy_rep_movsb:
     pop     rdi
     ret
 
-copy_avx2:
-avx2_loop:
-    cmp     r8, 128
-    jb      avx2_tail
-
-    vmovdqu ymm0, ymmword ptr [rdx]
-    vmovdqu ymm1, ymmword ptr [rdx + 32]
-    vmovdqu ymm2, ymmword ptr [rdx + 64]
-    vmovdqu ymm3, ymmword ptr [rdx + 96]
-
-    vmovdqu ymmword ptr [rcx], ymm0
-    vmovdqu ymmword ptr [rcx + 32], ymm1
-    vmovdqu ymmword ptr [rcx + 64], ymm2
-    vmovdqu ymmword ptr [rcx + 96], ymm3
-
-    add     rdx, 128
-    add     rcx, 128
-    sub     r8, 128
-    jmp     avx2_loop
-
-avx2_tail:
-    vzeroupper
-    test    r8, r8
-    jz      done
-    jmp     copy_rep_movsb
-
-copy_avx2_nt:
-avx2_nt_loop:
-    cmp     r8, 128
-    jb      avx2_nt_tail
-
-    vmovdqu     ymm0, ymmword ptr [rdx]
-    vmovdqu     ymm1, ymmword ptr [rdx + 32]
-    vmovdqu     ymm2, ymmword ptr [rdx + 64]
-    vmovdqu     ymm3, ymmword ptr [rdx + 96]
-
-    vmovntdq    ymmword ptr [rcx], ymm0
-    vmovntdq    ymmword ptr [rcx + 32], ymm1
-    vmovntdq    ymmword ptr [rcx + 64], ymm2
-    vmovntdq    ymmword ptr [rcx + 96], ymm3
-
-    add     rdx, 128
-    add     rcx, 128
-    sub     r8, 128
-    jmp     avx2_nt_loop
-
-avx2_nt_tail:
-    sfence
-    vzeroupper
-
-    test    r8, r8
-    jz      done
-    jmp     copy_rep_movsb
-
 done:
     ret
 FastCopy ENDP
+
 
 FastMove PROC
     mov     rax, rcx
@@ -210,12 +151,12 @@ move_backward:
 
     pop     rsi
     pop     rdi
-
     ret
 
 move_done:
     ret
 FastMove ENDP
+
 
 FastSet PROC
     mov     rax, rcx
@@ -234,13 +175,7 @@ FastSet PROC
     cmp     r8, 256
     jb      set_xmm_64_255
 
-    cmp     r8, 4096
-    jb      set_rep_stosb
-
-    cmp     r8, 1048576
-    jae     set_avx2_nt
-
-    jmp     set_avx2
+    jmp     set_rep_stosb
 
 set_scalar:
 scalar_set_loop:
@@ -315,63 +250,10 @@ set_rep_stosb:
     pop     rdi
     ret
 
-set_avx2:
-    movzx   r9d, dl
-    imul    r9d, 01010101h
-    vmovd   xmm0, r9d
-    vpshufd xmm0, xmm0, 0
-    vinserti128 ymm0, ymm0, xmm0, 1
-
-set_avx2_loop:
-    cmp     r8, 128
-    jb      set_avx2_tail
-
-    vmovdqu ymmword ptr [rcx], ymm0
-    vmovdqu ymmword ptr [rcx + 32], ymm0
-    vmovdqu ymmword ptr [rcx + 64], ymm0
-    vmovdqu ymmword ptr [rcx + 96], ymm0
-
-    add     rcx, 128
-    sub     r8, 128
-    jmp     set_avx2_loop
-
-set_avx2_tail:
-    vzeroupper
-    test    r8, r8
-    jz      set_done
-    jmp     set_rep_stosb
-
-set_avx2_nt:
-    movzx   r9d, dl
-    imul    r9d, 01010101h
-    vmovd   xmm0, r9d
-    vpshufd xmm0, xmm0, 0
-    vinserti128 ymm0, ymm0, xmm0, 1
-
-set_avx2_nt_loop:
-    cmp     r8, 128
-    jb      set_avx2_nt_tail
-
-    vmovntdq ymmword ptr [rcx], ymm0
-    vmovntdq ymmword ptr [rcx + 32], ymm0
-    vmovntdq ymmword ptr [rcx + 64], ymm0
-    vmovntdq ymmword ptr [rcx + 96], ymm0
-
-    add     rcx, 128
-    sub     r8, 128
-    jmp     set_avx2_nt_loop
-
-set_avx2_nt_tail:
-    sfence
-    vzeroupper
-
-    test    r8, r8
-    jz      set_done
-    jmp     set_rep_stosb
-
 set_done:
     ret
 FastSet ENDP
+
 
 FastCompare PROC
     test    r8, r8
@@ -388,10 +270,7 @@ FastCompare PROC
     cmp     r8, 16
     jb      compare_scalar
 
-    cmp     r8, 256
-    jb      compare_xmm
-
-    jmp     compare_avx2
+    jmp     compare_xmm
 
 compare_left_null:
     test    rdx, rdx
@@ -420,7 +299,7 @@ compare_equal:
 
 compare_xmm:
     cmp     r8, 16
-    jb      compare_scalar
+    jb      compare_equal
 
     movdqu  xmm0, xmmword ptr [rcx]
     movdqu  xmm1, xmmword ptr [rdx]
@@ -433,6 +312,7 @@ compare_xmm:
     add     rcx, 16
     add     rdx, 16
     sub     r8, 16
+    jz      compare_equal
     jmp     compare_xmm
 
 compare_xmm_mismatch:
@@ -444,34 +324,6 @@ compare_xmm_mismatch:
     movzx   r11d, byte ptr [rdx + rax]
     mov     eax, r10d
     sub     eax, r11d
-    ret
-
-compare_avx2:
-    cmp     r8, 32
-    jb      compare_xmm
-
-    vmovdqu ymm0, ymmword ptr [rcx]
-    vpcmpeqb ymm0, ymm0, ymmword ptr [rdx]
-    vpmovmskb eax, ymm0
-
-    cmp     eax, 0FFFFFFFFh
-    jne     compare_avx2_mismatch
-
-    add     rcx, 32
-    add     rdx, 32
-    sub     r8, 32
-    jmp     compare_avx2
-
-compare_avx2_mismatch:
-    not     eax
-    bsf     eax, eax
-
-    movzx   r10d, byte ptr [rcx + rax]
-    movzx   r11d, byte ptr [rdx + rax]
-    mov     eax, r10d
-    sub     eax, r11d
-
-    vzeroupper
     ret
 
 compare_diff_eax_r9d:
