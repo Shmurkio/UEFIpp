@@ -111,6 +111,28 @@ namespace UEFIpp::Protocols
 			return Handles;
 		}
 
+		template<typename TProtocol>
+		[[nodiscard]] auto Install(UEFI::Handle* Handle, TProtocol* Interface) const -> UEFI::StatusCode
+		{
+			if (!BootServices_ || !Handle || !Interface)
+			{
+				return UEFI::StatusCode::InvalidParameter;
+			}
+
+			return BootServices_->InstallProtocolInterface(Handle, Foundation::Cast::Auto<UEFI::Guid*>(&ProtocolTraits<TProtocol>::Id), UEFI::Table::InterfaceType::NativeInterface, Interface);
+		}
+
+		template<typename TProtocol>
+		[[nodiscard]] auto Uninstall(UEFI::Handle Handle, TProtocol* Interface) const -> UEFI::StatusCode
+		{
+			if (!BootServices_ || !Handle || !Interface)
+			{
+				return UEFI::StatusCode::InvalidParameter;
+			}
+
+			return BootServices_->UninstallProtocolInterface(Handle, Foundation::Cast::Auto<UEFI::Guid*>(&ProtocolTraits<TProtocol>::Id), Interface);
+		}
+
 	private:
 		BootServicesType* BootServices_{};
 	};
