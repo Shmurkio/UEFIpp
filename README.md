@@ -74,7 +74,7 @@ Use `Release` for the optimized configuration. Outputs are written below `x64/De
 | Foundation | Firmware-sized types, traits, casts, atomics, source locations, assertions, and locks |
 | Library | UTF string types, views, spans, arrays, vectors, tuples, expected/optional values, callables, events, and ownership |
 | IO | Result-based byte I/O, transports, adapters, UTF conversion, formatting, scanning, terminals, coroutines, and logging |
-| UEFI and Protocols | ABI-compatible tables, status handling, global context, typed protocol discovery, console, files, PCI, and networking |
+| UEFI and Protocols | ABI-compatible tables, status handling, global context, typed protocol discovery, console, graphics output, files, PCI, and networking |
 | FileSystem | Paths, metadata, file ownership, resizing, and exact last firmware status |
 | Memory | Pool allocation, allocator capabilities, executable allocators, access masks, and memory views |
 | Architecture | x64 registers, CPU helpers, assembly, decoding, formatting, disassembly, and unwinding |

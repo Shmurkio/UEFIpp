@@ -41,6 +41,23 @@ Shift and toggle masks include validity bits. Check validity before interpreting
 
 For normal output use `IO::SystemIO().Console()` with `IO::Print`; it buffers UTF-8 and performs validated UTF-16 conversion at the firmware boundary.
 
+## Graphics output
+
+`GraphicsOutput` exposes GOP mode discovery and selection, BLT operations, and
+the current linear-framebuffer description. Its supporting ABI types are:
+
+- `GraphicsPixelFormat` and `GraphicsPixelBitMask`;
+- `GraphicsOutputModeInformation`;
+- `GraphicsOutputProtocolMode`;
+- `GraphicsOutputBltPixel` and `GraphicsOutputBltOperation`.
+
+`Query` wraps the allocating `QueryMode` callback, `SetCurrentMode` wraps
+`SetMode`, and `BlockTransfer` wraps `Blt`. Firmware owns the protocol and
+current-mode state. The caller owns successful `Query` results and must release
+them through boot services. Direct framebuffer access is unavailable for
+`GraphicsPixelFormat::BltOnly`; otherwise use `FrameBufferBase`,
+`FrameBufferSize`, the pixel format, and `PixelsPerScanLine` together.
+
 ## Loaded image
 
 `LoadedImage` describes the running image: parent and device handles, system table, file path, load options, image base/size, code/data memory types, and unload callback.
@@ -104,6 +121,7 @@ Supporting structures model config data, sessions, completion/I/O tokens, receiv
 | `SimpleTextInput.hpp` | Basic console input ABI |
 | `SimpleTextInputEx.hpp` | Extended keys, state, notifications |
 | `SimpleTextOutput.hpp` | Console output ABI |
+| `GraphicsOutput.hpp` | GOP modes, framebuffer description, and BLT ABI |
 | `LoadedImage.hpp` | Loaded-image ABI and helpers |
 | `SimpleFileSystem.hpp` | Volume opening |
 | `File.hpp` | Raw file ABI |

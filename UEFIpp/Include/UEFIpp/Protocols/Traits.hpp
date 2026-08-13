@@ -1,6 +1,7 @@
 #pragma once
 
 #include <UEFIpp/Protocols/File.hpp>
+#include <UEFIpp/Protocols/GraphicsOutput.hpp>
 #include <UEFIpp/Protocols/LoadedImage.hpp>
 #include <UEFIpp/Protocols/PciIo.hpp>
 #include <UEFIpp/Protocols/ServiceBinding.hpp>
@@ -48,6 +49,15 @@ public:
       0x69c7,
       0x11d2,
       {0x8e, 0x39, 0x00, 0xa0, 0xc9, 0x69, 0x72, 0x3b}};
+};
+
+template <> class ProtocolTraits<GraphicsOutput> {
+public:
+  inline static constexpr UEFI::Guid Id{
+      0x9042a9de,
+      0x23dc,
+      0x4a38,
+      {0x96, 0xfb, 0x7a, 0xde, 0xd0, 0x80, 0x51, 0x6a}};
 };
 
 template <> class ProtocolTraits<SimpleFileSystem> {

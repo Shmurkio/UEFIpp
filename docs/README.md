@@ -35,7 +35,7 @@ Focused headers are listed in the module references and [public-header index](re
 | [Library](reference/library.md) | Strings, containers, tuples, `Optional`, `Expected`, callables, events, ownership |
 | [I/O](reference/io.md) | Concepts, errors, transports, adapters, UTF, format/scan, terminal input, logging |
 | [UEFI](reference/uefi.md) | Status codes, context, tables, memory descriptors, services, device paths |
-| [Protocols](reference/protocols.md) | Typed access and supported console, file, image, PCI, TCP4, and UDP4 protocols |
+| [Protocols](reference/protocols.md) | Typed access and supported console, graphics, file, image, PCI, TCP4, and UDP4 protocols |
 | [File system](reference/filesystem.md) | Paths, files, metadata, attributes, time, exact firmware status |
 | [Memory](reference/memory.md) | Allocation, capabilities, executable storage, access, memory views |
 | [Diagnostics](reference/diagnostics.md) | Trace records and structured logging |

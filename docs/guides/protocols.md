@@ -152,6 +152,7 @@ The driver owns `Interface`; firmware only publishes the pointer. Keep it alive 
 
 - `SimpleTextInput` and `SimpleTextInputEx`;
 - `SimpleTextOutput`;
+- `GraphicsOutput`;
 - `SimpleFileSystem` and `File`;
 - `LoadedImage`;
 - `PciIo`;
@@ -168,6 +169,55 @@ These types satisfy the `Protocols::Protocol` concept and work directly with `Ac
 Use `ScanCode` constants for non-character keys such as arrows, function keys, and Escape. `InputKey::HasUnicode`, `HasScanCode`, `IsScanCode`, and `IsEscape` keep key handling readable.
 
 The high-level `IO::Terminal` prefers extended input, falls back to basic input, and adds typed events, Unicode handling, timeouts, cancellation, and line editing.
+
+## Graphics output
+
+`GraphicsOutput` models the UEFI Graphics Output Protocol (GOP). Locate the
+firmware-owned interface through the ordinary typed access facade:
+
+```cpp
+Protocols::Access Access(&UEFI::Context::BootServices());
+auto Graphics = Access.Locate<Protocols::GraphicsOutput>();
+
+if (!Graphics || !(*Graphics)->CurrentMode() ||
+    !(*Graphics)->CurrentMode()->Info)
+{
+    return MakeUnexpected(UEFI::StatusCode::NotFound);
+}
+
+const auto* Mode = (*Graphics)->CurrentMode();
+(void)IO::Println(IO::SystemIO().Console(), "GOP mode: {}x{}",
+                  Mode->Info->HorizontalResolution,
+                  Mode->Info->VerticalResolution);
+```
+
+Use `SetCurrentMode` to select a supported mode and `BlockTransfer` for fill,
+screen-to-buffer, buffer-to-screen, and screen-to-screen operations. A solid
+fill reads only the first BLT pixel:
+
+```cpp
+Protocols::GraphicsOutputBltPixel Blue{ 0xFF, 0x00, 0x00, 0x00 };
+const auto Status = (*Graphics)->BlockTransfer(
+    &Blue,
+    Protocols::GraphicsOutputBltOperation::VideoFill,
+    0, 0,
+    0, 0,
+    Mode->Info->HorizontalResolution,
+    Mode->Info->VerticalResolution
+);
+```
+
+`GraphicsOutputModeInformation`, `GraphicsOutputProtocolMode`, pixel formats,
+bit masks, BLT pixels, and BLT operations mirror the firmware ABI. A mode with
+`GraphicsPixelFormat::BltOnly` has no usable linear framebuffer. For other
+modes, honor `PixelsPerScanLine` rather than assuming it equals horizontal
+resolution.
+
+`GraphicsOutput::Query` forwards GOP's allocating `QueryMode` operation. On a
+successful query, the caller owns the returned mode-information buffer and must
+release it with `UEFI::Context::BootServices().FreePool(Info)` before boot
+services end. The protocol pointer, current-mode pointer, and framebuffer remain
+firmware-owned and phase-bound.
 
 ## File protocols
 

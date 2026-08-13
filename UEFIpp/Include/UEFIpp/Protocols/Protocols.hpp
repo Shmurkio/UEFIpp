@@ -1,6 +1,7 @@
 #pragma once
 
 #include <UEFIpp/Protocols/Access.hpp>
+#include <UEFIpp/Protocols/GraphicsOutput.hpp>
 #include <UEFIpp/Protocols/InputKey.hpp>
 #include <UEFIpp/Protocols/SimpleTextInput.hpp>
 #include <UEFIpp/Protocols/SimpleTextInputEx.hpp>

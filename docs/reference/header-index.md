@@ -91,6 +91,7 @@ Umbrella headers collect the headers beneath them; leaf headers declare the name
 | [`Protocols/SimpleTextInput.hpp`](../../UEFIpp/Include/UEFIpp/Protocols/SimpleTextInput.hpp) | Basic console input ABI |
 | [`Protocols/SimpleTextInputEx.hpp`](../../UEFIpp/Include/UEFIpp/Protocols/SimpleTextInputEx.hpp) | Extended key state and notification ABI |
 | [`Protocols/SimpleTextOutput.hpp`](../../UEFIpp/Include/UEFIpp/Protocols/SimpleTextOutput.hpp) | Console output modes and ABI |
+| [`Protocols/GraphicsOutput.hpp`](../../UEFIpp/Include/UEFIpp/Protocols/GraphicsOutput.hpp) | Graphics output modes, framebuffer state, pixels, and BLT ABI |
 | [`Protocols/LoadedImage.hpp`](../../UEFIpp/Include/UEFIpp/Protocols/LoadedImage.hpp) | Loaded-image fields, load options, unload callback |
 | [`Protocols/File.hpp`](../../UEFIpp/Include/UEFIpp/Protocols/File.hpp) | Raw UEFI file protocol, modes, attributes |
 | [`Protocols/SimpleFileSystem.hpp`](../../UEFIpp/Include/UEFIpp/Protocols/SimpleFileSystem.hpp) | Volume root opening protocol |
