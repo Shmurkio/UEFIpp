@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Source">
+      <UniqueIdentifier>{F274DD56-28EE-4A5E-B1D0-B389BDFAC07D}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source\Library">
+      <UniqueIdentifier>{0D0B76C1-9B4A-4974-9860-99EBAD91CC66}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files">
+      <UniqueIdentifier>{DFBBA5C7-9C26-4DE3-99FC-B73F4E41111B}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="Entry.cpp" />
+    <ClCompile Include="Source\EntryPoint.cpp">
+      <Filter>Source</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Library\Containers.cpp">
+      <Filter>Source\Library</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Library\Functional.cpp">
+      <Filter>Source\Library</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Library\Ownership.cpp">
+      <Filter>Source\Library</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Library\Strings.cpp">
+      <Filter>Source\Library</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Library\TestSuite.cpp">
+      <Filter>Source\Library</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="Include\SampleApplication\LibrarySamples.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+  </ItemGroup>
+</Project>

@@ -1,11 +1,41 @@
 <Solution>
   <Configurations>
     <Platform Name="x64" />
-    <Platform Name="x86" />
   </Configurations>
+  <Project Path="UEFIpp/UEFIpp.vcxproj" Id="6fc109e8-d0e8-49ee-9a24-f3034acc531a" />
+  <Project Path="Samples/SampleApplication/SampleApplication.vcxproj" Id="d7b7b9d4-96f2-4c84-9a62-0c5f4f1ab8f2" />
+  <Project Path="Samples/SampleDxe/SampleDxe.vcxproj" Id="a27476a3-99a8-47cf-a86a-0c3b155d93e1" />
   <Folder Name="/Solution Items/">
-    <File Path="LICENSE.txt" />
+    <File Path=".gitattributes" />
+    <File Path=".gitignore" />
     <File Path="README.md" />
   </Folder>
-  <Project Path="UEFIpp/UEFIpp.vcxproj" Id="6fc109e8-d0e8-49ee-9a24-f3034acc531a" />
+  <Folder Name="/Documentation/">
+    <File Path="docs\README.md" />
+    <File Path="docs\entry-points.md" />
+    <File Path="docs\getting-started.md" />
+    <File Path="docs\programming-model.md" />
+  </Folder>
+  <Folder Name="/Documentation/Guides/">
+    <File Path="docs\guides\protocols.md" />
+    <File Path="docs\guides\streams-and-files.md" />
+    <File Path="docs\guides\symbols.md" />
+    <File Path="docs\guides\x64-code.md" />
+  </Folder>
+  <Folder Name="/Documentation/Reference/">
+    <File Path="docs\reference\architecture.md" />
+    <File Path="docs\reference\crt.md" />
+    <File Path="docs\reference\diagnostics.md" />
+    <File Path="docs\reference\executable.md" />
+    <File Path="docs\reference\filesystem.md" />
+    <File Path="docs\reference\foundation.md" />
+    <File Path="docs\reference\header-index.md" />
+    <File Path="docs\reference\library.md" />
+    <File Path="docs\reference\memory.md" />
+    <File Path="docs\reference\protocols.md" />
+    <File Path="docs\reference\reverse.md" />
+    <File Path="docs\reference\streams.md" />
+    <File Path="docs\reference\text.md" />
+    <File Path="docs\reference\uefi.md" />
+  </Folder>
 </Solution>

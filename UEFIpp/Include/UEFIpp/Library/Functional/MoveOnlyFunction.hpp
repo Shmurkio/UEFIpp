@@ -1,0 +1,269 @@
+#pragma once
+
+#include <UEFIpp/CRT/New.hpp>
+
+#include <UEFIpp/Library/Functional/FunctionDetail.hpp>
+#include <UEFIpp/Memory/AllocatorStub.hpp>
+
+namespace UEFIpp::Library
+{
+	template<typename>
+	class MoveOnlyFunction;
+
+	template<typename Return, typename... Args>
+	class MoveOnlyFunction<Return(Args...)>
+	{
+	private:
+		static constexpr Foundation::Size InlineSize = sizeof(Foundation::Void*) * 4;
+		static constexpr Foundation::Size InlineAlign = alignof(Foundation::Void*);
+
+		using InvokeFn = Return(*)(Foundation::Void*, Args...);
+		using MoveFn = Foundation::Void(*)(Foundation::Void*, Foundation::Void*);
+		using DestroyFn = Foundation::Void(*)(Foundation::Void*);
+		struct VTable
+		{
+			InvokeFn Invoke;
+			MoveFn Move;
+			DestroyFn Destroy;
+			Foundation::Size SizeValue;
+			Foundation::Size AlignValue;
+		};
+
+		template<typename Callable>
+		static constexpr Foundation::Bool FitsInline = sizeof(Callable) <= InlineSize && alignof(Callable) <= InlineAlign;
+
+	private:
+		alignas(InlineAlign) Foundation::Byte Storage_[InlineSize]{};
+		Foundation::Void* Object_{};
+		const VTable* Table_{};
+		Foundation::Bool Inline_{};
+		Memory::AllocatorStub Allocator_{};
+
+	private:
+		template<typename Callable>
+		struct TableStorage
+		{
+			inline static constexpr VTable Instance
+			{
+				[](Foundation::Void* Object, Args... Arguments) -> Return
+				{
+					return Detail::Invoke<Return, Callable, Args...>(Object, Foundation::Utility::Forward<Args>(Arguments)...);
+				},
+
+				[](Foundation::Void* Destination, Foundation::Void* Source) -> Foundation::Void
+				{
+					new (Destination) Callable(Foundation::Utility::Move(*static_cast<Callable*>(Source)));
+				},
+
+				[](Foundation::Void* Object) -> Foundation::Void
+				{
+					static_cast<Callable*>(Object)->~Callable();
+				},
+
+				sizeof(Callable),
+				alignof(Callable)
+			};
+		};
+
+		template<typename Callable>
+		static constexpr const VTable* Table()
+		{
+			return &TableStorage<Callable>::Instance;
+		}
+
+		[[nodiscard]] auto AllocateObject(
+			Foundation::Size Size,
+			Foundation::Size Alignment
+		) const -> Foundation::Void*
+		{
+			if (Allocator_)
+			{
+				return Allocator_.Allocate(Size, Alignment);
+			}
+
+			return ::operator new(Size);
+		}
+
+		auto FreeObject(Foundation::Void* Object) const -> Foundation::Void
+		{
+			if (!Object)
+			{
+				return;
+			}
+
+			if (Allocator_)
+			{
+				UEFIPP_VERIFY(Allocator_.Free(Object));
+				return;
+			}
+
+			::operator delete(Object);
+		}
+
+		Foundation::Void ResetInternal()
+		{
+			if (!Table_)
+			{
+				return;
+			}
+
+			Table_->Destroy(Object_);
+
+			if (!Inline_)
+			{
+				FreeObject(Object_);
+			}
+
+			Object_ = nullptr;
+			Table_ = nullptr;
+			Inline_ = false;
+		}
+
+		template<typename Callable>
+		Foundation::Void Construct(Callable&& CallableObject)
+		{
+			using Stored = Foundation::Traits::RemoveCvReferenceType<Callable>;
+
+			Table_ = Table<Stored>();
+
+			if constexpr (FitsInline<Stored>)
+			{
+				Object_ = Storage_;
+				Inline_ = true;
+				new (Object_) Stored(Foundation::Utility::Forward<Callable>(CallableObject));
+			}
+			else
+			{
+				Object_ = AllocateObject(sizeof(Stored), alignof(Stored));
+				Inline_ = false;
+
+				if (!Object_)
+				{
+					Table_ = nullptr;
+					return;
+				}
+
+				new (Object_) Stored(Foundation::Utility::Forward<Callable>(CallableObject));
+			}
+		}
+
+	public:
+		constexpr MoveOnlyFunction() = default;
+
+		constexpr explicit MoveOnlyFunction(Memory::AllocatorStub Allocator) noexcept :
+			Allocator_(Allocator)
+		{
+		}
+
+		constexpr MoveOnlyFunction(Foundation::NullPtr)
+		{
+		}
+
+		~MoveOnlyFunction()
+		{
+			ResetInternal();
+		}
+
+		MoveOnlyFunction(const MoveOnlyFunction&) = delete;
+		auto operator=(const MoveOnlyFunction&) -> MoveOnlyFunction & = delete;
+
+		MoveOnlyFunction(MoveOnlyFunction&& Other) noexcept :
+			Allocator_(Other.Allocator_)
+		{
+			*this = Foundation::Utility::Move(Other);
+		}
+
+		auto operator=(MoveOnlyFunction&& Other) noexcept -> MoveOnlyFunction&
+		{
+			if (this == &Other)
+			{
+				return *this;
+			}
+
+			ResetInternal();
+
+			Allocator_ = Other.Allocator_;
+			Table_ = Other.Table_;
+			Inline_ = Other.Inline_;
+
+			if (!Other.Table_)
+			{
+				return *this;
+			}
+
+			if (Other.Inline_)
+			{
+				Object_ = Storage_;
+				Table_->Move(Object_, Other.Object_);
+				Other.ResetInternal();
+				Other.Allocator_.Reset();
+			}
+			else
+			{
+				Object_ = Other.Object_;
+				Other.Object_ = nullptr;
+				Other.Table_ = nullptr;
+				Other.Inline_ = false;
+				Other.Allocator_.Reset();
+			}
+
+			return *this;
+		}
+
+		template<typename Callable, typename Stored = Foundation::Traits::RemoveCvReferenceType<Callable>, typename = Foundation::Traits::EnableIfType<!Foundation::Traits::IsSame<Stored, MoveOnlyFunction>::Value>>
+		MoveOnlyFunction(Callable&& CallableObject)
+		{
+			Construct(Foundation::Utility::Forward<Callable>(CallableObject));
+		}
+
+		template<typename Callable, typename Stored = Foundation::Traits::RemoveCvReferenceType<Callable>, typename = Foundation::Traits::EnableIfType<!Foundation::Traits::IsSame<Stored, MoveOnlyFunction>::Value>>
+		MoveOnlyFunction(
+			Callable&& CallableObject,
+			Memory::AllocatorStub Allocator
+		) :
+			Allocator_(Allocator)
+		{
+			Construct(Foundation::Utility::Forward<Callable>(CallableObject));
+		}
+
+		template<typename Callable, typename Stored = Foundation::Traits::RemoveCvReferenceType<Callable>, typename = Foundation::Traits::EnableIfType<!Foundation::Traits::IsSame<Stored, MoveOnlyFunction>::Value>>
+		auto operator=(Callable&& CallableObject) -> MoveOnlyFunction&
+		{
+			ResetInternal();
+			Construct(Foundation::Utility::Forward<Callable>(CallableObject));
+			return *this;
+		}
+
+		auto operator=(Foundation::NullPtr) -> MoveOnlyFunction&
+		{
+			ResetInternal();
+			return *this;
+		}
+
+		[[nodiscard]] constexpr auto Allocator() const noexcept
+			-> Memory::AllocatorStub
+		{
+			return Allocator_;
+		}
+
+		[[nodiscard]] explicit operator Foundation::Bool() const
+		{
+			return Table_ != nullptr;
+		}
+
+		[[nodiscard]] auto Empty() const -> Foundation::Bool
+		{
+			return Table_ == nullptr;
+		}
+
+		Foundation::Void Reset()
+		{
+			ResetInternal();
+		}
+
+		Return operator()(Args... Arguments)
+		{
+			return Table_->Invoke(Object_, Foundation::Utility::Forward<Args>(Arguments)...);
+		}
+	};
+}

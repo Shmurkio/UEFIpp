@@ -1,14 +1,6 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup Label="ProjectConfigurations">
-    <ProjectConfiguration Include="Debug|Win32">
-      <Configuration>Debug</Configuration>
-      <Platform>Win32</Platform>
-    </ProjectConfiguration>
-    <ProjectConfiguration Include="Release|Win32">
-      <Configuration>Release</Configuration>
-      <Platform>Win32</Platform>
-    </ProjectConfiguration>
     <ProjectConfiguration Include="Debug|x64">
       <Configuration>Debug</Configuration>
       <Platform>x64</Platform>
@@ -21,48 +13,27 @@
   <PropertyGroup Label="Globals">
     <VCProjectVersion>18.0</VCProjectVersion>
     <Keyword>Win32Proj</Keyword>
-    <ProjectGuid>{6fc109e8-d0e8-49ee-9a24-f3034acc531a}</ProjectGuid>
+    <ProjectGuid>{6FC109E8-D0E8-49EE-9A24-F3034ACC531A}</ProjectGuid>
     <RootNamespace>UEFIpp</RootNamespace>
     <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
+    <ProjectName>UEFIpp</ProjectName>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
-    <ConfigurationType>Application</ConfigurationType>
-    <UseDebugLibraries>true</UseDebugLibraries>
-    <PlatformToolset>v145</PlatformToolset>
-    <CharacterSet>Unicode</CharacterSet>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
-    <ConfigurationType>Application</ConfigurationType>
-    <UseDebugLibraries>false</UseDebugLibraries>
-    <PlatformToolset>v145</PlatformToolset>
-    <WholeProgramOptimization>true</WholeProgramOptimization>
-    <CharacterSet>Unicode</CharacterSet>
-  </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
-    <ConfigurationType>Application</ConfigurationType>
+    <ConfigurationType>StaticLibrary</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
     <PlatformToolset>v145</PlatformToolset>
     <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
-    <ConfigurationType>Application</ConfigurationType>
+    <ConfigurationType>StaticLibrary</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
     <PlatformToolset>v145</PlatformToolset>
-    <WholeProgramOptimization>true</WholeProgramOptimization>
     <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
   <ImportGroup Label="ExtensionSettings">
     <Import Project="$(VCTargetsPath)\BuildCustomizations\masm.props" />
-  </ImportGroup>
-  <ImportGroup Label="Shared">
-  </ImportGroup>
-  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
-    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
-  </ImportGroup>
-  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
-    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
   </ImportGroup>
   <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
@@ -71,50 +42,18 @@
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
-    <GenerateManifest>false</GenerateManifest>
-    <TargetExt>.efi</TargetExt>
-    <LinkIncremental>false</LinkIncremental>
+  <PropertyGroup>
+    <OutDir>$(ProjectDir)..\x64\$(Configuration)\</OutDir>
+    <IntDir>$(ProjectDir)..\x64\$(Configuration)\$(ProjectName)\</IntDir>
+    <TargetName>UEFIpp</TargetName>
   </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-    <GenerateManifest>false</GenerateManifest>
-    <TargetExt>.efi</TargetExt>
-  </PropertyGroup>
-  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
-    <ClCompile>
-      <WarningLevel>Level3</WarningLevel>
-      <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <ConformanceMode>true</ConformanceMode>
-      <LanguageStandard>stdcpp20</LanguageStandard>
-    </ClCompile>
-    <Link>
-      <SubSystem>Console</SubSystem>
-      <GenerateDebugInformation>true</GenerateDebugInformation>
-    </Link>
-  </ItemDefinitionGroup>
-  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
-    <ClCompile>
-      <WarningLevel>Level3</WarningLevel>
-      <FunctionLevelLinking>true</FunctionLevelLinking>
-      <IntrinsicFunctions>true</IntrinsicFunctions>
-      <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>WIN32;NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <ConformanceMode>true</ConformanceMode>
-      <LanguageStandard>stdcpp20</LanguageStandard>
-    </ClCompile>
-    <Link>
-      <SubSystem>Console</SubSystem>
-      <GenerateDebugInformation>true</GenerateDebugInformation>
-    </Link>
-  </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <ClCompile>
       <WarningLevel>Level4</WarningLevel>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <SDLCheck>false</SDLCheck>
-      <PreprocessorDefinitions>NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>_DEBUG;UEFIPP_DEBUG;ZYDIS_STATIC_BUILD;ZYCORE_STATIC_BUILD;ZYAN_NO_LIBC;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpplatest</LanguageStandard>
       <RuntimeTypeInfo>false</RuntimeTypeInfo>
@@ -122,20 +61,13 @@
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
       <BufferSecurityCheck>false</BufferSecurityCheck>
       <Optimization>Disabled</Optimization>
-      <WholeProgramOptimization>false</WholeProgramOptimization>
-      <AdditionalOptions>/Gs- %(AdditionalOptions)</AdditionalOptions>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
       <BasicRuntimeChecks>Default</BasicRuntimeChecks>
+      <SupportJustMyCode>false</SupportJustMyCode>
+      <AdditionalOptions>/Gs- %(AdditionalOptions)</AdditionalOptions>
+      <AdditionalIncludeDirectories>$(ProjectDir)Include</AdditionalIncludeDirectories>
+      <UseFullPaths>false</UseFullPaths>
     </ClCompile>
-    <Link>
-      <SubSystem>EFI Application</SubSystem>
-      <GenerateDebugInformation>true</GenerateDebugInformation>
-      <EntryPointSymbol>EfipMain</EntryPointSymbol>
-      <IgnoreAllDefaultLibraries>true</IgnoreAllDefaultLibraries>
-      <AdditionalOptions>/DYNAMICBASE:NO /NXCOMPAT:NO %(AdditionalOptions)</AdditionalOptions>
-      <LinkTimeCodeGeneration>Default</LinkTimeCodeGeneration>
-      <EnableUAC>false</EnableUAC>
-      <GenerateManifest>false</GenerateManifest>
-    </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <ClCompile>
@@ -143,236 +75,32 @@
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <SDLCheck>false</SDLCheck>
-      <PreprocessorDefinitions>NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>NDEBUG;ZYDIS_STATIC_BUILD;ZYCORE_STATIC_BUILD;ZYAN_NO_LIBC;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpplatest</LanguageStandard>
       <RuntimeTypeInfo>false</RuntimeTypeInfo>
       <ExceptionHandling>false</ExceptionHandling>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
       <BufferSecurityCheck>false</BufferSecurityCheck>
-      <Optimization>Disabled</Optimization>
-      <WholeProgramOptimization>false</WholeProgramOptimization>
+      <Optimization>MaxSpeed</Optimization>
       <AdditionalOptions>/Gs- %(AdditionalOptions)</AdditionalOptions>
-      <AdditionalIncludeDirectories>$(ProjectDir)UEFIpp\Include</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir)Include</AdditionalIncludeDirectories>
       <UseFullPaths>false</UseFullPaths>
     </ClCompile>
-    <Link>
-      <SubSystem>EFI Application</SubSystem>
-      <GenerateDebugInformation>true</GenerateDebugInformation>
-      <EntryPointSymbol>EfipMain</EntryPointSymbol>
-      <IgnoreAllDefaultLibraries>true</IgnoreAllDefaultLibraries>
-      <AdditionalOptions>/DYNAMICBASE:NO /NXCOMPAT:NO %(AdditionalOptions)</AdditionalOptions>
-      <LinkTimeCodeGeneration>Default</LinkTimeCodeGeneration>
-    </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="Entry.cpp" />
-    <ClCompile Include="UEFIpp\Source\Bus\Pci.cpp" />
-    <ClCompile Include="UEFIpp\Source\Bus\PciDevice.cpp" />
-    <ClCompile Include="UEFIpp\Source\CRT\Heap.cpp" />
-    <ClCompile Include="UEFIpp\Source\CRT\New.cpp" />
-    <ClCompile Include="UEFIpp\Source\CRT\StdLib.cpp" />
-    <ClCompile Include="UEFIpp\Source\CRT\String.cpp" />
-    <ClCompile Include="UEFIpp\Source\Crypto\Cipher\Aes.cpp" />
-    <ClCompile Include="UEFIpp\Source\Crypto\Cipher\AesGcm.cpp" />
-    <ClCompile Include="UEFIpp\Source\Crypto\PublicKey\X25519.cpp" />
-    <ClCompile Include="UEFIpp\Source\FileSystem\File.cpp" />
-    <ClCompile Include="UEFIpp\Source\FileSystem\FileAttributes.cpp" />
-    <ClCompile Include="UEFIpp\Source\FileSystem\FileInfo.cpp" />
-    <ClCompile Include="UEFIpp\Source\FileSystem\Time.cpp" />
-    <ClCompile Include="UEFIpp\Source\FileSystem\Path.cpp" />
-    <ClCompile Include="UEFIpp\Source\Memory\Allocator.cpp" />
-    <ClCompile Include="UEFIpp\Source\Memory\Memory.cpp" />
-    <ClCompile Include="UEFIpp\Source\Reverse\Pattern.cpp" />
-    <ClCompile Include="UEFIpp\Source\Reverse\Scanner.cpp" />
-    <ClCompile Include="UEFIpp\Source\Reverse\SymbolResolver.cpp" />
-    <ClCompile Include="UEFIpp\Source\UEFI\EntryPoint.cpp" />
+    <ClCompile Include="Source\**\*.cpp">
+      <ObjectFileName>$(IntDir)%(RelativeDir)%(Filename).obj</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="Source\**\*.c">
+      <ObjectFileName>$(IntDir)%(RelativeDir)%(Filename).obj</ObjectFileName>
+    </ClCompile>
+    <MASM Include="Source\**\*.asm" />
+    <MASM Include="Include\**\*.asm" />
+    <ClInclude Include="Include\**\*.hpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="DFA\NfaToDfa.hpp" />
-    <ClInclude Include="DFA\RegexLexer.hpp" />
-    <ClInclude Include="DFA\RegexToNfa.hpp" />
-    <ClInclude Include="DFA\RegexToPostfix.hpp" />
-    <ClInclude Include="DFA\RegexToken.hpp" />
-    <ClInclude Include="DFA\RegexValidate.hpp" />
-    <ClInclude Include="UEFIpp\Include\UEFIpp\Bus\Bus.hpp" />
-    <ClInclude Include="UEFIpp\Include\UEFIpp\Bus\Pci.hpp" />
-    <ClInclude Include="UEFIpp\Include\UEFIpp\Bus\PciClass.hpp" />
-    <ClInclude Include="UEFIpp\Include\UEFIpp\Bus\PciDevice.hpp" />
-    <ClInclude Include="UEFIpp\Include\UEFIpp\Crypto\Cipher\Aes.hpp" />
-    <ClInclude Include="UEFIpp\Include\UEFIpp\Crypto\Cipher\AesGcm.hpp" />
-    <ClInclude Include="UEFIpp\Include\UEFIpp\Crypto\Hash\Sha384.hpp" />
-    <ClInclude Include="UEFIpp\Include\UEFIpp\Crypto\PublicKey\X25519.hpp" />
-    <ClInclude Include="UEFIpp\Include\UEFIpp\Hooking\CallHook.hpp" />
-    <ClInclude Include="UEFIpp\Include\UEFIpp\Hooking\CodePatch.hpp" />
-    <ClInclude Include="UEFIpp\Include\UEFIpp\Hooking\Detour.hpp" />
-    <ClInclude Include="UEFIpp\Include\UEFIpp\Hooking\Hooking.hpp" />
-    <ClInclude Include="UEFIpp\Include\UEFIpp\Architecture\Architecture.hpp" />
-    <ClInclude Include="UEFIpp\Include\UEFIpp\Architecture\X64\Common\Msr.hpp" />
-    <ClInclude Include="UEFIpp\Include\UEFIpp\Architecture\X64\Common\Registers.hpp" />
-    <ClInclude Include="UEFIpp\Include\UEFIpp\Architecture\X64\Cpu\Cpu.hpp" />
-    <ClInclude Include="UEFIpp\Include\UEFIpp\Architecture\X64\Cpu\Random.hpp" />
-    <ClInclude Include="UEFIpp\Include\UEFIpp\Architecture\X64\Memory\Page.hpp" />
-    <ClInclude Include="UEFIpp\Include\UEFIpp\Architecture\X64\Memory\PageTables.hpp" />
-    <ClInclude Include="UEFIpp\Include\UEFIpp\Architecture\X64\Memory\Paging.hpp" />
-    <ClInclude Include="UEFIpp\Include\UEFIpp\Architecture\X64\Memory\PhysicalAddress.hpp" />
-    <ClInclude Include="UEFIpp\Include\UEFIpp\Architecture\X64\Memory\Tlb.hpp" />
-    <ClInclude Include="UEFIpp\Include\UEFIpp\Architecture\X64\Memory\VirtualAddress.hpp" />
-    <ClInclude Include="UEFIpp\Include\UEFIpp\Architecture\X64\X64.hpp" />
-    <ClInclude Include="UEFIpp\Include\UEFIpp\CRT\CRT.hpp" />
-    <ClInclude Include="UEFIpp\Include\UEFIpp\CRT\Heap.hpp" />
-    <ClInclude Include="UEFIpp\Include\UEFIpp\CRT\New.hpp" />
-    <ClInclude Include="UEFIpp\Include\UEFIpp\CRT\StdDef.hpp" />
-    <ClInclude Include="UEFIpp\Include\UEFIpp\CRT\StdLib.hpp" />
-    <ClInclude Include="UEFIpp\Include\UEFIpp\CRT\String.hpp" />
-    <ClInclude Include="UEFIpp\Include\UEFIpp\Crypto\ConstantTime.hpp" />
-    <ClInclude Include="UEFIpp\Include\UEFIpp\Crypto\Crypto.hpp" />
-    <ClInclude Include="UEFIpp\Include\UEFIpp\Crypto\Encoding\Hex.hpp" />
-    <ClInclude Include="UEFIpp\Include\UEFIpp\Crypto\Hash\Hash.hpp" />
-    <ClInclude Include="UEFIpp\Include\UEFIpp\Crypto\Hash\Sha256.hpp" />
-    <ClInclude Include="UEFIpp\Include\UEFIpp\Crypto\Kdf\Hkdf.hpp" />
-    <ClInclude Include="UEFIpp\Include\UEFIpp\Crypto\Kdf\Pbkdf2.hpp" />
-    <ClInclude Include="UEFIpp\Include\UEFIpp\Crypto\Mac\Hmac.hpp" />
-    <ClInclude Include="UEFIpp\Include\UEFIpp\Crypto\Mac\HmacSha256.hpp" />
-    <ClInclude Include="UEFIpp\Include\UEFIpp\Crypto\Random.hpp" />
-    <ClInclude Include="UEFIpp\Include\UEFIpp\Crypto\SecureBuffer.hpp" />
-    <ClInclude Include="UEFIpp\Include\UEFIpp\Crypto\SecureZero.hpp" />
-    <ClInclude Include="UEFIpp\Include\UEFIpp\FileSystem\File.hpp" />
-    <ClInclude Include="UEFIpp\Include\UEFIpp\FileSystem\FileAttributes.hpp" />
-    <ClInclude Include="UEFIpp\Include\UEFIpp\FileSystem\Time.hpp" />
-    <ClInclude Include="UEFIpp\Include\UEFIpp\FileSystem\FileInfo.hpp" />
-    <ClInclude Include="UEFIpp\Include\UEFIpp\FileSystem\FileSystem.hpp" />
-    <ClInclude Include="UEFIpp\Include\UEFIpp\FileSystem\Path.hpp" />
-    <ClInclude Include="UEFIpp\Include\UEFIpp\Foundation\Assertions.hpp" />
-    <ClInclude Include="UEFIpp\Include\UEFIpp\Foundation\Bit.hpp" />
-    <ClInclude Include="UEFIpp\Include\UEFIpp\Foundation\Cast.hpp" />
-    <ClInclude Include="UEFIpp\Include\UEFIpp\Foundation\Compare.hpp" />
-    <ClInclude Include="UEFIpp\Include\UEFIpp\Foundation\Concepts.hpp" />
-    <ClInclude Include="UEFIpp\Include\UEFIpp\Foundation\Endian.hpp" />
-    <ClInclude Include="UEFIpp\Include\UEFIpp\Foundation\Foundation.hpp" />
-    <ClInclude Include="UEFIpp\Include\UEFIpp\Foundation\Traits.hpp" />
-    <ClInclude Include="UEFIpp\Include\UEFIpp\Foundation\Types.hpp" />
-    <ClInclude Include="UEFIpp\Include\UEFIpp\Foundation\Utility.hpp" />
-    <ClInclude Include="UEFIpp\Include\UEFIpp\Hooking\Patch.hpp" />
-    <ClInclude Include="UEFIpp\Include\UEFIpp\Hooking\VTableHook.hpp" />
-    <ClInclude Include="UEFIpp\Include\UEFIpp\Hooking\X64\AbsoluteJump.hpp" />
-    <ClInclude Include="UEFIpp\Include\UEFIpp\Hooking\X64\Instruction.hpp" />
-    <ClInclude Include="UEFIpp\Include\UEFIpp\Hooking\X64\RelativeCall.hpp" />
-    <ClInclude Include="UEFIpp\Include\UEFIpp\Hooking\X64\RelativeJump.hpp" />
-    <ClInclude Include="UEFIpp\Include\UEFIpp\Hooking\X64\X64.hpp" />
-    <ClInclude Include="UEFIpp\Include\UEFIpp\Library\Containers\Array.hpp" />
-    <ClInclude Include="UEFIpp\Include\UEFIpp\Library\Containers\Containers.hpp" />
-    <ClInclude Include="UEFIpp\Include\UEFIpp\Library\Containers\Expected.hpp" />
-    <ClInclude Include="UEFIpp\Include\UEFIpp\Library\Containers\Optional.hpp" />
-    <ClInclude Include="UEFIpp\Include\UEFIpp\Library\Containers\Span.hpp" />
-    <ClInclude Include="UEFIpp\Include\UEFIpp\Library\Containers\Vector.hpp" />
-    <ClInclude Include="UEFIpp\Include\UEFIpp\Library\Functional\Event.hpp" />
-    <ClInclude Include="UEFIpp\Include\UEFIpp\Library\Functional\EventConnection.hpp" />
-    <ClInclude Include="UEFIpp\Include\UEFIpp\Library\Functional\EventResult.hpp" />
-    <ClInclude Include="UEFIpp\Include\UEFIpp\Library\Functional\Function.hpp" />
-    <ClInclude Include="UEFIpp\Include\UEFIpp\Library\Functional\Functional.hpp" />
-    <ClInclude Include="UEFIpp\Include\UEFIpp\Library\Functional\FunctionDetail.hpp" />
-    <ClInclude Include="UEFIpp\Include\UEFIpp\Library\Functional\FunctionRef.hpp" />
-    <ClInclude Include="UEFIpp\Include\UEFIpp\Library\Functional\MoveOnlyFunction.hpp" />
-    <ClInclude Include="UEFIpp\Include\UEFIpp\Library\Functional\ScopedEventConnection.hpp" />
-    <ClInclude Include="UEFIpp\Include\UEFIpp\Library\Functional\StopEvent.hpp" />
-    <ClInclude Include="UEFIpp\Include\UEFIpp\Library\Library.hpp" />
-    <ClInclude Include="UEFIpp\Include\UEFIpp\Library\String\BasicString.hpp" />
-    <ClInclude Include="UEFIpp\Include\UEFIpp\Library\String\String.hpp" />
-    <ClInclude Include="UEFIpp\Include\UEFIpp\Library\String\StringView.hpp" />
-    <ClInclude Include="UEFIpp\Include\UEFIpp\Loader\LoadedImageFinder.hpp" />
-    <ClInclude Include="UEFIpp\Include\UEFIpp\Loader\Loader.hpp" />
-    <ClInclude Include="UEFIpp\Include\UEFIpp\Loader\PeDirectory.hpp" />
-    <ClInclude Include="UEFIpp\Include\UEFIpp\Loader\PeImage.hpp" />
-    <ClInclude Include="UEFIpp\Include\UEFIpp\Loader\PeTypes.hpp" />
-    <ClInclude Include="UEFIpp\Include\UEFIpp\Memory\Allocator.hpp" />
-    <ClInclude Include="UEFIpp\Include\UEFIpp\Memory\Memory.hpp" />
-    <ClInclude Include="UEFIpp\Include\UEFIpp\Network\Address\IPv4Address.hpp" />
-    <ClInclude Include="UEFIpp\Include\UEFIpp\Network\Address\Url.hpp" />
-    <ClInclude Include="UEFIpp\Include\UEFIpp\Network\Transport\Udp4Client.hpp" />
-    <ClInclude Include="UEFIpp\Include\UEFIpp\Network\Transport\Udp4Error.hpp" />
-    <ClInclude Include="UEFIpp\Include\UEFIpp\Nvram\Attribute.hpp" />
-    <ClInclude Include="UEFIpp\Include\UEFIpp\Nvram\Nvram.hpp" />
-    <ClInclude Include="UEFIpp\Include\UEFIpp\Nvram\QueryInfo.hpp" />
-    <ClInclude Include="UEFIpp\Include\UEFIpp\Nvram\Store.hpp" />
-    <ClInclude Include="UEFIpp\Include\UEFIpp\Nvram\TypedVariable.hpp" />
-    <ClInclude Include="UEFIpp\Include\UEFIpp\Nvram\Variable.hpp" />
-    <ClInclude Include="UEFIpp\Include\UEFIpp\Nvram\VariableId.hpp" />
-    <ClInclude Include="UEFIpp\Include\UEFIpp\Nvram\View.hpp" />
-    <ClInclude Include="UEFIpp\Include\UEFIpp\Nvram\WellKnown.hpp" />
-    <ClInclude Include="UEFIpp\Include\UEFIpp\Protocols\Access.hpp" />
-    <ClInclude Include="UEFIpp\Include\UEFIpp\Protocols\File.hpp" />
-    <ClInclude Include="UEFIpp\Include\UEFIpp\Protocols\InputKey.hpp" />
-    <ClInclude Include="UEFIpp\Include\UEFIpp\Protocols\LoadedImage.hpp" />
-    <ClInclude Include="UEFIpp\Include\UEFIpp\Protocols\PciIo.hpp" />
-    <ClInclude Include="UEFIpp\Include\UEFIpp\Protocols\Protocols.hpp" />
-    <ClInclude Include="UEFIpp\Include\UEFIpp\Protocols\ServiceBinding.hpp" />
-    <ClInclude Include="UEFIpp\Include\UEFIpp\Protocols\SimpleFileSystem.hpp" />
-    <ClInclude Include="UEFIpp\Include\UEFIpp\Protocols\SimpleTextInput.hpp" />
-    <ClInclude Include="UEFIpp\Include\UEFIpp\Protocols\SimpleTextInputEx.hpp" />
-    <ClInclude Include="UEFIpp\Include\UEFIpp\Protocols\SimpleTextOutput.hpp" />
-    <ClInclude Include="UEFIpp\Include\UEFIpp\Protocols\Tcp4.hpp" />
-    <ClInclude Include="UEFIpp\Include\UEFIpp\Protocols\Traits.hpp" />
-    <ClInclude Include="UEFIpp\Include\UEFIpp\Protocols\Udp4.hpp" />
-    <ClInclude Include="UEFIpp\Include\UEFIpp\Reverse\Match.hpp" />
-    <ClInclude Include="UEFIpp\Include\UEFIpp\Reverse\Pattern.hpp" />
-    <ClInclude Include="UEFIpp\Include\UEFIpp\Reverse\PatternByte.hpp" />
-    <ClInclude Include="UEFIpp\Include\UEFIpp\Reverse\Reverse.hpp" />
-    <ClInclude Include="UEFIpp\Include\UEFIpp\Reverse\Scanner.hpp" />
-    <ClInclude Include="UEFIpp\Include\UEFIpp\Reverse\SymbolResolver.hpp" />
-    <ClInclude Include="UEFIpp\Include\UEFIpp\Stream\File\FileInputStream.hpp" />
-    <ClInclude Include="UEFIpp\Include\UEFIpp\Stream\File\FileOutputStream.hpp" />
-    <ClInclude Include="UEFIpp\Include\UEFIpp\Stream\Formatting\Common.hpp" />
-    <ClInclude Include="UEFIpp\Include\UEFIpp\Stream\Input\ConsoleSource.hpp" />
-    <ClInclude Include="UEFIpp\Include\UEFIpp\Stream\Input\Input.hpp" />
-    <ClInclude Include="UEFIpp\Include\UEFIpp\Stream\Output\ConsoleSink.hpp" />
-    <ClInclude Include="UEFIpp\Include\UEFIpp\Stream\Output\FileSink.hpp" />
-    <ClInclude Include="UEFIpp\Include\UEFIpp\Stream\Formatting\HexDump.hpp" />
-    <ClInclude Include="UEFIpp\Include\UEFIpp\Stream\Output\Output.hpp" />
-    <ClInclude Include="UEFIpp\Include\UEFIpp\Stream\Output\SerialSink.hpp" />
-    <ClInclude Include="UEFIpp\Include\UEFIpp\Stream\Stream.hpp" />
-    <ClInclude Include="UEFIpp\Include\UEFIpp\Synchronization\ScopedEvent.hpp" />
-    <ClInclude Include="UEFIpp\Include\UEFIpp\Synchronization\Synchronization.hpp" />
-    <ClInclude Include="UEFIpp\Include\UEFIpp\Synchronization\TimerEvent.hpp" />
-    <ClInclude Include="UEFIpp\Include\UEFIpp\Synchronization\WaitableEvent.hpp" />
-    <ClInclude Include="UEFIpp\Include\UEFIpp\Synchronization\WaitSet.hpp" />
-    <ClInclude Include="UEFIpp\Include\UEFIpp\Text\Encoding.hpp" />
-    <ClInclude Include="UEFIpp\Include\UEFIpp\Text\Format.hpp" />
-    <ClInclude Include="UEFIpp\Include\UEFIpp\Text\Parse.hpp" />
-    <ClInclude Include="UEFIpp\Include\UEFIpp\Text\Text.hpp" />
-    <ClInclude Include="UEFIpp\Include\UEFIpp\Time\Calendar.hpp" />
-    <ClInclude Include="UEFIpp\Include\UEFIpp\Time\Clock.hpp" />
-    <ClInclude Include="UEFIpp\Include\UEFIpp\Time\Date.hpp" />
-    <ClInclude Include="UEFIpp\Include\UEFIpp\Time\DateTime.hpp" />
-    <ClInclude Include="UEFIpp\Include\UEFIpp\Time\Duration.hpp" />
-    <ClInclude Include="UEFIpp\Include\UEFIpp\Time\Instant.hpp" />
-    <ClInclude Include="UEFIpp\Include\UEFIpp\Time\Stopwatch.hpp" />
-    <ClInclude Include="UEFIpp\Include\UEFIpp\Time\Time.hpp" />
-    <ClInclude Include="UEFIpp\Include\UEFIpp\Time\TimeOfDay.hpp" />
-    <ClInclude Include="UEFIpp\Include\UEFIpp\Time\TimeZone.hpp" />
-    <ClInclude Include="UEFIpp\Include\UEFIpp\UEFIpp.hpp" />
-    <ClInclude Include="UEFIpp\Include\UEFIpp\UEFI\BootServices.hpp" />
-    <ClInclude Include="UEFIpp\Include\UEFIpp\UEFI\Capsule.hpp" />
-    <ClInclude Include="UEFIpp\Include\UEFIpp\UEFI\ConfigurationTable.hpp" />
-    <ClInclude Include="UEFIpp\Include\UEFIpp\UEFI\Context.hpp" />
-    <ClInclude Include="UEFIpp\Include\UEFIpp\UEFI\DevicePath.hpp" />
-    <ClInclude Include="UEFIpp\Include\UEFIpp\UEFI\Guid.hpp" />
-    <ClInclude Include="UEFIpp\Include\UEFIpp\UEFI\Memory.hpp" />
-    <ClInclude Include="UEFIpp\Include\UEFIpp\UEFI\RuntimeServices.hpp" />
-    <ClInclude Include="UEFIpp\Include\UEFIpp\UEFI\Status.hpp" />
-    <ClInclude Include="UEFIpp\Include\UEFIpp\UEFI\SystemTable.hpp" />
-    <ClInclude Include="UEFIpp\Include\UEFIpp\UEFI\TableHeader.hpp" />
-    <ClInclude Include="UEFIpp\Include\UEFIpp\UEFI\Types.hpp" />
-    <ClInclude Include="UEFIpp\Include\UEFIpp\UEFI\UEFI.hpp" />
-    <ClInclude Include="Uefi\Detour\Detour.hpp" />
-    <ClInclude Include="Uefi\Image\Image.hpp" />
-    <ClInclude Include="DFA\Alphabet.hpp" />
-    <ClInclude Include="Uefi\NVRAM\NVRAM.hpp" />
-    <ClInclude Include="Uefi\Util\Util.hpp" />
-  </ItemGroup>
-  <ItemGroup>
-    <MASM Include="UEFIpp\Include\UEFIpp\Architecture\X64\Cpu\RandomAsm.asm" />
-    <MASM Include="UEFIpp\Source\Memory\MemoryAsm.asm" />
+    <None Include="UEFIpp.props" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
