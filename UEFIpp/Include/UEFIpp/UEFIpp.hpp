@@ -2,13 +2,12 @@
 
 #include <UEFIpp/Foundation/Foundation.hpp>
 #include <UEFIpp/Diagnostics/Diagnostics.hpp>
+#include <UEFIpp/IO/IO.hpp>
 #include <UEFIpp/Protocols/Protocols.hpp>
-#include <UEFIpp/Stream/Stream.hpp>
 #include <UEFIpp/UEFI/UEFI.hpp>
 #include <UEFIpp/Architecture/Architecture.hpp>
 #include <UEFIpp/Memory/Memory.hpp>
 #include <UEFIpp/CRT/CRT.hpp>
-#include <UEFIpp/Text/Text.hpp>
 #include <UEFIpp/Library/Library.hpp>
 #include <UEFIpp/FileSystem/FileSystem.hpp>
 #include <UEFIpp/Reverse/Reverse.hpp>
@@ -16,7 +15,7 @@
 #include <sal.h>
 
 namespace UEFI = UEFIpp::UEFI;
-namespace Stream = UEFIpp::Stream;
+namespace IO = UEFIpp::IO;
 namespace Foundation = UEFIpp::Foundation;
 namespace Diagnostics = UEFIpp::Diagnostics;
 namespace Protocols = UEFIpp::Protocols;

@@ -22,6 +22,9 @@
     <ClCompile Include="Source\Library\Functional.cpp">
       <Filter>Source\Library</Filter>
     </ClCompile>
+    <ClCompile Include="Source\Library\Io.cpp">
+      <Filter>Source\Library</Filter>
+    </ClCompile>
     <ClCompile Include="Source\Library\Ownership.cpp">
       <Filter>Source\Library</Filter>
     </ClCompile>

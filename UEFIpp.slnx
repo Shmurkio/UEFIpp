@@ -18,7 +18,7 @@
   </Folder>
   <Folder Name="/Documentation/Guides/">
     <File Path="docs\guides\protocols.md" />
-    <File Path="docs\guides\streams-and-files.md" />
+    <File Path="docs\guides\io-and-files.md" />
     <File Path="docs\guides\symbols.md" />
     <File Path="docs\guides\x64-code.md" />
   </Folder>
@@ -30,12 +30,11 @@
     <File Path="docs\reference\filesystem.md" />
     <File Path="docs\reference\foundation.md" />
     <File Path="docs\reference\header-index.md" />
+    <File Path="docs\reference\io.md" />
     <File Path="docs\reference\library.md" />
     <File Path="docs\reference\memory.md" />
     <File Path="docs\reference\protocols.md" />
     <File Path="docs\reference\reverse.md" />
-    <File Path="docs\reference\streams.md" />
-    <File Path="docs\reference\text.md" />
     <File Path="docs\reference\uefi.md" />
   </Folder>
 </Solution>

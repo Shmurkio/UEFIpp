@@ -3,7 +3,7 @@
 #include <intrin.h>
 
 #include <UEFIpp/Foundation/Foundation.hpp>
-#include <UEFIpp/Stream/Stream.hpp>
+#include <UEFIpp/IO/Text/Format.hpp>
 
 #ifndef UEFIPP_TRACE_MODULE
 #define UEFIPP_TRACE_MODULE UnknownModule
@@ -24,20 +24,20 @@ struct TraceEntry final {
 __declspec(noinline) auto CurrentInstructionAddress() noexcept
     -> const Foundation::Void *;
 
-template <typename TSink>
-auto operator<<(Stream::Output<TSink> &Stream, const TraceEntry &Entry)
-    -> Stream::Output<TSink> & {
-  const auto State = Stream.SaveState();
-
-  Stream << '[' << Entry.Module << '|' << Entry.Source.Function << ':'
-         << Stream::Decimal << Entry.Source.Line << ", 0x"
-         << Entry.InstructionAddress << ", RIP: 0x" << Entry.ReturnAddress
-         << "] ";
-
-  Stream.RestoreState(State);
-  return Stream;
-}
 } // namespace UEFIpp::Diagnostics
+
+namespace UEFIpp::IO {
+template <>
+struct Formatter<Diagnostics::TraceEntry> {
+  [[nodiscard]] auto Format(WriterRef Writer,
+                            const Diagnostics::TraceEntry &Entry,
+                            const FormatSpec &) const -> Result<> {
+    return Print(Writer, "[{}|{}:{}, {}, RIP: {}] ", Entry.Module,
+                 Entry.Source.Function, Entry.Source.Line,
+                 Entry.InstructionAddress, Entry.ReturnAddress);
+  }
+};
+} // namespace UEFIpp::IO
 
 #define Trace()                                                                \
   ::UEFIpp::Diagnostics::TraceEntry {                                          \

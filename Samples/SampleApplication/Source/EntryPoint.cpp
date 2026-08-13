@@ -1,7 +1,7 @@
 #include <UEFIpp/UEFIpp.hpp>
 
 [[nodiscard]] extern auto Main(
-	const UEFIpp::Library::Vector<UEFIpp::Library::String>& Args
+	const UEFIpp::Library::Vector<UEFIpp::Library::U8String>& Args
 ) -> UEFI::MainResult;
 
 namespace
@@ -97,16 +97,33 @@ extern "C" auto EfiMain(
 		}
 	}
 
-	UEFIpp::Library::Vector<UEFIpp::Library::String> Args{};
+	UEFIpp::Library::Vector<UEFIpp::Library::U8String> Args{};
 
 	for (const auto& Arg : RawArgs)
 	{
-		auto Narrow = UEFIpp::Text::Encoding::WideToAscii(Arg.View());
-		if (!Args.PushBack(Narrow))
+		auto Utf8 = UEFIpp::IO::WideToUtf8(Arg.View());
+		if (!Utf8 || !Args.PushBack(Foundation::Utility::Move(Utf8.Value())))
 		{
 			return UEFI::ToStatusValue(UEFI::StatusCode::OutOfResources);
 		}
 	}
 
-	return UEFI::ToStatusValue(Main(Args));
+	const auto Result = Main(Args);
+	const auto Flushed = IO::SystemIO().Flush();
+
+	if (!Result)
+	{
+		return UEFI::ToStatusValue(Result);
+	}
+
+	if (!Flushed)
+	{
+		return UEFI::ToStatusValue(
+			Flushed.Error().Code == IO::ErrorCode::Firmware
+				? Flushed.Error().Status.Code()
+				: UEFI::StatusCode::DeviceError
+		);
+	}
+
+	return UEFI::ToStatusValue(UEFI::StatusCode::Success);
 }

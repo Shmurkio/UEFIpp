@@ -6,9 +6,7 @@ namespace SampleApplication
 		StringView Name
 	) -> Foundation::Void
 	{
-		Stream::Out::Console
-			<< Stream::Endl
-			<< "-- " << Name << " --" << Stream::Endl;
+		(void)IO::Println(IO::SystemIO().Console(), "\n-- {} --", Name);
 	}
 
 	auto TestSuite::Check(
@@ -20,19 +18,16 @@ namespace SampleApplication
 		{
 			++Passed_;
 
-			Stream::Out::Console
-				<< "  [pass] " << Description << Stream::Endl;
+			(void)IO::Println(IO::SystemIO().Console(), "  [pass] {}", Description);
 
 			return;
 		}
 
 		++Failed_;
 
-		Stream::Out::Console
-			<< "  [FAIL] " << Description << Stream::Endl;
-
-		Stream::Out::Serial
-			<< Trace() << "Failed: " << Description << Stream::Endl;
+		auto& Io = IO::SystemIO();
+		(void)IO::Println(Io.Console(), "  [FAIL] {}", Description);
+		UEFIPP_LOG(Io.Log(), IO::Severity::Error, "Failed: {}", Description);
 	}
 
 	auto TestSuite::Passed() const -> Foundation::Size

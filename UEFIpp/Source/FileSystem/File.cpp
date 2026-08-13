@@ -5,7 +5,7 @@
 #include <UEFIpp/Protocols/LoadedImage.hpp>
 #include <UEFIpp/Protocols/SimpleFileSystem.hpp>
 #include <UEFIpp/Protocols/Traits.hpp>
-#include <UEFIpp/Text/Encoding.hpp>
+#include <UEFIpp/IO/Text/Utf.hpp>
 #include <UEFIpp/UEFI/Context.hpp>
 
 namespace UEFIpp::FileSystem
@@ -80,12 +80,14 @@ namespace UEFIpp::FileSystem
 			Protocols::File& Handle,
 			const Path& Path,
 			FileInfo& Info,
-			Memory::AllocatorStub Allocator
+			Memory::AllocatorStub Allocator,
+			UEFI::Status* LastStatus = nullptr
 		) -> Foundation::Bool
 		{
 			Foundation::UintN InfoSize{};
 			auto Guid = FileInfoGuid;
 			auto Status = Handle.QueryInfo(Guid, nullptr, InfoSize);
+			if (LastStatus) *LastStatus = UEFI::Status{ Status };
 
 			if (Status != UEFI::StatusCode::BufferTooSmall || !InfoSize)
 			{
@@ -98,6 +100,7 @@ namespace UEFIpp::FileSystem
 
 			if (!RawBuffer)
 			{
+				if (LastStatus) *LastStatus = UEFI::Status{ UEFI::StatusCode::OutOfResources };
 				return false;
 			}
 
@@ -105,6 +108,7 @@ namespace UEFIpp::FileSystem
 
 			Guid = FileInfoGuid;
 			Status = Handle.QueryInfo(Guid, Buffer, InfoSize);
+			if (LastStatus) *LastStatus = UEFI::Status{ Status };
 
 			if (UEFI::IsError(Status))
 			{
@@ -140,17 +144,21 @@ namespace UEFIpp::FileSystem
 				delete[] RawBuffer;
 			}
 
+			if (LastStatus) *LastStatus = UEFI::Status{ UEFI::StatusCode::Success };
+
 			return true;
 		}
 
 		[[nodiscard]] auto OpenRoot(
 			UEFI::Handle FsHandle,
 			Protocols::File*& Root,
-			Memory::AllocatorStub Allocator
+			Memory::AllocatorStub Allocator,
+			UEFI::Status* LastStatus = nullptr
 		) -> Foundation::Bool
 		{
 			if (!FsHandle)
 			{
+				if (LastStatus) *LastStatus = UEFI::Status{ UEFI::StatusCode::InvalidParameter };
 				return false;
 			}
 
@@ -159,10 +167,12 @@ namespace UEFIpp::FileSystem
 
 			if (!FileSystem || !*FileSystem)
 			{
+				if (LastStatus) *LastStatus = UEFI::Status{ UEFI::StatusCode::NotFound };
 				return false;
 			}
 
 			const auto Status = (*FileSystem)->OpenRoot(Root);
+			if (LastStatus) *LastStatus = UEFI::Status{ Status };
 
 			return UEFI::IsSuccess(Status) && Root;
 		}
@@ -190,10 +200,14 @@ namespace UEFIpp::FileSystem
 		Handle_ = Other.Handle_;
 		Allocator_ = Other.Allocator_;
 		Info_ = Foundation::Utility::Move(Other.Info_);
+		FileSystemHandle_ = Other.FileSystemHandle_;
+		LastStatus_ = Other.LastStatus_;
 
 		Other.Handle_ = nullptr;
 		Other.Allocator_.Reset();
 		Other.Info_ = FileInfo{};
+		Other.FileSystemHandle_ = nullptr;
+		Other.LastStatus_ = UEFI::Status{};
 
 		return *this;
 	}
@@ -212,12 +226,13 @@ namespace UEFIpp::FileSystem
 
 		if (FilePath.Empty() || !FsHandle)
 		{
+			LastStatus_ = UEFI::Status{ UEFI::StatusCode::InvalidParameter };
 			return false;
 		}
 
 		Protocols::File* Root{};
 
-		if (!OpenRoot(FsHandle, Root, Allocator_))
+		if (!OpenRoot(FsHandle, Root, Allocator_, &LastStatus_))
 		{
 			return false;
 		}
@@ -225,24 +240,33 @@ namespace UEFIpp::FileSystem
 		Path NormalizedPath{ FilePath.View(), Allocator_ };
 		NormalizedPath.Normalize();
 
-		auto WidePath = Text::Encoding::ToWideAscii(
-			NormalizedPath.View(),
-			Allocator_
-		);
+		auto WidePath = IO::Utf8ToWide(
+			IO::AsUtf8(NormalizedPath.View()), Allocator_);
+		if (!WidePath)
+		{
+			LastStatus_ = UEFI::Status{ UEFI::StatusCode::InvalidParameter };
+			(void)Root->CloseFile();
+			return false;
+		}
 		Protocols::File* FileHandle{};
 
-		const auto Status = Root->OpenFile(FileHandle, WidePath.CStr(), ToOpenMask(Mode), CreateAttributesFor(Mode));
+		const auto Status = Root->OpenFile(FileHandle, WidePath.Value().CStr(), ToOpenMask(Mode), CreateAttributesFor(Mode));
+		LastStatus_ = UEFI::Status{ Status };
 
 		(void)Root->CloseFile();
 
 		if (UEFI::IsError(Status) || !FileHandle)
 		{
+			if (!FileHandle && !UEFI::IsError(Status))
+			{
+				LastStatus_ = UEFI::Status{ UEFI::StatusCode::DeviceError };
+			}
 			return false;
 		}
 
 		FileInfo NewInfo{ Allocator_ };
 
-		if (!QueryInfo(*FileHandle, NormalizedPath, NewInfo, Allocator_))
+		if (!QueryInfo(*FileHandle, NormalizedPath, NewInfo, Allocator_, &LastStatus_))
 		{
 			(void)FileHandle->CloseFile();
 			return false;
@@ -251,6 +275,7 @@ namespace UEFIpp::FileSystem
 		Handle_ = FileHandle;
 		FileSystemHandle_ = FsHandle;
 		Info_ = Foundation::Utility::Move(NewInfo);
+		LastStatus_ = UEFI::Status{};
 
 		return true;
 	}
@@ -276,6 +301,7 @@ namespace UEFIpp::FileSystem
 		if (!Handle_)
 		{
 			Info_ = FileInfo{ Allocator_ };
+			LastStatus_ = UEFI::Status{};
 			return true;
 		}
 
@@ -284,6 +310,7 @@ namespace UEFIpp::FileSystem
 		Info_ = FileInfo{ Allocator_ };
 
 		const auto Status = OldHandle->CloseFile();
+		LastStatus_ = UEFI::Status{ Status };
 		return UEFI::IsSuccess(Status);
 	}
 
@@ -291,6 +318,7 @@ namespace UEFIpp::FileSystem
 	{
 		if (!Handle_)
 		{
+			LastStatus_ = UEFI::Status{ UEFI::StatusCode::InvalidParameter };
 			return false;
 		}
 
@@ -299,6 +327,7 @@ namespace UEFIpp::FileSystem
 		Info_ = FileInfo{ Allocator_ };
 
 		const auto Status = OldHandle->DeleteFile();
+		LastStatus_ = UEFI::Status{ Status };
 		return !UEFI::IsError(Status);
 	}
 
@@ -306,11 +335,86 @@ namespace UEFIpp::FileSystem
 	{
 		if (!Handle_)
 		{
+			LastStatus_ = UEFI::Status{ UEFI::StatusCode::InvalidParameter };
 			return false;
 		}
 
 		const auto Status = Handle_->FlushFile();
+		LastStatus_ = UEFI::Status{ Status };
 		return !UEFI::IsError(Status);
+	}
+
+	auto File::Resize(Foundation::Uint64 Size) -> Foundation::Bool
+	{
+		if (!Handle_ || Info_.IsDirectory())
+		{
+			LastStatus_ = UEFI::Status{ UEFI::StatusCode::InvalidParameter };
+			return false;
+		}
+
+		Foundation::Uint64 OldPosition{};
+		auto PositionStatus = Handle_->CurrentPosition(OldPosition);
+		LastStatus_ = UEFI::Status{ PositionStatus };
+		if (UEFI::IsError(PositionStatus))
+		{
+			return false;
+		}
+
+		Foundation::UintN InfoSize{};
+		auto Guid = FileInfoGuid;
+		auto Status = Handle_->QueryInfo(Guid, nullptr, InfoSize);
+		LastStatus_ = UEFI::Status{ Status };
+		if (Status != UEFI::StatusCode::BufferTooSmall || !InfoSize)
+		{
+			return false;
+		}
+
+		auto* RawBuffer = Allocator_
+			? Allocator_.AllocateStorage<Foundation::Uint8>(InfoSize)
+			: new Foundation::Uint8[InfoSize];
+		if (!RawBuffer)
+		{
+			LastStatus_ = UEFI::Status{ UEFI::StatusCode::OutOfResources };
+			return false;
+		}
+
+		auto FreeBuffer = [&]()
+		{
+			if (Allocator_)
+			{
+				UEFIPP_VERIFY(Allocator_.Free(RawBuffer));
+			}
+			else
+			{
+				delete[] RawBuffer;
+			}
+		};
+
+		auto* Buffer = Foundation::Cast::Auto<RawFileInfo*>(RawBuffer);
+		Guid = FileInfoGuid;
+		Status = Handle_->QueryInfo(Guid, Buffer, InfoSize);
+		LastStatus_ = UEFI::Status{ Status };
+		if (UEFI::IsError(Status))
+		{
+			FreeBuffer();
+			return false;
+		}
+
+		Buffer->FileSize = Size;
+		Guid = FileInfoGuid;
+		Status = Handle_->UpdateInfo(Guid, Buffer, InfoSize);
+		LastStatus_ = UEFI::Status{ Status };
+		FreeBuffer();
+
+		if (UEFI::IsError(Status) || !QueryInfo(*Handle_, Info_.Path(), Info_, Allocator_, &LastStatus_))
+		{
+			return false;
+		}
+
+		const auto NewPosition = OldPosition < Size ? OldPosition : Size;
+		PositionStatus = Handle_->SetCurrentPosition(NewPosition);
+		LastStatus_ = UEFI::Status{ PositionStatus };
+		return !UEFI::IsError(PositionStatus);
 	}
 
 	auto File::Read(Library::Vector<Foundation::Uint8>& Buffer) -> Foundation::Bool
@@ -324,6 +428,7 @@ namespace UEFIpp::FileSystem
 
 		if (!Buffer.Resize(FileSize))
 		{
+			LastStatus_ = UEFI::Status{ UEFI::StatusCode::OutOfResources };
 			return false;
 		}
 
@@ -332,7 +437,9 @@ namespace UEFIpp::FileSystem
 			return true;
 		}
 
-		if (UEFI::IsError(Handle_->SetCurrentPosition(0)))
+		auto PositionStatus = Handle_->SetCurrentPosition(0);
+		LastStatus_ = UEFI::Status{ PositionStatus };
+		if (UEFI::IsError(PositionStatus))
 		{
 			Buffer.Clear();
 			return false;
@@ -340,6 +447,7 @@ namespace UEFIpp::FileSystem
 
 		auto ReadSize = Foundation::Cast::Auto<Foundation::UintN>(FileSize);
 		const auto Status = Handle_->ReadFile(Buffer.Data(), ReadSize);
+		LastStatus_ = UEFI::Status{ Status };
 
 		if (UEFI::IsError(Status) || ReadSize != FileSize)
 		{
@@ -357,6 +465,7 @@ namespace UEFIpp::FileSystem
 
 		if (!Handle_ || Info_.IsDirectory())
 		{
+			LastStatus_ = UEFI::Status{ UEFI::StatusCode::InvalidParameter };
 			return false;
 		}
 
@@ -375,11 +484,14 @@ namespace UEFIpp::FileSystem
 
 		if (!Buffer)
 		{
+			LastStatus_ = UEFI::Status{ UEFI::StatusCode::OutOfResources };
 			BufferSize = 0;
 			return false;
 		}
 
-		if (UEFI::IsError(Handle_->SetCurrentPosition(0)))
+		auto PositionStatus = Handle_->SetCurrentPosition(0);
+		LastStatus_ = UEFI::Status{ PositionStatus };
+		if (UEFI::IsError(PositionStatus))
 		{
 			UEFIPP_VERIFY(FreeReadBuffer(Buffer));
 			BufferSize = 0;
@@ -388,6 +500,7 @@ namespace UEFIpp::FileSystem
 
 		auto ReadSize = Foundation::Cast::Auto<Foundation::UintN>(BufferSize);
 		const auto Status = Handle_->ReadFile(Buffer, ReadSize);
+		LastStatus_ = UEFI::Status{ Status };
 
 		if (UEFI::IsError(Status) || ReadSize != BufferSize)
 		{
@@ -431,10 +544,13 @@ namespace UEFIpp::FileSystem
 	{
 		if (!Handle_ || Info_.IsDirectory() || (!Buffer && BufferSize != 0))
 		{
+			LastStatus_ = UEFI::Status{ UEFI::StatusCode::InvalidParameter };
 			return false;
 		}
 
-		if (UEFI::IsError(Handle_->SetCurrentPosition(0)))
+		auto PositionStatus = Handle_->SetCurrentPosition(0);
+		LastStatus_ = UEFI::Status{ PositionStatus };
+		if (UEFI::IsError(PositionStatus))
 		{
 			return false;
 		}
@@ -446,13 +562,14 @@ namespace UEFIpp::FileSystem
 
 		auto WriteSize = Foundation::Cast::Auto<Foundation::UintN>(BufferSize);
 		const auto Status = Handle_->WriteFile(Buffer, WriteSize);
+		LastStatus_ = UEFI::Status{ Status };
 
 		if (UEFI::IsError(Status) || WriteSize != BufferSize)
 		{
 			return false;
 		}
 
-		return QueryInfo(*Handle_, Info_.Path(), Info_, Allocator_);
+		return QueryInfo(*Handle_, Info_.Path(), Info_, Allocator_, &LastStatus_);
 	}
 
 	auto File::Write(const Library::Vector<Foundation::Uint8>& Buffer, Foundation::Uint64 Position) -> Foundation::Bool
@@ -464,10 +581,13 @@ namespace UEFIpp::FileSystem
 	{
 		if (!Handle_ || Info_.IsDirectory() || (!Buffer && BufferSize != 0))
 		{
+			LastStatus_ = UEFI::Status{ UEFI::StatusCode::InvalidParameter };
 			return false;
 		}
 
-		if (UEFI::IsError(Handle_->SetCurrentPosition(Position)))
+		auto PositionStatus = Handle_->SetCurrentPosition(Position);
+		LastStatus_ = UEFI::Status{ PositionStatus };
+		if (UEFI::IsError(PositionStatus))
 		{
 			return false;
 		}
@@ -479,13 +599,14 @@ namespace UEFIpp::FileSystem
 
 		auto WriteSize = Foundation::Cast::Auto<Foundation::UintN>(BufferSize);
 		const auto Status = Handle_->WriteFile(Buffer, WriteSize);
+		LastStatus_ = UEFI::Status{ Status };
 
 		if (UEFI::IsError(Status) || WriteSize != BufferSize)
 		{
 			return false;
 		}
 
-		return QueryInfo(*Handle_, Info_.Path(), Info_, Allocator_);
+		return QueryInfo(*Handle_, Info_.Path(), Info_, Allocator_, &LastStatus_);
 	}
 
 	auto File::Append(const Library::Vector<Foundation::Uint8>& Buffer) -> Foundation::Bool
@@ -497,10 +618,13 @@ namespace UEFIpp::FileSystem
 	{
 		if (!Handle_ || Info_.IsDirectory() || (!Buffer && BufferSize != 0))
 		{
+			LastStatus_ = UEFI::Status{ UEFI::StatusCode::InvalidParameter };
 			return false;
 		}
 
-		if (UEFI::IsError(Handle_->SetCurrentPosition(Foundation::Uint64(-1))))
+		auto PositionStatus = Handle_->SetCurrentPosition(Foundation::Uint64(-1));
+		LastStatus_ = UEFI::Status{ PositionStatus };
+		if (UEFI::IsError(PositionStatus))
 		{
 			return false;
 		}
@@ -512,23 +636,26 @@ namespace UEFIpp::FileSystem
 
 		auto WriteSize = Foundation::Cast::Auto<Foundation::UintN>(BufferSize);
 		const auto Status = Handle_->WriteFile(Buffer, WriteSize);
+		LastStatus_ = UEFI::Status{ Status };
 
 		if (UEFI::IsError(Status) || WriteSize != BufferSize)
 		{
 			return false;
 		}
 
-		return QueryInfo(*Handle_, Info_.Path(), Info_, Allocator_);
+		return QueryInfo(*Handle_, Info_.Path(), Info_, Allocator_, &LastStatus_);
 	}
 
 	auto File::Position(Foundation::Uint64& Position) -> Foundation::Bool
 	{
 		if (!Handle_)
 		{
+			LastStatus_ = UEFI::Status{ UEFI::StatusCode::InvalidParameter };
 			return false;
 		}
 
 		const auto Status = Handle_->CurrentPosition(Position);
+		LastStatus_ = UEFI::Status{ Status };
 
 		return UEFI::IsSuccess(Status);
 	}

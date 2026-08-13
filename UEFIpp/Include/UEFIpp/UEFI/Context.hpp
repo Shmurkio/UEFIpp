@@ -30,6 +30,11 @@ public:
   [[nodiscard]] static auto HasConsoleIn() noexcept -> Foundation::Bool;
   [[nodiscard]] static auto HasConsoleOut() noexcept -> Foundation::Bool;
   [[nodiscard]] static auto HasImageHandle() noexcept -> Foundation::Bool;
+  [[nodiscard]] static auto HasBootServices() noexcept -> Foundation::Bool;
+  // Flushes boot-service-backed I/O before calling firmware ExitBootServices.
+  [[nodiscard]] static auto PrepareExitBootServices() -> Foundation::Bool;
+  // Call immediately after firmware ExitBootServices succeeds.
+  static auto ExitBootServicesSucceeded() noexcept -> Foundation::Void;
   [[nodiscard]] static auto ImageHandle() -> Handle;
   [[nodiscard]] static auto CrtMemoryType() -> MemoryType;
   [[nodiscard]] static auto IsInitialized() noexcept -> Foundation::Bool;

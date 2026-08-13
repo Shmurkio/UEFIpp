@@ -45,6 +45,7 @@ Umbrella headers collect the headers beneath them; leaf headers declare the name
 | [`Library/Containers/Vector.hpp`](../../UEFIpp/Include/UEFIpp/Library/Containers/Vector.hpp) | Owning dynamic contiguous vector and small algorithms |
 | [`Library/Containers/Optional.hpp`](../../UEFIpp/Include/UEFIpp/Library/Containers/Optional.hpp) | Optional in-place value |
 | [`Library/Containers/Expected.hpp`](../../UEFIpp/Include/UEFIpp/Library/Containers/Expected.hpp) | Value-or-error and void-or-error results |
+| [`Library/Containers/Tuple.hpp`](../../UEFIpp/Include/UEFIpp/Library/Containers/Tuple.hpp) | Recursive heterogeneous tuple, `Get`, and `MakeTuple` |
 | [`Library/Functional/Functional.hpp`](../../UEFIpp/Include/UEFIpp/Library/Functional/Functional.hpp) | Callable and event umbrella |
 | [`Library/Functional/FunctionDetail.hpp`](../../UEFIpp/Include/UEFIpp/Library/Functional/FunctionDetail.hpp) | Internal callable invocation helper used by templates |
 | [`Library/Functional/FunctionRef.hpp`](../../UEFIpp/Include/UEFIpp/Library/Functional/FunctionRef.hpp) | Non-owning callable reference |
@@ -98,21 +99,42 @@ Umbrella headers collect the headers beneath them; leaf headers declare the name
 | [`Protocols/Tcp4.hpp`](../../UEFIpp/Include/UEFIpp/Protocols/Tcp4.hpp) | TCP4 and shared IPv4/network ABI structures |
 | [`Protocols/Udp4.hpp`](../../UEFIpp/Include/UEFIpp/Protocols/Udp4.hpp) | UDP4 configuration, tokens, packet ABI |
 
-## Stream
+## IO
 
 | Header | Contents |
 | --- | --- |
-| [`Stream/Stream.hpp`](../../UEFIpp/Include/UEFIpp/Stream/Stream.hpp) | Complete streams umbrella |
-| [`Stream/Formatting/Common.hpp`](../../UEFIpp/Include/UEFIpp/Stream/Formatting/Common.hpp) | Formatting state enums and manipulators |
-| [`Stream/Formatting/HexDump.hpp`](../../UEFIpp/Include/UEFIpp/Stream/Formatting/HexDump.hpp) | Configurable byte dump |
-| [`Stream/Output/Output.hpp`](../../UEFIpp/Include/UEFIpp/Stream/Output/Output.hpp) | Generic buffered formatted output |
-| [`Stream/Output/ConsoleSink.hpp`](../../UEFIpp/Include/UEFIpp/Stream/Output/ConsoleSink.hpp) | Console sink and `Out::Console` |
-| [`Stream/Output/SerialSink.hpp`](../../UEFIpp/Include/UEFIpp/Stream/Output/SerialSink.hpp) | Serial-port sink and `Out::Serial` |
-| [`Stream/Output/FileSink.hpp`](../../UEFIpp/Include/UEFIpp/Stream/Output/FileSink.hpp) | High-level file output sink |
-| [`Stream/Input/Input.hpp`](../../UEFIpp/Include/UEFIpp/Stream/Input/Input.hpp) | Generic input, extraction, input events |
-| [`Stream/Input/ConsoleSource.hpp`](../../UEFIpp/Include/UEFIpp/Stream/Input/ConsoleSource.hpp) | Extended console source and `In::Console` |
-| [`Stream/File/FileInputStream.hpp`](../../UEFIpp/Include/UEFIpp/Stream/File/FileInputStream.hpp) | Buffered file input, lines/tokens/seeking |
-| [`Stream/File/FileOutputStream.hpp`](../../UEFIpp/Include/UEFIpp/Stream/File/FileOutputStream.hpp) | Formatted and raw file output |
+| [`IO/IO.hpp`](../../UEFIpp/Include/UEFIpp/IO/IO.hpp) | Complete I/O umbrella |
+| [`IO/Context.hpp`](../../UEFIpp/Include/UEFIpp/IO/Context.hpp) | Standard console/serial/input/event/logging context |
+| [`IO/Core/Core.hpp`](../../UEFIpp/Include/UEFIpp/IO/Core/Core.hpp) | Core umbrella |
+| [`IO/Core/Error.hpp`](../../UEFIpp/Include/UEFIpp/IO/Core/Error.hpp) | Rich I/O errors and `Result<T>` |
+| [`IO/Core/Concepts.hpp`](../../UEFIpp/Include/UEFIpp/IO/Core/Concepts.hpp) | Structural source, sink, and capability concepts |
+| [`IO/Core/Operations.hpp`](../../UEFIpp/Include/UEFIpp/IO/Core/Operations.hpp) | Exact/all transfers, flush, close |
+| [`IO/Core/Options.hpp`](../../UEFIpp/Include/UEFIpp/IO/Core/Options.hpp) | Cancellation and wait options |
+| [`IO/Core/WriterRef.hpp`](../../UEFIpp/Include/UEFIpp/IO/Core/WriterRef.hpp) | Borrowed writer type erasure |
+| [`IO/Core/ReaderRef.hpp`](../../UEFIpp/Include/UEFIpp/IO/Core/ReaderRef.hpp) | Borrowed reader type erasure |
+| [`IO/Core/AnyIO.hpp`](../../UEFIpp/Include/UEFIpp/IO/Core/AnyIO.hpp) | Owning inline writer/reader type erasure |
+| [`IO/Adapter/Adapter.hpp`](../../UEFIpp/Include/UEFIpp/IO/Adapter/Adapter.hpp) | Adapter umbrella |
+| [`IO/Adapter/Buffered.hpp`](../../UEFIpp/Include/UEFIpp/IO/Adapter/Buffered.hpp) | Bounded output/input buffering and lookahead |
+| [`IO/Adapter/Newline.hpp`](../../UEFIpp/Include/UEFIpp/IO/Adapter/Newline.hpp) | Explicit newline policies |
+| [`IO/Adapter/Utility.hpp`](../../UEFIpp/Include/UEFIpp/IO/Adapter/Utility.hpp) | Null, counting, fixed, memory, and tee adapters |
+| [`IO/Adapter/Advanced.hpp`](../../UEFIpp/Include/UEFIpp/IO/Adapter/Advanced.hpp) | Prefix, hash, rate, ANSI, fault, and ring adapters |
+| [`IO/Transport/Transport.hpp`](../../UEFIpp/Include/UEFIpp/IO/Transport/Transport.hpp) | Transport umbrella |
+| [`IO/Transport/Console.hpp`](../../UEFIpp/Include/UEFIpp/IO/Transport/Console.hpp) | UTF-8 console and terminal capabilities |
+| [`IO/Transport/Serial.hpp`](../../UEFIpp/Include/UEFIpp/IO/Transport/Serial.hpp) | Bounded raw serial transport |
+| [`IO/Transport/File.hpp`](../../UEFIpp/Include/UEFIpp/IO/Transport/File.hpp) | Partial, seekable file source and sink |
+| [`IO/Text/Text.hpp`](../../UEFIpp/Include/UEFIpp/IO/Text/Text.hpp) | Text umbrella |
+| [`IO/Text/Utf.hpp`](../../UEFIpp/Include/UEFIpp/IO/Text/Utf.hpp) | Incremental UTF and validated conversions |
+| [`IO/Text/Writer.hpp`](../../UEFIpp/Include/UEFIpp/IO/Text/Writer.hpp) | UTF-8 writing helpers |
+| [`IO/Text/Format.hpp`](../../UEFIpp/Include/UEFIpp/IO/Text/Format.hpp) | Checked formatting, runtime arguments, formatters, hex dump |
+| [`IO/Text/Reader.hpp`](../../UEFIpp/Include/UEFIpp/IO/Text/Reader.hpp) | Bounded Unicode text reading |
+| [`IO/Text/Scan.hpp`](../../UEFIpp/Include/UEFIpp/IO/Text/Scan.hpp) | Typed parsing and transactional scanning |
+| [`IO/Text/Operators.hpp`](../../UEFIpp/Include/UEFIpp/IO/Text/Operators.hpp) | Result-aware output chaining and atomic typed extraction operators |
+| [`IO/Terminal/TerminalIO.hpp`](../../UEFIpp/Include/UEFIpp/IO/Terminal/TerminalIO.hpp) | Terminal umbrella |
+| [`IO/Terminal/Terminal.hpp`](../../UEFIpp/Include/UEFIpp/IO/Terminal/Terminal.hpp) | Typed key, wait, coroutine, style, and cursor API |
+| [`IO/Terminal/EventLoop.hpp`](../../UEFIpp/Include/UEFIpp/IO/Terminal/EventLoop.hpp) | Fixed-capacity UEFI coroutine event loop |
+| [`IO/Terminal/LineEditor.hpp`](../../UEFIpp/Include/UEFIpp/IO/Terminal/LineEditor.hpp) | Unicode-aware interactive line editor |
+| [`IO/Logging/Logging.hpp`](../../UEFIpp/Include/UEFIpp/IO/Logging/Logging.hpp) | Logging umbrella |
+| [`IO/Logging/Logger.hpp`](../../UEFIpp/Include/UEFIpp/IO/Logging/Logger.hpp) | Structured multi-sink logger and panic writer |
 
 ## FileSystem
 
@@ -124,15 +146,6 @@ Umbrella headers collect the headers beneath them; leaf headers declare the name
 | [`FileSystem/FileInfo.hpp`](../../UEFIpp/Include/UEFIpp/FileSystem/FileInfo.hpp) | Path, sizes, timestamps, and attributes |
 | [`FileSystem/FileAttributes.hpp`](../../UEFIpp/Include/UEFIpp/FileSystem/FileAttributes.hpp) | File attribute mask wrapper |
 | [`FileSystem/Time.hpp`](../../UEFIpp/Include/UEFIpp/FileSystem/Time.hpp) | File calendar timestamp value |
-
-## Text
-
-| Header | Contents |
-| --- | --- |
-| [`Text/Text.hpp`](../../UEFIpp/Include/UEFIpp/Text/Text.hpp) | Text umbrella |
-| [`Text/Encoding.hpp`](../../UEFIpp/Include/UEFIpp/Text/Encoding.hpp) | UTF-8/16/32 and ASCII conversion |
-| [`Text/Format.hpp`](../../UEFIpp/Include/UEFIpp/Text/Format.hpp) | Integer, GUID, and status formatting |
-| [`Text/Parse.hpp`](../../UEFIpp/Include/UEFIpp/Text/Parse.hpp) | Strict decimal, hexadecimal, and GUID parsing |
 
 ## Memory
 

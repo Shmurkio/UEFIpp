@@ -6,7 +6,6 @@
 #include <UEFIpp/Library/Containers/Optional.hpp>
 #include <UEFIpp/Library/Containers/Vector.hpp>
 #include <UEFIpp/Protocols/Traits.hpp>
-#include <UEFIpp/Stream/Output/Output.hpp>
 #include <UEFIpp/UEFI/BootServices.hpp>
 #include <UEFIpp/UEFI/Status.hpp>
 #include <UEFIpp/UEFI/Types.hpp>

@@ -151,7 +151,7 @@ for (const auto& Instruction : Listing->Instructions())
 
     if (Text)
     {
-        Stream::Out::Console << *Text << Stream::Endl;
+        (void)IO::Println(IO::SystemIO().Console(), "{}", *Text);
     }
 }
 ```

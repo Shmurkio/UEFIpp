@@ -12,7 +12,7 @@ This has several consequences:
 - do not assume the full C++ standard library is present;
 - treat allocation as fallible even when a constructor cannot report it directly;
 - keep firmware ABI types and callback signatures exact;
-- use UEFIpp's `String`, `Vector`, `Optional`, `Expected`, ownership types, and streams.
+- use UEFIpp's `U8String`, containers, ownership types, and result-based I/O.
 
 ## Error handling
 
@@ -80,10 +80,8 @@ const UEFI::Status Result{ RawStatus };
 
 if (Result.Failed())
 {
-    Stream::Out::Serial
-        << "Operation failed: "
-        << UEFI::StatusName(Result.Code())
-        << Stream::Endl;
+    (void)IO::Println(IO::SystemIO().Serial(),
+                      "Operation failed: {}", Result);
 }
 ```
 

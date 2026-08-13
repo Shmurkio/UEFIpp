@@ -39,7 +39,7 @@ Shift and toggle masks include validity bits. Check validity before interpreting
 
 `SimpleTextOutput` exposes reset, string output/testing, mode query/set, attribute selection, clear screen, cursor position, and cursor visibility. `SimpleTextOutputMode` holds current mode, dimensions, attributes, and cursor state.
 
-For normal output use `Stream::Out::Console`, which handles buffering and narrow/wide conversion.
+For normal output use `IO::SystemIO().Console()` with `IO::Print`; it buffers UTF-8 and performs validated UTF-16 conversion at the firmware boundary.
 
 ## Loaded image
 

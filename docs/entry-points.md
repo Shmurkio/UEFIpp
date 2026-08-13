@@ -43,7 +43,7 @@ An application receives parsed command-line arguments:
 
 ```cpp
 [[nodiscard]] auto Main(
-    const Vector<String>& Args
+    const Vector<U8String>& Args
 ) -> UEFI::MainResult;
 ```
 
@@ -53,12 +53,15 @@ The application adapter performs the following work:
 2. Verifies that console input and output are available.
 3. Looks up `Protocols::LoadedImage` on the current image handle.
 4. Parses the UTF-16 `LoadOptions` command line, including quoted arguments.
-5. Converts arguments to narrow `String` objects.
-6. Calls `Main(Args)` and returns its status to firmware.
+5. Validates and converts arguments to UTF-8 `U8String` objects.
+6. Calls `Main(Args)`.
+7. Flushes the process-wide console and serial pipelines.
+8. Returns the application failure, or a flush failure when `Main` succeeded,
+   to firmware.
 
 Adapter failures use meaningful firmware codes: invalid context becomes `InvalidParameter`, missing console support becomes `Unsupported`, and allocation failures become `OutOfResources`.
 
-An application should not call `Context::Normalize` again. By the time `Main` runs, console/serial globals, pool allocation, the system table, boot services, runtime services, and the image handle are ready.
+An application should not call `Context::Normalize` again. By the time `Main` runs, `IO::SystemIO()`, pool allocation, the system table, boot services, runtime services, and the image handle are ready.
 
 ## Driver `Main` and unload
 
@@ -77,8 +80,8 @@ namespace
         [[maybe_unused]] UEFI::Handle ImageHandle
     ) -> UEFI::StatusCode
     {
-        Stream::Out::Serial
-            << Trace() << "Driver unloaded" << Stream::Endl;
+        UEFIPP_LOG(IO::SystemIO().Log(), IO::Severity::Info,
+                   "Driver unloaded");
 
         return UEFI::StatusCode::Success;
     }
@@ -102,7 +105,10 @@ namespace
 }
 ```
 
-The unload callback returns a raw `StatusCode` because that function pointer is part of the UEFI protocol ABI. `MainResult` is for the C++ boundary controlled by the project.
+The driver adapter also flushes the process-wide console and serial pipelines
+after `Main`. The unload callback returns a raw `StatusCode` because that
+function pointer is part of the UEFI protocol ABI. `MainResult` is for the C++
+boundary controlled by the project.
 
 ## `UEFI::Context`
 
@@ -118,6 +124,10 @@ The unload callback returns a raw `StatusCode` because that function pointer is 
 | `ConsoleIn()` / `ConsoleOut()` | Returns normalized console protocol references |
 | `HasConsoleIn()` / `HasConsoleOut()` | Checks console availability before taking a reference |
 | `ImageHandle()` / `HasImageHandle()` | Accesses the current image handle |
+| `HasBootServices()` | Reports whether boot-service-backed capabilities remain valid |
+| `IO::SystemIO().Flush()` | Publishes buffered console and serial output and returns the first failure |
+| `PrepareExitBootServices()` | Flushes the standard output pipelines before invoking firmware `ExitBootServices` |
+| `ExitBootServicesSucceeded()` | Invalidates boot-only I/O without firmware calls after exit succeeds |
 | `CrtMemoryType()` | Reports the pool type used by the freestanding runtime |
 | `IsInitialized()` | Reports whether attachment succeeded |
 
@@ -138,22 +148,18 @@ const auto Ready = UEFI::Context::Normalize(
 
 The checked-in adapters use the defaults. Change them only if the platform or image lifetime requires a different choice. In particular, memory allocated as boot-services data must not be treated as valid after `ExitBootServices`.
 
-## Trace module names
+## Logging module names
 
-`Trace()` captures the project module, function, source line, current instruction address, and return address. `UEFIpp.props` defines the module as `$(ProjectName)` for every consuming project:
+The structured logger records module, severity, timestamp, and source location. Set the module during project initialization and use `UEFIPP_LOG` to capture the call site:
 
 ```cpp
-Stream::Out::Serial
-    << Trace() << "Network initialization failed" << Stream::Endl;
+auto& Log = IO::SystemIO().Log();
+Log.SetModule(u8"NetworkDriver");
+UEFIPP_LOG(Log, IO::Severity::Error,
+           "network initialization failed: {}", Status);
 ```
 
-The prefix resembles:
-
-```text
-[SampleDxe|Main:42, 0x..., RIP: 0x...] Network initialization failed
-```
-
-This is deliberately resolved at each call site. A trace written inside `UEFIpp.lib` identifies UEFIpp; a trace written inside your driver identifies your project.
+The default module is `UEFIpp`. A project can still format `Diagnostics::TraceEntry` when instruction/return addresses are specifically useful, but ordinary diagnostics should use structured logging.
 
 ## Keep the adapter thin
 

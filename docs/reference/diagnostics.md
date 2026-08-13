@@ -1,42 +1,31 @@
 # Diagnostics reference
 
-`UEFIpp::Diagnostics` currently provides structured call-site tracing.
+Ordinary diagnostics use `IO::Logger`; `UEFIpp::Diagnostics` additionally provides low-level instruction/return-address capture.
 
-Focused umbrella: `UEFIpp/Diagnostics/Diagnostics.hpp`.
+## Structured logging
 
-## `Trace()`
-
-`Trace()` expands at the call site into a `TraceEntry` containing:
-
-- the compile-time module name;
-- source function and line;
-- the current instruction address;
-- the caller return address.
-
-Write it to any UEFIpp output stream:
+`IO::SystemIO().Log()` is initialized with serial output, a cycle timestamp source, and module `UEFIpp`. Configure a project module and emit compile-time checked messages:
 
 ```cpp
-Stream::Out::Serial
-    << Trace() << "Controller started" << Stream::Endl;
+auto& Log = IO::SystemIO().Log();
+Log.SetModule(u8"ControllerDriver");
+UEFIPP_LOG(Log, IO::Severity::Info, "controller {} started", Controller);
 ```
 
-`operator<<` temporarily changes formatting to render addresses and restores the stream afterward.
+`Logger` supports severity filtering, multiple sinks, source locations, timestamps, and named fields. See the [I/O reference](io.md#logging-and-context).
 
-## Automatic module names
+## `Diagnostics::Trace()`
 
-`UEFIpp.props` defines `UEFIPP_TRACE_MODULE` from `$(ProjectName)`. Because each translation unit expands the macro itself, traces automatically identify the application, driver, or library project that contains the call.
+`Trace()` expands at the call site into a `TraceEntry` containing the compile-time module, function, line, current instruction address, and caller return address. It has an `IO::Formatter` specialization:
 
-Override `UEFIppTraceModule` in a project property group if its display name should differ from the project name. The fallback module is `UnknownModule` if the property sheet was not imported.
+```cpp
+(void)IO::Println(IO::SystemIO().Serial(), "{} controller started", Trace());
+```
 
-## Performance and safety
+`UEFIpp.props` defines `UEFIPP_TRACE_MODULE` from `$(ProjectName)`. Override `UEFIppTraceModule` when its display name should differ. Captured addresses are diagnostic and are not stable identifiers across builds or relocation.
 
-Trace entries capture return addresses through MSVC intrinsics and are primarily diagnostic. Avoid treating captured addresses as stable identifiers across builds or relocations.
+## Panic path
 
-Serial output is suitable for drivers that cannot assume a console. Like any I/O, excessive tracing can affect timing. Keep high-frequency traces behind appropriate project/configuration policy.
+Assertions write through `IO::PanicWriter` before breaking and halting. This path uses no allocation or lock and is configured to direct serial output. It is deliberately smaller and more dependable than the normal structured logger.
 
-## Headers
-
-- `Trace.hpp` defines `TraceEntry`, address capture, stream formatting, and the macro.
-- `Diagnostics.hpp` is the focused umbrella.
-
-See [Applications and drivers](../entry-points.md#trace-module-names) for project configuration.
+Headers: `Diagnostics/Trace.hpp`, `Diagnostics/Diagnostics.hpp`, and `IO/Logging/Logging.hpp`.

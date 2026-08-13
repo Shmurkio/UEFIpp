@@ -23,4 +23,5 @@ namespace SampleApplication
 	auto RunContainerSamples(TestSuite& Tests) -> Foundation::Void;
 	auto RunFunctionalSamples(TestSuite& Tests) -> Foundation::Void;
 	auto RunOwnershipSamples(TestSuite& Tests) -> Foundation::Void;
+	auto RunIoSamples(TestSuite& Tests) -> Foundation::Void;
 }

@@ -20,7 +20,7 @@ Warnings do not set the UEFI error bit. Consequently, `Status::Succeeded()` is t
 
 ## Context
 
-`Context` normalizes the firmware tables, image handle, console/serial streams, and runtime allocation environment. Its API and lifetime rules are detailed in [Applications and drivers](../entry-points.md#ueficontext).
+`Context` normalizes firmware tables, the image handle, standard I/O, and the runtime allocation environment. Its API and lifetime rules are detailed in [Applications and drivers](../entry-points.md#ueficontext).
 
 The context stores borrowed pointers. It does not own or copy the UEFI system, boot-services, runtime-services, or console tables.
 
@@ -50,7 +50,7 @@ inline constexpr UEFI::Guid ProtocolId
 };
 ```
 
-Streams can print a GUID, `Text::Format::Guid` converts it to a string, and `Text::Parse::Guid` parses the canonical hyphenated form.
+`IO::Print` formats GUIDs directly and `IO::Parse<UEFI::Guid>` parses the canonical hyphenated form.
 
 ## System table
 

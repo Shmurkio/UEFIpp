@@ -1,6 +1,7 @@
 #include <UEFIpp/Reverse/SymbolResolver.hpp>
 #include <UEFIpp/Executable/Pe/Image.hpp>
-#include <UEFIpp/Stream/File/FileInputStream.hpp>
+#include <UEFIpp/IO/Text/Reader.hpp>
+#include <UEFIpp/IO/Transport/File.hpp>
 
 namespace UEFIpp::Reverse
 {
@@ -18,10 +19,11 @@ namespace UEFIpp::Reverse
 
 	auto SymbolResolver::Load(const FileSystem::Path& Path, const Foundation::Void* ImageBase, Foundation::Uint64) -> Foundation::Bool
 	{
-		Stream::FileInputStream File{ Allocator_ };
+		IO::FileSource File{ Allocator_ };
 		if (!File.Open(Path)) return false;
-		const auto& Buffer = File.Buffer();
-		return Load(Buffer.Data(), Buffer.Size(), ImageBase);
+		auto Buffer = IO::ReadAll(File, Allocator_);
+		if (!Buffer) return false;
+		return Load(Buffer.Value().Data(), Buffer.Value().Size(), ImageBase);
 	}
 
 	auto SymbolResolver::Load(const Library::Vector<Foundation::Uint8>& Pdb, const Foundation::Void* ImageBase, Foundation::Uint64) -> Foundation::Bool

@@ -6,8 +6,8 @@ namespace
 		[[maybe_unused]] UEFI::Handle ImageHandle
 	) -> UEFI::StatusCode
 	{
-		Stream::Out::Serial
-			<< Trace() << "SampleDxe unloaded" << Stream::Endl;
+		UEFIPP_LOG(IO::SystemIO().Log(), IO::Severity::Info,
+			"SampleDxe unloaded");
 
 		return UEFI::StatusCode::Success;
 	}
@@ -15,8 +15,7 @@ namespace
 
 [[nodiscard]] auto Main() -> UEFI::MainResult
 {
-	Stream::Out::Serial
-		<< Trace() << "SampleDxe loaded" << Stream::Endl;
+	UEFIPP_LOG(IO::SystemIO().Log(), IO::Severity::Info, "SampleDxe loaded");
 
 	Protocols::Access Access(
 		&UEFI::Context::BootServices()
@@ -28,8 +27,8 @@ namespace
 
 	if (!LoadedImage)
 	{
-		Stream::Out::Serial
-			<< Trace() << "Loaded Image protocol is unavailable" << Stream::Endl;
+		UEFIPP_LOG(IO::SystemIO().Log(), IO::Severity::Error,
+			"Loaded Image protocol is unavailable");
 
 		return MakeUnexpected(UEFI::StatusCode::NotFound);
 	}

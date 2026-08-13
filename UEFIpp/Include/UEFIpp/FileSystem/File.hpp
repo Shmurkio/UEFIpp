@@ -32,6 +32,7 @@ namespace UEFIpp::FileSystem
 		Memory::AllocatorStub Allocator_{};
 		FileInfo Info_{};
 		UEFI::Handle FileSystemHandle_{};
+		UEFI::Status LastStatus_{};
 
 	public:
 		// Constructs an empty file
@@ -73,6 +74,12 @@ namespace UEFIpp::FileSystem
 		// Returns the opened file information
 		[[nodiscard]] auto Info() const -> const FileInfo&;
 
+		// Preserves the exact status returned by the last firmware operation.
+		[[nodiscard]] constexpr auto LastStatus() const noexcept -> UEFI::Status
+		{
+			return LastStatus_;
+		}
+
 		[[nodiscard]] constexpr auto Allocator() const noexcept
 			-> Memory::AllocatorStub
 		{
@@ -87,6 +94,9 @@ namespace UEFIpp::FileSystem
 
 		// Flushes the file buffers
 		[[nodiscard]] auto Flush() -> Foundation::Bool;
+
+		// Changes the logical file size while preserving the current position.
+		[[nodiscard]] auto Resize(Foundation::Uint64 Size) -> Foundation::Bool;
 
 		// Reads the file data into a vector
 		[[nodiscard]] auto Read(Library::Vector<Foundation::Uint8>& Buffer) -> Foundation::Bool;

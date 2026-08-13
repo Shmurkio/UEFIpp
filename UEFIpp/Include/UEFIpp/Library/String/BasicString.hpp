@@ -353,6 +353,63 @@ namespace UEFIpp::Library
 			return Append(Character);
 		}
 
+		[[nodiscard]] auto Insert(SizeType Position, ViewType View) -> Foundation::Bool
+		{
+			if (Position > Size_)
+			{
+				return false;
+			}
+			if (View.Empty())
+			{
+				return true;
+			}
+
+			const auto OldSize = Size_;
+			if (!Storage_.Resize(Size_ + View.Size() + 1))
+			{
+				return false;
+			}
+
+			for (SizeType Index = OldSize + 1; Index > Position; --Index)
+			{
+				Storage_[Index + View.Size() - 1] = Storage_[Index - 1];
+			}
+			for (SizeType Index{}; Index < View.Size(); ++Index)
+			{
+				Storage_[Position + Index] = View[Index];
+			}
+
+			Size_ += View.Size();
+			Storage_[Size_] = TChar{};
+			return true;
+		}
+
+		[[nodiscard]] auto Insert(SizeType Position, TChar Character) -> Foundation::Bool
+		{
+			return Insert(Position, ViewType{ &Character, 1 });
+		}
+
+		[[nodiscard]] auto Erase(SizeType Position, SizeType Count = 1) -> Foundation::Bool
+		{
+			if (Position > Size_)
+			{
+				return false;
+			}
+			const auto Available = Size_ - Position;
+			if (Count > Available)
+			{
+				Count = Available;
+			}
+			for (SizeType Index = Position; Index + Count <= Size_; ++Index)
+			{
+				Storage_[Index] = Storage_[Index + Count];
+			}
+			Size_ -= Count;
+			(void)Storage_.Resize(Size_ + 1);
+			Storage_[Size_] = TChar{};
+			return true;
+		}
+
 		auto PopBack() -> void
 		{
 			if (!Size_)

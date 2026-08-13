@@ -4,7 +4,7 @@
 
 Focused umbrella: `UEFIpp/FileSystem/FileSystem.hpp`.
 
-For copyable examples, read [Streams, console input, and files](../guides/streams-and-files.md#files).
+For copyable examples, read [Modern I/O and files](../guides/io-and-files.md#transports-and-files).
 
 ## `Path`
 

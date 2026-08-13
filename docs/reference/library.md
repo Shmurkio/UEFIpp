@@ -40,6 +40,10 @@ A non-owning contiguous view. Construct it from a pointer/size pair, a C array, 
 
 Unlike `Array` and `Vector`, `Span::At` returns a reference and does not perform a bounds check. The name indicates indexed access, not optional access. Callers must ensure `Index < Size()`.
 
+### `Tuple<T...>`
+
+An inline heterogeneous value used by typed multi-value operations such as `IO::Scan<T...>`. Construct it directly or with `MakeTuple`, inspect its arity through `TupleSize`, and access fields with `Get<Index>`. C arrays decay to pointers in tuple deduction and `MakeTuple`.
+
 ## `Vector<T>`
 
 `Vector` is an owning dynamic contiguous array with an optional `AllocatorStub`. It is copyable and movable.
@@ -156,7 +160,7 @@ Use it for rollback and local cleanup, particularly before a resource can be pla
 | Area | Headers |
 | --- | --- |
 | Strings | `String/BasicString.hpp`, `String/StringView.hpp`, `String/String.hpp` |
-| Containers | `Containers/Array.hpp`, `Span.hpp`, `Vector.hpp`, `Optional.hpp`, `Expected.hpp`, `Containers.hpp` |
+| Containers | `Containers/Array.hpp`, `Span.hpp`, `Vector.hpp`, `Tuple.hpp`, `Optional.hpp`, `Expected.hpp`, `Containers.hpp` |
 | Functional | `FunctionRef.hpp`, `Function.hpp`, `MoveOnlyFunction.hpp`, `Event.hpp`, `StopEvent.hpp`, connection/result headers, `Functional.hpp` |
 | Ownership | `UniquePtr.hpp`, `UniqueResource.hpp`, `ScopeExit.hpp`, `Ownership.hpp` |
 

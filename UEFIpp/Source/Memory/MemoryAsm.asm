@@ -241,11 +241,13 @@ set_xmm_tail:
 set_rep_stosb:
     push    rdi
 
+    mov     r9, rax
     mov     rdi, rcx
     mov     al, dl
     mov     rcx, r8
     cld
     rep stosb
+    mov     rax, r9
 
     pop     rdi
     ret
@@ -299,7 +301,7 @@ compare_equal:
 
 compare_xmm:
     cmp     r8, 16
-    jb      compare_equal
+    jb      compare_scalar
 
     movdqu  xmm0, xmmword ptr [rcx]
     movdqu  xmm1, xmmword ptr [rdx]

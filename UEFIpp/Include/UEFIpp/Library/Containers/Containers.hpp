@@ -5,3 +5,4 @@
 #include <UEFIpp/Library/Containers/Vector.hpp>
 #include <UEFIpp/Library/Containers/Optional.hpp>
 #include <UEFIpp/Library/Containers/Expected.hpp>
+#include <UEFIpp/Library/Containers/Tuple.hpp>

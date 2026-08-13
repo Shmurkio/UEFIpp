@@ -73,7 +73,10 @@ An EFI image is not an ordinary Windows executable. Keep these settings:
 | Incremental linking | `false` | `false` |
 | Additional options | `/FIXED:NO /DYNAMICBASE:NO /NXCOMPAT:NO` | same |
 
-The user-facing function is still named `Main`; the project-owned adapter exports `EfiMain` and performs context initialization. See [Applications and drivers](entry-points.md).
+The user-facing function is still named `Main`; the project-owned adapter
+exports `EfiMain`, initializes the context, and flushes the standard console and
+serial pipelines after `Main`. See
+[Applications and drivers](entry-points.md).
 
 ## Shared trace configuration
 
@@ -121,16 +124,15 @@ With the SampleApplication adapter in the project, `Entry.cpp` only needs this:
 #include <UEFIpp/UEFIpp.hpp>
 
 [[nodiscard]] auto Main(
-    const Vector<String>& Args
+    const Vector<U8String>& Args
 ) -> UEFI::MainResult
 {
-    Stream::Out::Console
-        << Stream::ClearScreen
-        << "Application started" << Stream::Endl
-        << "Arguments: " << Args.Size() << Stream::Endl;
-
-    Stream::Out::Serial
-        << Trace() << "Initialization complete" << Stream::Endl;
+    auto& Io = IO::SystemIO();
+    (void)Io.StandardInput().Clear();
+    (void)IO::Println(Io.Console(), "Application started");
+    (void)IO::Println(Io.Console(), "Arguments: {}", Args.Size());
+    UEFIPP_LOG(Io.Log(), IO::Severity::Info,
+               "initialization complete");
 
     return {};
 }
@@ -149,8 +151,8 @@ With the SampleDxe adapter, the driver-facing signature is:
 ```cpp
 [[nodiscard]] auto Main() -> UEFI::MainResult
 {
-    Stream::Out::Serial
-        << Trace() << "Driver loaded" << Stream::Endl;
+    UEFIPP_LOG(IO::SystemIO().Log(), IO::Severity::Info,
+               "driver loaded");
 
     return {};
 }
@@ -169,10 +171,11 @@ fs0:
 SampleApplication.efi first "second argument"
 ```
 
-The application adapter reads `LoadedImage::LoadOptions`, handles quotes, converts the UTF-16 command line to narrow strings, and passes a `Vector<String>` to `Main`.
+The application adapter reads `LoadedImage::LoadOptions`, handles quotes, validates the UTF-16 command line, and passes UTF-8 `Vector<U8String>` arguments to `Main`.
 
 ## Next steps
 
 - Read [Applications and drivers](entry-points.md) before changing either entry-point adapter.
 - Read [Core programming model](programming-model.md) before designing ownership or error propagation.
+- Read [Modern I/O and files](guides/io-and-files.md) for output, input, logging, and file examples.
 - Use the [documentation home](README.md) to find a guide or module reference.

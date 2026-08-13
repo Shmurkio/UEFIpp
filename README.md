@@ -1,84 +1,86 @@
 # UEFIpp
 
-UEFIpp is a freestanding C++ library for x64 UEFI applications and boot-service drivers. It keeps the firmware ABI at the edge of a project and provides C++ interfaces for the parts that make firmware code pleasant to write: strings and containers, error handling, ownership, streams, files, protocol discovery, memory access, x64 assembly and disassembly, PE inspection, unwinding, and symbol resolution.
+UEFIpp is a freestanding, modern C++ library for x64 UEFI applications and boot-service drivers. It keeps the firmware ABI at the edge while providing typed errors, UTF-8 text, composable I/O, containers, ownership, protocol discovery, files, x64 code tooling, PE inspection, unwinding, and symbol resolution.
 
-The repository builds three targets:
-
-- `UEFIpp.lib`, the static library;
-- `SampleApplication.efi`, an application and executable Library test suite;
-- `SampleDxe.efi`, a boot-service driver.
+The repository builds `UEFIpp.lib`, `SampleApplication.efi`, and `SampleDxe.efi`.
 
 ## Start here
 
 - [Documentation home](docs/README.md)
 - [Getting started](docs/getting-started.md)
+- [Modern I/O and files](docs/guides/io-and-files.md)
 - [Applications, drivers, and entry points](docs/entry-points.md)
-- [Core programming model](docs/programming-model.md)
-- [Complete public-header index](docs/reference/header-index.md)
+- [Public-header index](docs/reference/header-index.md)
 
-The [SampleApplication](Samples/SampleApplication/Entry.cpp) is useful when learning the general-purpose `Library/` APIs. It runs focused examples for every public string, container, functional, event, and ownership type. The [SampleDxe](Samples/SampleDxe/Entry.cpp) is the smallest example of a driver with an unload callback.
-
-## A minimal application
+## Minimal application
 
 ```cpp
 #include <UEFIpp/UEFIpp.hpp>
 
-[[nodiscard]] auto Main(
-    const Vector<String>& Args
-) -> UEFI::MainResult
+[[nodiscard]] auto Main(const Vector<U8String>& Args) -> UEFI::MainResult
 {
-    Stream::Out::Console
-        << "Hello from UEFI++" << Stream::Endl
-        << "Arguments: " << Args.Size() << Stream::Endl;
+    auto& Io = IO::SystemIO();
 
+    if (auto Result = IO::Println(
+            Io.Console(), "Hello from UEFI++; arguments: {}", Args.Size());
+        !Result)
+    {
+        return MakeUnexpected(Result.Error().Status.Failed()
+            ? Result.Error().Status.Code()
+            : UEFI::StatusCode::DeviceError);
+    }
+
+    UEFIPP_LOG(Io.Log(), IO::Severity::Info, "application started");
     return {};
 }
 ```
 
-The project-owned entry-point adapter initializes `UEFI::Context`, converts UEFI load options to `Vector<String>`, invokes `Main`, and maps `MainResult` back to the firmware `EFI_STATUS` ABI. Application code therefore stays ordinary C++.
+The project-owned entry adapter attaches `UEFI::Context`, initializes
+`IO::SystemIO()`, converts UTF-16 load options to validated UTF-8 arguments,
+invokes `Main`, flushes the standard console and serial pipelines, and maps the
+application or flush result back to `EFI_STATUS`.
+
+## I/O design
+
+The I/O system is intentionally not an imitation of `std::iostream`:
+
+- `OutputSink` and `InputSource` are structural concepts with partial-transfer semantics.
+- Every fallible operation returns `IO::Result<T>` with operation, exact firmware status, offset, and transferred-byte context.
+- `Print` uses compile-time checked, stateless format strings; `VPrint` supports runtime format arguments.
+- The optional `Out(...) <<` and `Reader >> Read<T...>`/`Into(...)` facade preserves explicit results, per-value formatting, and transactional extraction without persistent stream state.
+- UTF-8 is the library text boundary. UTF-16 conversion is explicit and validated at firmware boundaries.
+- Buffering, newline conversion, teeing, prefixing, hashing, rate limiting, fault injection, and terminal styling are composable adapters.
+- `WriterRef`/`ReaderRef` provide allocation-free borrowed type erasure; `AnyWriter`/`AnyReader` provide owning small-buffer type erasure.
+- Terminal input exposes typed key events, timeouts, cancellation, coroutines, and a Unicode-aware line editor.
+- Structured logging formats once and fans out to multiple sinks; panic output avoids allocation and locks.
+
+See the [I/O guide](docs/guides/io-and-files.md) and
+[I/O reference](docs/reference/io.md).
 
 ## Build
 
-Open `UEFIpp.slnx` in Visual Studio and select `Debug|x64` or `Release|x64`, or build from a Visual Studio developer shell:
+Open `UEFIpp.slnx` in Visual Studio or build from a Visual Studio developer shell:
 
 ```powershell
 msbuild UEFIpp.slnx /m /p:Configuration=Debug /p:Platform=x64
 ```
 
-Outputs are written to `x64/Debug` or `x64/Release`.
+Use `Release` for the optimized configuration. Outputs are written below `x64/Debug` or `x64/Release`. The projects use the MSVC `v145` toolset, `/std:c++latest`, the conforming preprocessor, UTF-8 source/execution encoding, MASM, no exceptions or RTTI, and no default libraries in EFI images.
 
-The projects currently use the MSVC `v145` platform toolset, MASM, and a Windows SDK. Exceptions and RTTI are disabled, default libraries are not linked into EFI images, and `EfiMain` is the linker entry point. See [Getting started](docs/getting-started.md) for the complete project setup.
-
-## What is included
+## Main modules
 
 | Area | What it provides |
 | --- | --- |
-| Foundation | Firmware-sized types, casts, bit operations, flags, atomics, IDs, assertions, spin locks, and low-level utilities |
-| Library | Strings, views, arrays, spans, vectors, optional/expected values, callable wrappers, events, smart ownership, and scope guards |
-| UEFI and Protocols | ABI-compatible tables and structures, status handling, global context, typed protocol discovery, files, console, PCI I/O, TCP4, and UDP4 |
-| Stream, Text, and FileSystem | Console/serial/file streams, formatting, parsing, encoding conversion, paths, metadata, and file operations |
-| Memory | Pool allocation, allocator capabilities, executable allocators, access masks, and type-erased memory views |
-| Architecture | x64 registers and CPU helpers, instruction models, assembler, decoder, disassembler, formatter, and unwinder |
-| Executable and Reverse | PE parsing, export enumeration, PDB/MSF loading, symbol databases, matching, providers, and resolution |
-| Diagnostics and CRT | Project-aware tracing and the small runtime surface required by freestanding C++ code |
+| Foundation | Firmware-sized types, traits, casts, atomics, source locations, assertions, and locks |
+| Library | UTF string types, views, spans, arrays, vectors, tuples, expected/optional values, callables, events, and ownership |
+| IO | Result-based byte I/O, transports, adapters, UTF conversion, formatting, scanning, terminals, coroutines, and logging |
+| UEFI and Protocols | ABI-compatible tables, status handling, global context, typed protocol discovery, console, files, PCI, and networking |
+| FileSystem | Paths, metadata, file ownership, resizing, and exact last firmware status |
+| Memory | Pool allocation, allocator capabilities, executable allocators, access masks, and memory views |
+| Architecture | x64 registers, CPU helpers, assembly, decoding, formatting, disassembly, and unwinding |
+| Executable and Reverse | PE parsing, exports, MSF/PDB loading, symbol databases, matching, providers, and resolution |
 
-The [reference documentation](docs/README.md#module-reference) describes each area and links every public header.
-
-## Repository layout
-
-```text
-UEFIpp/
-  Include/UEFIpp/    Public headers
-  Source/             Library implementations
-  UEFIpp.props        Shared per-project trace configuration
-Samples/
-  SampleApplication/  Application and Library examples
-  SampleDxe/          Boot-service driver example
-docs/                 Guides and API reference
-```
-
-## Design notes
-
-UEFIpp is intentionally explicit about failure and lifetime. Operations that can fail commonly return `Bool`, `Optional<T>`, or `Expected<T, E>`. Non-owning types such as `Span`, `StringView`, `FunctionRef`, `AllocatorStub`, and `MemoryView` do not extend the lifetime of what they reference. Firmware handles remain governed by UEFI phase and protocol rules.
-
-Those conventions are explained in [Core programming model](docs/programming-model.md) and repeated near the APIs where they matter.
+UEFIpp is explicit about failure and lifetime. Non-owning views and capability
+references never extend backend lifetimes. Flush the standard I/O pipelines
+with `UEFI::Context::PrepareExitBootServices()` before firmware exit and
+invalidate boot-service-backed I/O with `ExitBootServicesSucceeded()` afterward.

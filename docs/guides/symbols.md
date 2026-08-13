@@ -18,10 +18,10 @@ if (!Image.IsValid())
     return MakeUnexpected(UEFI::StatusCode::LoadError);
 }
 
-Stream::Out::Console
-    << "Image size: " << Image.ImageSize() << Stream::Endl
-    << "Entry RVA: " << Image.EntryPointRva() << Stream::Endl
-    << "Sections: " << Image.SectionCount() << Stream::Endl;
+(void)IO::Println(IO::SystemIO().Console(),
+                  "image size={}, entry RVA={:#X}, sections={}",
+                  Image.ImageSize(), Image.EntryPointRva(),
+                  Image.SectionCount());
 ```
 
 `Image` expects a mapped image at `Base`, not a raw file layout. It exposes the DOS header, 32/64-bit NT headers, file header, section array, data directories, RVA translation, and parsed exports.
@@ -29,10 +29,8 @@ Stream::Out::Console
 ```cpp
 for (const auto& Export : Image.Exports())
 {
-    Stream::Out::Console
-        << Export.Name << " @ 0x"
-        << Stream::Hexadecimal << Export.Address
-        << Stream::Decimal << Stream::Endl;
+    (void)IO::Println(IO::SystemIO().Console(), "{} @ {:#X}",
+                      Export.Name, Export.Address);
 }
 ```
 
@@ -57,13 +55,10 @@ if (!Loaded)
 {
     const auto Error = Loaded.Error();
 
-    Stream::Out::Serial
-        << Trace()
-        << "PDB load failed, code="
-        << Foundation::Cast::Underlying(Error.Code)
-        << ", stream=" << Error.Stream
-        << ", offset=" << Error.Offset
-        << Stream::Endl;
+    UEFIPP_LOG(IO::SystemIO().Log(), IO::Severity::Error,
+               "PDB load failed: code={}, stream={}, offset={}",
+               Foundation::Cast::Underlying(Error.Code),
+               Error.Stream, Error.Offset);
 
     return MakeUnexpected(UEFI::StatusCode::CompromisedData);
 }
@@ -80,10 +75,8 @@ Foundation::Uint64 Rva{};
 
 if (Resolver.FindRva("DriverEntry", Rva))
 {
-    Stream::Out::Console
-        << "DriverEntry RVA: 0x"
-        << Stream::Hexadecimal << Rva
-        << Stream::Decimal << Stream::Endl;
+    (void)IO::Println(IO::SystemIO().Console(),
+                      "DriverEntry RVA: {:#X}", Rva);
 }
 
 using DriverEntryFn = auto (*)(Foundation::Void*) -> Foundation::Int32;
@@ -101,10 +94,9 @@ const auto Symbol = Resolver.Symbolize(Address);
 
 if (Symbol.SymbolValue)
 {
-	Stream::Out::Console
-		<< Resolver.Database().String(Symbol.SymbolValue->Name)
-		<< "+0x" << Stream::Hexadecimal << Symbol.OffsetIntoSymbol
-		<< Stream::Decimal << Stream::Endl;
+	(void)IO::Println(IO::SystemIO().Console(), "{}+{:#X}",
+	                  Resolver.Database().String(Symbol.SymbolValue->Name),
+	                  Symbol.OffsetIntoSymbol);
 }
 ```
 
@@ -117,10 +109,8 @@ Foundation::Uint64 Offset{};
 
 if (Resolver.FieldOffset("MY_TYPE", "Member", Offset))
 {
-    Stream::Out::Console
-        << "MY_TYPE::Member = 0x"
-        << Stream::Hexadecimal << Offset
-        << Stream::Decimal << Stream::Endl;
+    (void)IO::Println(IO::SystemIO().Console(),
+                      "MY_TYPE::Member = {:#X}", Offset);
 }
 ```
 

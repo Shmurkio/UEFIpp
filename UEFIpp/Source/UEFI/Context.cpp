@@ -2,11 +2,7 @@
 
 #include <UEFIpp/Protocols/Access.hpp>
 #include <UEFIpp/Protocols/SimpleTextInputEx.hpp>
-#include <UEFIpp/Stream/Input/ConsoleSource.hpp>
-#include <UEFIpp/Stream/Input/Input.hpp>
-#include <UEFIpp/Stream/Output/ConsoleSink.hpp>
-#include <UEFIpp/Stream/Output/Output.hpp>
-#include <UEFIpp/Stream/Output/SerialSink.hpp>
+#include <UEFIpp/IO/Context.hpp>
 
 namespace UEFIpp::UEFI {
 Handle Context::ImageHandle_{};
@@ -30,12 +26,7 @@ auto Context::Attach(Table::System *SystemTable, Foundation::Uint16 SerialPort,
   BootServices_ = SystemTable->BootServices;
   RuntimeServices_ = SystemTable->RuntimeServices;
 
-  Stream::Out::Serial.SetSink(Stream::SerialSink(SerialPort));
-
-  if (SystemTable->ConsoleOut) {
-    Stream::Out::Console.SetSink(
-        Stream::ConsoleOutputSink(SystemTable->ConsoleOut));
-  }
+  Protocols::SimpleTextInputEx *ExtendedInput{};
 
   if (SystemTable->ConsoleIn && SystemTable->ConsoleInHandle) {
     Protocols::Access Access(BootServices_);
@@ -43,10 +34,12 @@ auto Context::Attach(Table::System *SystemTable, Foundation::Uint16 SerialPort,
         SystemTable->ConsoleInHandle);
 
     if (InputEx) {
-      Stream::In::Console.SetSource(
-          Stream::ConsoleInputSource(BootServices_, *InputEx));
+      ExtendedInput = *InputEx;
     }
   }
+
+  IO::SystemIO().Attach(BootServices_, ExtendedInput, SystemTable->ConsoleIn,
+                        SystemTable->ConsoleOut, SerialPort);
 
   CrtMemoryType_ = CrtMemoryType;
   return true;
@@ -68,7 +61,7 @@ auto Context::Normalize(Handle ImageHandle, Table::System *SystemTable,
 }
 
 auto Context::BootServices() -> Table::BootServices & {
-  UEFIPP_ASSERT(IsInitialized());
+  UEFIPP_ASSERT(HasBootServices());
   return *BootServices_;
 }
 
@@ -104,6 +97,21 @@ auto Context::HasImageHandle() noexcept -> Foundation::Bool {
   return ImageHandle_ != nullptr;
 }
 
+auto Context::HasBootServices() noexcept -> Foundation::Bool {
+  return BootServices_ != nullptr;
+}
+
+auto Context::PrepareExitBootServices() -> Foundation::Bool {
+  return HasBootServices() &&
+         Foundation::Cast::Auto<Foundation::Bool>(
+             IO::SystemIO().PrepareExitBootServices());
+}
+
+auto Context::ExitBootServicesSucceeded() noexcept -> Foundation::Void {
+  IO::SystemIO().ExitBootServices();
+  BootServices_ = nullptr;
+}
+
 auto Context::ImageHandle() -> Handle {
   UEFIPP_ASSERT(HasImageHandle());
   return ImageHandle_;
@@ -112,7 +120,7 @@ auto Context::ImageHandle() -> Handle {
 auto Context::CrtMemoryType() -> MemoryType { return CrtMemoryType_; }
 
 auto Context::IsInitialized() noexcept -> Foundation::Bool {
-  return SystemTable_ && BootServices_ && RuntimeServices_;
+  return SystemTable_ && RuntimeServices_;
 }
 
 } // namespace UEFIpp::UEFI

@@ -49,9 +49,9 @@ if (!LoadedImage)
     return MakeUnexpected(UEFI::StatusCode::NotFound);
 }
 
-Stream::Out::Serial
-    << "Image base: " << (*LoadedImage)->ImageBase << Stream::Endl
-    << "Image size: " << (*LoadedImage)->ImageSize << Stream::Endl;
+(void)IO::Println(IO::SystemIO().Serial(),
+                  "Image base: {}, image size: {}",
+                  (*LoadedImage)->ImageBase, (*LoadedImage)->ImageSize);
 ```
 
 This is the normal way to inspect the current image or install its unload callback.
@@ -167,11 +167,11 @@ These types satisfy the `Protocols::Protocol` concept and work directly with `Ac
 
 Use `ScanCode` constants for non-character keys such as arrows, function keys, and Escape. `InputKey::HasUnicode`, `HasScanCode`, `IsScanCode`, and `IsEscape` keep key handling readable.
 
-The high-level `Stream::In::Console` wraps extended input and is preferable for normal line and character input.
+The high-level `IO::Terminal` prefers extended input, falls back to basic input, and adds typed events, Unicode handling, timeouts, cancellation, and line editing.
 
 ## File protocols
 
-`Protocols::File` and `SimpleFileSystem` expose the raw UEFI ABI. Use them when you need protocol-level positioning, info GUIDs, or handle ownership. Use `FileSystem::File` and file streams for ordinary reads and writes.
+`Protocols::File` and `SimpleFileSystem` expose the raw UEFI ABI. Use them for protocol-level info GUIDs or handle ownership. Use `IO::FileSource` and `IO::FileSink` for result-based partial I/O, seeking, flushing, and truncation.
 
 ## PCI I/O
 

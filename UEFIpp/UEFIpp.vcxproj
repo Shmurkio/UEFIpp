@@ -64,7 +64,7 @@
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
       <BasicRuntimeChecks>Default</BasicRuntimeChecks>
       <SupportJustMyCode>false</SupportJustMyCode>
-      <AdditionalOptions>/Gs- %(AdditionalOptions)</AdditionalOptions>
+      <AdditionalOptions>/Gs- /utf-8 /Zc:preprocessor %(AdditionalOptions)</AdditionalOptions>
       <AdditionalIncludeDirectories>$(ProjectDir)Include</AdditionalIncludeDirectories>
       <UseFullPaths>false</UseFullPaths>
     </ClCompile>
@@ -83,7 +83,7 @@
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
       <BufferSecurityCheck>false</BufferSecurityCheck>
       <Optimization>MaxSpeed</Optimization>
-      <AdditionalOptions>/Gs- %(AdditionalOptions)</AdditionalOptions>
+      <AdditionalOptions>/Gs- /utf-8 /Zc:preprocessor %(AdditionalOptions)</AdditionalOptions>
       <AdditionalIncludeDirectories>$(ProjectDir)Include</AdditionalIncludeDirectories>
       <UseFullPaths>false</UseFullPaths>
     </ClCompile>
